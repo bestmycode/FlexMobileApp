@@ -96,7 +96,7 @@ class SignInScreenState extends State<SignInScreen> {
       height: hScale(265),
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/login_top_background.png"),
+          image: AssetImage("assets/signin_top_background.png"),
           fit: BoxFit.cover,
         ),
       ),

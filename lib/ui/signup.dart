@@ -1,334 +1,319 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/ui/widgets/custom_shape.dart';
-import 'package:flexflutter/ui/widgets/customappbar.dart';
-import 'package:flexflutter/ui/widgets/responsive_ui.dart';
-import 'package:flexflutter/ui/widgets/textformfield.dart';
+import 'package:flexflutter/utils/validator.dart';
+import 'package:flexflutter/utils/scale.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
+
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  SignUpScreenState createState() => SignUpScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
-  bool checkBoxValue = false;
-  late double _height;
-  late double _width;
-  late double _pixelRatio;
-  late bool _large;
-  late bool _medium;
+class SignUpScreenState extends State<SignUpScreen> {
+
+  hScale(double scale) {
+    return Scale().hScale(context, scale);
+  }
+
+  wScale(double scale) {
+    return Scale().wScale(context, scale);
+  }
+
+  fSize(double size) {
+    return Scale().fSize(context, size);
+  }
+
+  final firstNameCtl = TextEditingController();
+  final lastNameCtl = TextEditingController();
+  final mobileNumberCtl = TextEditingController();
+  final companyNameCtl = TextEditingController();
+  final companyEmailCtl = TextEditingController();
+  final passwordCtl = TextEditingController();
+  // ignore: non_constant_identifier_names
+  bool flag_term = false;
+
+  handleBack() {
+    Navigator.of(context).pop();
+  }
+
+  handleContinue() {
+    Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
+  }
+
+  handleLogin() {
+    Navigator.of(context).pushReplacementNamed(SIGN_IN);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    _height = MediaQuery.of(context).size.height;
-    _width = MediaQuery.of(context).size.width;
-    _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    _large =  ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-    _medium =  ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
-
     return Material(
       child: Scaffold(
-        body: Container(
-          height: _height,
-          width: _width,
-          margin: EdgeInsets.only(bottom: 5),
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                Opacity(opacity: 0.88,child: CustomAppBar()),
-                clipShape(),
-                form(),
-                acceptTermsTextRow(),
-                SizedBox(height: _height/35,),
-                button(),
-                infoTextRow(),
-                socialIconsRow(),
-                //signInTextRow(),
-              ],
-            ),
-          ),
-        ),
-      ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              logo(),
+              customTextField(firstNameCtl, 'Enter First Name', ' First Name ', false),
+              customTextField(lastNameCtl, 'Enter Last Name', ' Last Name ', false),
+              customTextField(mobileNumberCtl, 'Enter Mobile Number', ' Mobile Number ', false),
+              customTextField(companyNameCtl, 'Enter Company Name', ' Registered Company Name ', false),
+              customTextField(companyEmailCtl, 'Enter Company Email Address', ' Company Email Address ', false),
+              customTextField(passwordCtl, 'At Least 8 Characters', ' Password ', true),
+              termsField(),
+              continueButton(),
+              loginField()
+            ]
+          )
+        )
+      )
     );
   }
 
-  Widget clipShape() {
-    return Stack(
-      children: <Widget>[
-        Opacity(
-          opacity: 0.75,
-          child: ClipPath(
-            clipper: CustomShapeClipper(),
-            child: Container(
-              height: _large? _height/8 : (_medium? _height/7 : _height/6.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.orange, Colors.pinkAccent],
-                ),
-              ),
+  Widget backButton() {
+    return Positioned(
+      left: 24.0,
+      top: 0.0,
+      child: SizedBox(
+        width: hScale(40),
+        height: hScale(40),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff727a80),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)
             ),
+            padding: const EdgeInsets.all(0)
           ),
-        ),
-        Opacity(
-          opacity: 0.5,
-          child: ClipPath(
-            clipper: CustomShapeClipper2(),
-            child: Container(
-              height: _large? _height/12 : (_medium? _height/11 : _height/10),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.orange, Colors.pinkAccent],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Container(
-          height: _height / 5.5,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                  spreadRadius: 0.0,
-                  color: Colors.black26,
-                  offset: Offset(1.0, 10.0),
-                  blurRadius: 20.0),
-            ],
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: GestureDetector(
-              onTap: (){
-                print('Adding photo');
-              },
-
-              child: Icon(Icons.add_a_photo, size: _large? 40: (_medium? 33: 31),color: Colors.orange,)),
-        ),
-//        Positioned(
-//          top: _height/8,
-//          left: _width/1.75,
-//          child: Container(
-//            alignment: Alignment.center,
-//            height: _height/23,
-//            padding: EdgeInsets.all(5),
-//            decoration: BoxDecoration(
-//              shape: BoxShape.circle,
-//              color:  Colors.orange[100],
-//            ),
-//            child: GestureDetector(
-//                onTap: (){
-//                  print('Adding photo');
-//                },
-//                child: Icon(Icons.add_a_photo, size: _large? 22: (_medium? 15: 13),)),
-//          ),
-//        ),
-      ],
+          onPressed: () { handleBack(); },
+          child: Icon(Icons.arrow_back_ios, color: Colors.white, size:wScale(13)),
+        )
+      )
     );
   }
 
-  Widget form() {
+  Widget logo() {
     return Container(
-      margin: EdgeInsets.only(
-          left:_width/ 12.0,
-          right: _width / 12.0,
-          top: _height / 20.0),
-      child: Form(
+        width: MediaQuery.of(context).size.width,
+        height: hScale(174),
+        padding: EdgeInsets.only(top: hScale(44)),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/signup_top_background.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: Column(
-          children: <Widget>[
-            firstNameTextFormField(),
-            SizedBox(height: _height / 60.0),
-            lastNameTextFormField(),
-            SizedBox(height: _height/ 60.0),
-            emailTextFormField(),
-            SizedBox(height: _height / 60.0),
-            phoneTextFormField(),
-            SizedBox(height: _height / 60.0),
-            passwordTextFormField(),
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: hScale(40),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                        "Create an account",
+                        style: TextStyle(color: const Color(0xffffffff), fontSize: fSize(24), fontWeight: FontWeight.w700 )),
+                    backButton()
+                  ]
+                )
+              ),
+              signUpProgressField()
+            ]
+        )
+    );
+  }
+
+  Widget signUpProgressField() {
+    return (
+      Container(
+        width: MediaQuery.of(context).size.width,
+        height: hScale(32),
+        margin: EdgeInsets.only(top: hScale(25)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            roundNumber('1', true),
+            hypen(true),
+            roundNumber('2', false),
+            hypen(false),
+            roundNumber('3', false),
+            hypen(false),
+            roundNumber('4', false)
           ],
         ),
-      ),
+      )
     );
   }
-
-  Widget firstNameTextFormField() {
-    return const TextField(
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hintText: 'first name'
-      ),
-    );
-  }
-
-  Widget lastNameTextFormField() {
-    // return CustomTextField(
-    //   keyboardType: TextInputType.text,
-    //   icon: Icons.person,
-    //   hint: "Last Name", textEditingController: null,
-    // );
-    return const TextField(
-      decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'first name'
-      ),
-    );
-  }
-
-  Widget emailTextFormField() {
-    // return CustomTextField(
-    //   keyboardType: TextInputType.emailAddress,
-    //   icon: Icons.email,
-    //   hint: "Email ID", textEditingController: null,
-    // );
-    return const TextField(
-      decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'first name'
-      ),
-    );
-  }
-
-  Widget phoneTextFormField() {
-    // return CustomTextField(
-    //   keyboardType: TextInputType.number,
-    //   icon: Icons.phone,
-    //   hint: "Mobile Number", textEditingController: null,
-    // );
-    return const TextField(
-      decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'first name'
-      ),
-    );
-  }
-
-  Widget passwordTextFormField() {
-    // return CustomTextField(
-    //   keyboardType: TextInputType.text,
-    //   obscureText: true,
-    //   icon: Icons.lock,
-    //   hint: "Password", textEditingController: null,
-    // );
-    return const TextField(
-      decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          hintText: 'first name'
-      ),
-    );
-  }
-
-  Widget acceptTermsTextRow() {
+  
+  Widget roundNumber(num, active) {
     return Container(
-      margin: EdgeInsets.only(top: _height / 100.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-        ],
-      ),
-    );
-  }
-
-  Widget button() {
-    return RaisedButton(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-      onPressed: () {
-        print("Routing to your account");
-      },
-      textColor: Colors.white,
-      padding: EdgeInsets.all(0.0),
-      child: Container(
-        alignment: Alignment.center,
-//        height: _height / 20,
-        width:_large? _width/4 : (_medium? _width/3.75: _width/3.5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-          gradient: LinearGradient(
-            colors: <Color>[Colors.orange, Colors.pinkAccent],
-          ),
+      width: hScale(32),
+      height: hScale(32),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: active ? Color(0xff30E7A9) : Colors.white,
         ),
-        padding: const EdgeInsets.all(12.0),
-        child: Text('SIGN UP', style: TextStyle(fontSize: _large? 14: (_medium? 12: 10)),),
+        borderRadius: BorderRadius.circular(hScale(16)),
       ),
+      child: num != '4'
+          ? Text(num, style: TextStyle(color: active ? const Color(0xff30E7A9) : Colors.white))
+          : Icon(Icons.check , color: active ? const Color(0xff30E7A9) : Colors.white, size:wScale(16)),
     );
   }
 
-  Widget infoTextRow() {
+  Widget hypen(active) {
     return Container(
-      margin: EdgeInsets.only(top: _height / 40.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            "Or create using social media",
-            style: TextStyle(fontWeight: FontWeight.w400, fontSize: _large? 12: (_medium? 11: 10)),
-          ),
-        ],
-      ),
+      width: 30,
+      height: 1,
+      color: active ? Color(0xff30E7A9) : Colors.white,
     );
   }
 
-  Widget socialIconsRow() {
+  Widget customTextField(ctl, hint, label, pwd) {
     return Container(
-      margin: EdgeInsets.only(top: _height / 80.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          CircleAvatar(
-            radius: 15,
-            backgroundImage: AssetImage("assets/images/googlelogo.png"),
-          ),
-          SizedBox(
-            width: 20,
-          ),
-          CircleAvatar(
-            radius: 15,
-            backgroundImage: AssetImage("assets/images/fblogo.jpg"),
-          ),
-          SizedBox(
-            width: 20,
-          ),
-          CircleAvatar(
-            radius: 15,
-            backgroundImage: AssetImage("assets/images/twitterlogo.jpg"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget signInTextRow() {
-    return Container(
-      margin: EdgeInsets.only(top: _height / 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            "Already have an account?",
-            style: TextStyle(fontWeight: FontWeight.w400),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop(SIGN_IN);
-              print("Routing to Sign up screen");
-            },
-            child: Text(
-              "Sign in",
-              style: TextStyle(
-                  fontWeight: FontWeight.w800, color: Colors.orange, fontSize: 19),
+        width: wScale(295),
+        height: hScale(56),
+        margin: EdgeInsets.only(top: hScale(32)),
+        alignment: Alignment.center,
+        child: TextField(
+          controller: ctl,
+          obscureText: pwd,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            hintText: hint,
+            hintStyle: TextStyle(
+                color: const Color(0xff040415),
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500),
+            labelText: label,
+            labelStyle: TextStyle(
+                color: const Color(0xff040415),
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Color(0xff040415),
+                    width: 1.0)
             ),
-          )
-        ],
-      ),
+          ),
+        )
     );
   }
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(DoubleProperty('_width', _width));
+
+  Widget termsField() {
+    return Container(
+      width: wScale(295),
+      height: hScale(48),
+      margin: EdgeInsets.only(top: hScale(21)),
+      alignment: Alignment.topLeft,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          termsCheckBox(),
+          termsTitle(),
+          ]
+        ),
+      );
+  }
+
+  Widget termsCheckBox() {
+    return SizedBox(
+      width: hScale(14),
+      height: hScale(24),
+      child: Transform.scale(
+        scale: 0.7,
+        child:Checkbox(
+          value: flag_term,
+          activeColor: const Color(0xff30E7A9),
+          onChanged: (value) {
+            setState(() {
+              flag_term = value!;
+            });
+          },
+        ),
+      )
+    );
+  }
+
+  Widget termsTitle() {
+    return Container(
+      width: wScale(264),
+      height: hScale(48),
+      // margin: EdgeInsets.only(left: wScale(17)),
+      child: RichText(
+        text: TextSpan(
+          // Note: Styles for TextSpans must be explicitly defined.
+          // Child text spans will inherit styles from parent
+          style: TextStyle(
+            fontSize: fSize(14),
+            color: Colors.black,
+          ),
+          children: const [
+            TextSpan(text: 'I agree to the '),
+            TextSpan(text: 'terms of use ', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: 'and '),
+            TextSpan(text: 'privacy policy', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+      )
+    );
+  }
+
+  Widget continueButton() {
+    return Container(
+        width: wScale(295),
+        height: hScale(56),
+        margin: EdgeInsets.only(top: hScale(22)),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)
+            ),
+          ),
+          onPressed: () { handleContinue(); },
+          child: Text(
+              "Continue",
+              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
+        )
+    );
+  }
+
+  Widget loginField() {
+    return Container(
+        margin: EdgeInsets.only(top: hScale(45), bottom: hScale(52)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+                "Already have an account?",
+                style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
+            loginButton()
+          ],
+        )
+    );
+  }
+
+  Widget loginButton() {
+    return TextButton(
+      style: TextButton.styleFrom(
+        primary: const Color(0xff30E7A9),
+        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
+      ),
+      onPressed: () { handleLogin(); },
+      child: const Text('Login'),
+    );
   }
 }
