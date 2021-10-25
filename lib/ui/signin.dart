@@ -38,13 +38,13 @@ class SignInScreenState extends State<SignInScreen> {
     if(emailValidate!.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(emailValidate!),
+          content: Text(emailValidate),
         ),
       );
     } else if(passwordValidate!.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(passwordValidate!),
+          content: Text(passwordValidate),
         ),
       );
     } else {
