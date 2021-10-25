@@ -6,4 +6,6 @@ const String SPLASH_SCREEN ='splash';
 const String SIGN_IN = 'signin';
 // ignore: constant_identifier_names
 const String SIGN_UP ='signup';
+// ignore: constant_identifier_names
+const String MAIN_SCREEN ='main';
 
