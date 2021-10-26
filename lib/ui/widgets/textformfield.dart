@@ -1,47 +1,55 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
-import 'package:flexflutter/ui/widgets/responsive_ui.dart';
+import 'package:flexflutter/utils/scale.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hint;
-  final TextEditingController textEditingController;
-  final TextInputType keyboardType;
-  final bool obscureText;
-  final IconData icon;
-  late double _width;
-  late double _pixelRatio;
-  late bool large;
-  late bool medium;
+  final String label;
+  final TextEditingController ctl;
+  final bool pwd;
 
-
-  CustomTextField(
-    {Key? key, required this.hint,
-      required this.textEditingController,
-      required this.keyboardType,
-      required this.icon,
-      this.obscureText= false,
-     }) : super(key: key);
+  const CustomTextField({Key? key, required this.ctl, required this.hint, required this.label, this.pwd= false }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    _width = MediaQuery.of(context).size.width;
-    _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    large =  ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
-    medium=  ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
-    return Material(
-      borderRadius: BorderRadius.circular(30.0),
-      elevation: large? 12 : (medium? 10 : 8),
-      child: TextFormField(
-        controller: textEditingController,
-        keyboardType: keyboardType,
-        cursorColor: Colors.orange,
-        decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: Colors.orange, size: 20),
-          hintText: hint,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide.none),
-        ),
-      ),
+    hScale(double scale) {
+      return Scale().hScale(context, scale);
+    }
+    wScale(double scale) {
+      return Scale().wScale(context, scale);
+    }
+
+    fSize(double size) {
+      return Scale().fSize(context, size);
+    }
+
+    return Container(
+        width: wScale(295),
+        height: hScale(56),
+        alignment: Alignment.center,
+        child: TextField(
+          controller: ctl,
+          obscureText: pwd,
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
+            hintText: hint,
+            hintStyle: TextStyle(
+                color: const Color(0xff040415),
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500),
+            labelText: label,
+            labelStyle: TextStyle(
+                color: const Color(0xff040415),
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Color(0xff040415),
+                    width: 1.0)
+            ),
+          ),
+        )
     );
   }
 }

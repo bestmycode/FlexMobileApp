@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/validator.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'package:flexflutter/ui/widgets/textformfield.dart';
+import 'package:flexflutter/ui/widgets/spacefield.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -35,6 +37,7 @@ class SignUpScreenState extends State<SignUpScreen> {
   final passwordCtl = TextEditingController();
   // ignore: non_constant_identifier_names
   bool flag_term = false;
+  int signup_progress = 1;
 
   handleBack() {
     Navigator.of(context).pop();
@@ -61,15 +64,25 @@ class SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             children: [
               logo(),
-              customTextField(firstNameCtl, 'Enter First Name', ' First Name ', false),
-              customTextField(lastNameCtl, 'Enter Last Name', ' Last Name ', false),
-              customTextField(mobileNumberCtl, 'Enter Mobile Number', ' Mobile Number ', false),
-              customTextField(companyNameCtl, 'Enter Company Name', ' Registered Company Name ', false),
-              customTextField(companyEmailCtl, 'Enter Company Email Address', ' Company Email Address ', false),
-              customTextField(passwordCtl, 'At Least 8 Characters', ' Password ', true),
+              const CustomSpacer(size: 38),
+              CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: ' First Name '),
+              const CustomSpacer(size: 32),
+              CustomTextField(ctl: lastNameCtl, hint: 'Enter Last Name', label: ' Last Name '),
+              const CustomSpacer(size: 32),
+              CustomTextField(ctl: mobileNumberCtl, hint: 'Enter Mobile Number', label: ' Mobile Number '),
+              const CustomSpacer(size: 32),
+              CustomTextField(ctl: companyNameCtl, hint: 'Enter Company Name', label: ' Registered Company Name '),
+              const CustomSpacer(size: 32),
+              CustomTextField(ctl: companyEmailCtl, hint: 'Enter Company Email Address', label: ' Company Email Address '),
+              const CustomSpacer(size: 32),
+              CustomTextField(ctl: passwordCtl, hint: 'At Least 8 Characters', label: ' Password ', pwd: true),
+              const CustomSpacer(size: 21),
               termsField(),
+              const CustomSpacer(size: 22),
               continueButton(),
-              loginField()
+              const CustomSpacer(size: 45),
+              loginField(),
+              const CustomSpacer(size: 52),
             ]
           )
         )
@@ -125,6 +138,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                   ]
                 )
               ),
+              const CustomSpacer(size: 25),
               signUpProgressField()
             ]
         )
@@ -133,21 +147,20 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   Widget signUpProgressField() {
     return (
-      Container(
+      SizedBox(
         width: MediaQuery.of(context).size.width,
         height: hScale(32),
-        margin: EdgeInsets.only(top: hScale(25)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            roundNumber('1', true),
-            hypen(true),
-            roundNumber('2', false),
-            hypen(false),
-            roundNumber('3', false),
-            hypen(false),
-            roundNumber('4', false)
+            roundNumber(1, signup_progress >= 1),
+            hypen(signup_progress >= 1),
+            roundNumber(2, signup_progress >= 2),
+            hypen(signup_progress >= 2),
+            roundNumber(3, signup_progress >= 3),
+            hypen(signup_progress >= 3),
+            roundNumber(4, signup_progress >= 4)
           ],
         ),
       )
@@ -165,8 +178,8 @@ class SignUpScreenState extends State<SignUpScreen> {
         ),
         borderRadius: BorderRadius.circular(hScale(16)),
       ),
-      child: num != '4'
-          ? Text(num, style: TextStyle(color: active ? const Color(0xff30E7A9) : Colors.white))
+      child: num != 4
+          ? Text(num.toString(), style: TextStyle(color: active ? const Color(0xff30E7A9) : Colors.white))
           : Icon(Icons.check , color: active ? const Color(0xff30E7A9) : Colors.white, size:wScale(16)),
     );
   }
@@ -179,42 +192,10 @@ class SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget customTextField(ctl, hint, label, pwd) {
-    return Container(
-        width: wScale(295),
-        height: hScale(56),
-        margin: EdgeInsets.only(top: hScale(32)),
-        alignment: Alignment.center,
-        child: TextField(
-          controller: ctl,
-          obscureText: pwd,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            hintText: hint,
-            hintStyle: TextStyle(
-                color: const Color(0xff040415),
-                fontSize: fSize(14),
-                fontWeight: FontWeight.w500),
-            labelText: label,
-            labelStyle: TextStyle(
-                color: const Color(0xff040415),
-                fontSize: fSize(14),
-                fontWeight: FontWeight.w500),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
-          ),
-        )
-    );
-  }
-
   Widget termsField() {
     return Container(
       width: wScale(295),
       height: hScale(48),
-      margin: EdgeInsets.only(top: hScale(21)),
       alignment: Alignment.topLeft,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -247,10 +228,9 @@ class SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget termsTitle() {
-    return Container(
+    return SizedBox(
       width: wScale(264),
       height: hScale(48),
-      // margin: EdgeInsets.only(left: wScale(17)),
       child: RichText(
         text: TextSpan(
           style: TextStyle(
@@ -269,10 +249,9 @@ class SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget continueButton() {
-    return Container(
+    return SizedBox(
         width: wScale(295),
         height: hScale(56),
-        margin: EdgeInsets.only(top: hScale(22)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
@@ -290,17 +269,14 @@ class SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget loginField() {
-    return Container(
-        margin: EdgeInsets.only(top: hScale(45), bottom: hScale(52)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-                "Already have an account?",
-                style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
-            loginButton()
-          ],
-        )
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+            "Already have an account?",
+            style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
+        loginButton()
+      ],
     );
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flexflutter/constants/constants.dart';
+import 'package:flexflutter/ui/widgets/spacefield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
@@ -64,7 +65,6 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
   @override
   Widget build(BuildContext context) {
     var platform = Theme.of(context).platform;
-    // platform == TargetPlatform.iOS
     return Stack(
       children: <Widget>[
         Image.asset(
@@ -87,29 +87,26 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
     return Center(
       child: Column(
           children: [
-            Container(
-              margin: EdgeInsets.only(top: hScale(72)),
-              child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.contain,
-                  width: wScale(71)),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: hScale(101)),
-              child: Image.asset(
-                  platform == 'ios' ? 'assets/face_id_white.png' : 'assets/touch_id_white.png',
-                  fit: BoxFit.contain,
-                  width: hScale(150)),
-            ),
+            const CustomSpacer(size: 72),
+            Image.asset(
+                'assets/logo.png',
+                fit: BoxFit.contain,
+                width: wScale(71)),
+            const CustomSpacer(size: 101),
+            Image.asset(
+                platform == 'ios' ? 'assets/face_id_white.png' : 'assets/touch_id_white.png',
+                fit: BoxFit.contain,
+                width: hScale(150)),
             Container(
               margin: EdgeInsets.only(top: hScale(113), left: wScale(40), right: wScale(40)),
               child: Text(
                   platform == 'ios' ? "Secure your account with Face ID" :  "Secure your account with Touch ID",
                   textAlign: TextAlign.center,
                   style: TextStyle(color: const Color(0xffffffff), fontSize: fSize(24))),
-
             ),
+            const CustomSpacer(size: 120),
             enableFaceIDButton(platform),
+            const CustomSpacer(size: 14),
             setUpLaterButton()
           ]
       ),
@@ -117,10 +114,9 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
   }
 
   Widget enableFaceIDButton(platform) {
-    return Container(
+    return SizedBox(
         width: wScale(187),
         height: hScale(56),
-        margin: EdgeInsets.only(top: hScale(120)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff30E7A9),
@@ -138,16 +134,13 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
   }
 
   Widget setUpLaterButton() {
-    return Container(
-      margin: EdgeInsets.only(top: hScale(14)),
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xffffffff),
-          textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xffffffff)),
-        ),
-        onPressed: () { handleSetUpLater(); },
-        child: const Text('I’ll set it up later'),
-      )
+    return TextButton(
+      style: TextButton.styleFrom(
+        primary: const Color(0xffffffff),
+        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xffffffff)),
+      ),
+      onPressed: () { handleSetUpLater(); },
+      child: const Text('I’ll set it up later'),
     );
   }
 
@@ -155,13 +148,12 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
     return Center(
       child: Column(
           children: [
-            Container(
-              margin: EdgeInsets.only(top: hScale(134)),
-              child: Image.asset(
-                  'assets/logo.png',
-                  fit: BoxFit.contain,
-                  width: wScale(137)),
-            ),
+            const CustomSpacer(size: 134),
+            Image.asset(
+                'assets/logo.png',
+                fit: BoxFit.contain,
+                width: wScale(137)),
+            const CustomSpacer(size: 103),
             statusAuthField(status),
           ]
       ),
@@ -172,27 +164,22 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
     return Container(
         width: hScale(155),
         height: hScale(155),
-        margin: EdgeInsets.only(top: hScale(103)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(8)),
-          color: Color(0xffc0c3c9),
+          color: const Color(0xffc0c3c9),
         ),
         child: Center(
           child: Column(
             children: [
-              Container(
-                margin: EdgeInsets.only(top: hScale(26)),
-                child: Image.asset(
-                    status == 'waiting' ? 'assets/face_id_blue.png' : 'assets/blue_check.png',
-                    fit: BoxFit.contain,
-                    width: hScale(72)),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: hScale(19)),
-                child: Text(
-                    "Face ID",
-                    style: TextStyle(color: Colors.black, fontSize: fSize(16))),
-              )
+              const CustomSpacer(size: 26),
+              Image.asset(
+                  status == 'waiting' ? 'assets/face_id_blue.png' : 'assets/blue_check.png',
+                  fit: BoxFit.contain,
+                  width: hScale(72)),
+              const CustomSpacer(size: 19),
+              Text(
+                  "Face ID",
+                  style: TextStyle(color: Colors.black, fontSize: fSize(16))),
             ],
           ),
         )

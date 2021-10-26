@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
+import 'package:flexflutter/ui/widgets/spacefield.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -44,8 +45,11 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
           body: Align(
             child: Column(
                 children: <Widget>[
+                  const CustomSpacer(size: 120),
                   logo(),
+                  const CustomSpacer(size: 130),
                   existingUserButton(),
+                  const CustomSpacer(size: 24),
                   newCustomerButton()
                 ]
             )
@@ -56,13 +60,10 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
   }
 
   Widget logo() {
-   return Container(
-     margin: EdgeInsets.only(top: 120 * heightRatio, bottom: 130 * heightRatio),
-     child: Image.asset(
-      'assets/logo.png',
-      fit: BoxFit.contain,
-      width: 187 * widthRatio,)
-    );
+   return Image.asset(
+    'assets/logo.png',
+    fit: BoxFit.contain,
+    width: 187 * widthRatio,);
   }
 
   Widget existingUserButton() {
@@ -92,7 +93,6 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
     return Container(
         width: 295 * widthRatio,
         height: 56 * heightRatio,
-        margin: EdgeInsets.only(top: 24 * heightRatio),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white, width: 2)

@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flexflutter/ui/widgets/spacefield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'package:flexflutter/ui/widgets/spacefield.dart';
+import 'package:flexflutter/ui/widgets/textformfield.dart';
 
 class ForgotPwdScreen extends StatefulWidget {
   const ForgotPwdScreen({Key? key}) : super(key: key);
@@ -58,7 +61,8 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
               flag_submit ? loginTitle() : Column(
                 children: [
                   submitTitle(),
-                  customTextField(),
+                  const CustomSpacer(size: 46),
+                  CustomTextField(ctl: emailCtr, hint: 'Enter Email Address', label: 'Email'),
                 ],
               ),
               customButton(flag_submit)
@@ -149,36 +153,6 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
           ],
         ),
       )
-    );
-  }
-
-  Widget customTextField() {
-    return Container(
-        width: wScale(295),
-        height: hScale(56),
-        margin: EdgeInsets.only(top: hScale(46)),
-        alignment: Alignment.center,
-        child: TextField(
-          controller: emailCtr,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            hintText: 'Enter Email Address',
-            hintStyle: TextStyle(
-                color: const Color(0xff040415),
-                fontSize: fSize(14),
-                fontWeight: FontWeight.w500),
-            labelText:  'Email',
-            labelStyle: TextStyle(
-                color: const Color(0xff040415),
-                fontSize: fSize(14),
-                fontWeight: FontWeight.w500),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
-          ),
-        )
     );
   }
 

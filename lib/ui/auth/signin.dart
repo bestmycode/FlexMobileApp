@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'package:flexflutter/ui/widgets/textformfield.dart';
+import 'package:flexflutter/ui/widgets/spacefield.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -69,15 +71,21 @@ class SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Material(
       child: Scaffold(
-        body: Align(
+        body: SingleChildScrollView(
           child: Column(
             children: [
               logo(),
+              const CustomSpacer(size: 66),
               title(),
-              emailTextField(),
-              passwordTextField(),
+              const CustomSpacer(size: 50),
+              CustomTextField(ctl: emailCtr, hint: 'Enter Email Address', label: 'Email'),
+              const CustomSpacer(size: 32),
+              CustomTextField(ctl: passwordCtr, hint: 'Enter Password', label: 'Password', pwd: true),
+              const CustomSpacer(size: 24),
               forgotPwdField(),
+              const CustomSpacer(size: 25),
               loginButton(),
+              const CustomSpacer(size: 62),
               registerField()
             ]
           )
@@ -110,79 +118,15 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   Widget title() {
-    return Container(
-      margin: EdgeInsets.only(top: hScale(66), bottom: hScale(50)),
-      child: Text(
-          "Let’s Sign You In",
-          style: TextStyle(color: const Color(0xff1A2831), fontSize: fSize(24), fontWeight: FontWeight.w700 )),
-    );
-  }
-
-  Widget emailTextField() {
-    return Container(
-      width: wScale(295),
-      height: hScale(56),
-      alignment: Alignment.center,
-      child: TextField(
-        controller: emailCtr,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          hintText: 'Enter Email Address',
-          hintStyle: TextStyle(
-            color: const Color(0xff040415),
-            fontSize: fSize(14),
-            fontWeight: FontWeight.w500),
-          labelText: ' Email ',
-          labelStyle: TextStyle(
-            color: const Color(0xff040415),
-            fontSize: fSize(14),
-            fontWeight: FontWeight.w500),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Color(0xff040415),
-              width: 1.0)
-          ),
-        ),
-      )
-    );
-  }
-
-  Widget passwordTextField() {
-    return Container(
-        width: wScale(295),
-        height: hScale(56),
-        alignment: Alignment.center,
-        margin: EdgeInsets.only(top: hScale(32)),
-        child: TextField(
-          controller: passwordCtr,
-          obscureText: true,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            hintText: 'Enter Password',
-            hintStyle: TextStyle(
-              color: const Color(0xff040415),
-              fontSize: fSize(14),
-              fontWeight: FontWeight.w500),
-            labelText: ' Password ',
-            labelStyle: TextStyle(
-              color: const Color(0xff040415),
-              fontSize: fSize(14),
-              fontWeight: FontWeight.w500),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Color(0xff040415),
-                width: 1.0)
-            ),
-          ),
-        )
-    );
+    return Text(
+        "Let’s Sign You In",
+        style: TextStyle(color: const Color(0xff1A2831), fontSize: fSize(24), fontWeight: FontWeight.w700 ));
   }
 
   Widget forgotPwdField() {
-    return Container(
+    return SizedBox(
       width: wScale(295),
       height: hScale(24),
-      margin: EdgeInsets.only(top: hScale(24)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -239,10 +183,9 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   Widget loginButton() {
-    return Container(
+    return SizedBox(
         width: wScale(295),
         height: hScale(56),
-        margin: EdgeInsets.only(top: hScale(25)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
@@ -260,17 +203,14 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   Widget registerField() {
-    return Container(
-      margin: EdgeInsets.only(top: hScale(62)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Don't have an account?",
-            style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
-          registerButton()
-        ],
-      )
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "Don't have an account?",
+          style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
+        registerButton()
+      ],
     );
   }
 
