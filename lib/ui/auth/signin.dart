@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/utils/validator.dart';
 import 'package:flexflutter/utils/scale.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -33,35 +32,32 @@ class SignInScreenState extends State<SignInScreen> {
   bool flag_remember = false;
 
   handleLogin() {
-    String? emailValidate = Validator().validateEmail(emailCtr.text);
-    String? passwordValidate = Validator().validatePasswordLength(passwordCtr.text);
-    if(emailValidate!.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(emailValidate),
-        ),
-      );
-    } else if(passwordValidate!.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(passwordValidate),
-        ),
-      );
-    } else {
-      Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
-    }
+    // String? emailValidate = Validator().validateEmail(emailCtr.text);
+    // String? passwordValidate = Validator().validatePasswordLength(passwordCtr.text);
+    // if(emailValidate!.isNotEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(emailValidate),
+    //     ),
+    //   );
+    // } else if(passwordValidate!.isNotEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text(passwordValidate),
+    //     ),
+    //   );
+    // } else {
+    //   Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
+    // }
+    Navigator.of(context).pushReplacementNamed(SIGN_IN_AUTH);
   }
 
   handleRegister() {
-    // ignore: avoid_print
-    print('Register Button Clicked');
     Navigator.of(context).pushReplacementNamed(SIGN_UP);
   }
 
   handleForgotPwd() {
-    // ignore: avoid_print
-    print('Forgot password Button Clicked');
-    Navigator.of(context).pop();
+    Navigator.of(context).pushReplacementNamed(FORGOT_PWD);
   }
 
   @override

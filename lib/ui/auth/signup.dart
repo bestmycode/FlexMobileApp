@@ -253,8 +253,6 @@ class SignUpScreenState extends State<SignUpScreen> {
       // margin: EdgeInsets.only(left: wScale(17)),
       child: RichText(
         text: TextSpan(
-          // Note: Styles for TextSpans must be explicitly defined.
-          // Child text spans will inherit styles from parent
           style: TextStyle(
             fontSize: fSize(14),
             color: Colors.black,
