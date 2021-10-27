@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/textformfield.dart';
-import 'package:flexflutter/ui/widgets/spacefield.dart';
+import 'package:flexflutter/ui/widgets/custom_textfield.dart';
+import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -30,8 +30,7 @@ class SignInScreenState extends State<SignInScreen> {
   final emailCtr = TextEditingController();
   final passwordCtr = TextEditingController();
 
-  // ignore: non_constant_identifier_names
-  bool flag_remember = false;
+  bool flagRemember = false;
 
   handleLogin() {
     // String? emailValidate = Validator().validateEmail(emailCtr.text);
@@ -149,11 +148,11 @@ class SignInScreenState extends State<SignInScreen> {
       child: Transform.scale(
         scale: 0.7,
         child:Checkbox(
-          value: flag_remember,
+          value: flagRemember,
           activeColor: const Color(0xff30E7A9),
           onChanged: (value) {
             setState(() {
-              flag_remember = value!;
+              flagRemember = value!;
             });
           },
         ),

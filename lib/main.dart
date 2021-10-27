@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/splash/loading.dart';
 import 'package:flexflutter/ui/splash/splash.dart';
-import 'package:flexflutter/ui/auth/signin.dart';
-import 'package:flexflutter/ui/auth/signin_auth.dart';
-import 'package:flexflutter/ui/auth/forgotpwd.dart';
-import 'package:flexflutter/ui/auth/signup.dart';
+import 'package:flexflutter/ui/auth/signin/signin.dart';
+import 'package:flexflutter/ui/auth/signin/signin_auth.dart';
+import 'package:flexflutter/ui/auth/signin/forgotpwd.dart';
+import 'package:flexflutter/ui/auth/signup/index.dart';
 import 'package:flexflutter/ui/main.dart';
 
 void main() => runApp(MyApp());

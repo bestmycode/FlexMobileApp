@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/ui/widgets/spacefield.dart';
+import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
@@ -27,8 +27,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
     return Scale().fSize(context, size);
   }
 
-  // ignore: non_constant_identifier_names
-  int flag_status = 0;
+  int flagStatus = 0;
 
   startTime() async {
     var _duration = const Duration(seconds: 3);
@@ -37,7 +36,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
 
   stateAuth() {
     setState(() {
-      flag_status = 2;
+      flagStatus = 2;
     });
     Timer(const Duration(seconds: 3), navigationMainPage );
   }
@@ -48,7 +47,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
 
   handleEnableFaceID() {
     setState(() {
-      flag_status = 1;
+      flagStatus = 1;
     });
     startTime();
   }
@@ -76,7 +75,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> with SingleTickerPro
         Scaffold(
           backgroundColor: Colors.transparent,
           body: platform == TargetPlatform.iOS
-              ? flag_status == 0 ? initAuth('ios') : flag_status == 1 ? statusAuth("waiting") : statusAuth("done")
+              ? flagStatus == 0 ? initAuth('ios') : flagStatus == 1 ? statusAuth("waiting") : statusAuth("done")
               : initAuth('android')
         )
       ],

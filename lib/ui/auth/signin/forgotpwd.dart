@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:flexflutter/ui/widgets/spacefield.dart';
+import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/spacefield.dart';
-import 'package:flexflutter/ui/widgets/textformfield.dart';
+import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 
 class ForgotPwdScreen extends StatefulWidget {
   const ForgotPwdScreen({Key? key}) : super(key: key);
@@ -29,7 +28,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
   }
 
   final emailCtr = TextEditingController();
-  bool flag_submit = false;
+  bool flagSubmit = false;
 
   handleBack() {
 
@@ -37,7 +36,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
 
   handleSubmit() {
     setState(() {
-      flag_submit = true;
+      flagSubmit = true;
     });
   }
 
@@ -58,14 +57,14 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
           child: Column(
             children: [
               header(),
-              flag_submit ? loginTitle() : Column(
+              flagSubmit ? loginTitle() : Column(
                 children: [
                   submitTitle(),
                   const CustomSpacer(size: 46),
                   CustomTextField(ctl: emailCtr, hint: 'Enter Email Address', label: 'Email'),
                 ],
               ),
-              customButton(flag_submit)
+              customButton(flagSubmit)
             ]
           )
         )

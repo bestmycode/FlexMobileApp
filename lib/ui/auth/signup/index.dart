@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/utils/validator.dart';
 import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/textformfield.dart';
-import 'package:flexflutter/ui/widgets/spacefield.dart';
+import 'package:flexflutter/ui/widgets/custom_textfield.dart';
+import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -35,9 +32,9 @@ class SignUpScreenState extends State<SignUpScreen> {
   final companyNameCtl = TextEditingController();
   final companyEmailCtl = TextEditingController();
   final passwordCtl = TextEditingController();
-  // ignore: non_constant_identifier_names
-  bool flag_term = false;
-  int signup_progress = 1;
+
+  bool flagTerm = false;
+  int signUpProgress = 1;
 
   handleBack() {
     Navigator.of(context).pop();
@@ -154,13 +151,13 @@ class SignUpScreenState extends State<SignUpScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            roundNumber(1, signup_progress >= 1),
-            hypen(signup_progress >= 1),
-            roundNumber(2, signup_progress >= 2),
-            hypen(signup_progress >= 2),
-            roundNumber(3, signup_progress >= 3),
-            hypen(signup_progress >= 3),
-            roundNumber(4, signup_progress >= 4)
+            roundNumber(1, signUpProgress >= 1),
+            hypen(signUpProgress >= 1),
+            roundNumber(2, signUpProgress >= 2),
+            hypen(signUpProgress >= 2),
+            roundNumber(3, signUpProgress >= 3),
+            hypen(signUpProgress >= 3),
+            roundNumber(4, signUpProgress >= 4)
           ],
         ),
       )
@@ -174,13 +171,13 @@ class SignUpScreenState extends State<SignUpScreen> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         border: Border.all(
-          color: active ? Color(0xff30E7A9) : Colors.white,
+          color: active ? const Color(0xff30E7A9) : Colors.white,
         ),
         borderRadius: BorderRadius.circular(hScale(16)),
       ),
       child: num != 4
           ? Text(num.toString(), style: TextStyle(color: active ? const Color(0xff30E7A9) : Colors.white))
-          : Icon(Icons.check , color: active ? const Color(0xff30E7A9) : Colors.white, size:wScale(16)),
+          : Icon(Icons.check , color: active ? const Color(0xff30E7A9) : Colors.white, size: wScale(16)),
     );
   }
 
@@ -188,7 +185,7 @@ class SignUpScreenState extends State<SignUpScreen> {
     return Container(
       width: 30,
       height: 1,
-      color: active ? Color(0xff30E7A9) : Colors.white,
+      color: active ? const Color(0xff30E7A9) : Colors.white,
     );
   }
 
@@ -215,11 +212,11 @@ class SignUpScreenState extends State<SignUpScreen> {
       child: Transform.scale(
         scale: 0.7,
         child:Checkbox(
-          value: flag_term,
+          value: flagTerm,
           activeColor: const Color(0xff30E7A9),
           onChanged: (value) {
             setState(() {
-              flag_term = value!;
+              flagTerm = value!;
             });
           },
         ),
