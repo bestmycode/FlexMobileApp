@@ -1,3 +1,4 @@
+import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   final companyEmailCtl = TextEditingController();
 
   handleContinue() {
-
+    Navigator.of(context).pushReplacementNamed(TWO_STEP_FINAL);
   }
 
   @override

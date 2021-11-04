@@ -21,5 +21,11 @@ const String MAIN_CONTACT_PERSON = 'main_contact_person';
 // ignore: constant_identifier_names
 const String TWO_STEP_VERIFICATION = 'two_step_verification';
 // ignore: constant_identifier_names
+const String TWO_STEP_FINAL = 'two_step_final';
+// ignore: constant_identifier_names
+const String TWO_STEP_FAILED = 'two_step_failed';
+// ignore: constant_identifier_names
+const String ALMOST_DONE = 'almost_done';
+// ignore: constant_identifier_names
 const String MAIN_SCREEN ='main';
 

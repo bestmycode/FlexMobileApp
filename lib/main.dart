@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/auth/signup/almost_done.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flexflutter/constants/constants.dart';
@@ -12,6 +13,8 @@ import 'package:flexflutter/ui/auth/signup/company_detail.dart';
 import 'package:flexflutter/ui/auth/signup/registered_address.dart';
 import 'package:flexflutter/ui/auth/signup/main_contact_person.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_verification.dart';
+import 'package:flexflutter/ui/auth/signup/two_step_final.dart';
+import 'package:flexflutter/ui/auth/signup/two_step_failed.dart';
 import 'package:flexflutter/ui/main.dart';
 
 void main() => runApp(MyApp());
@@ -39,6 +42,9 @@ class MyApp extends StatelessWidget {
         REGISTERED_ADDRESS: (BuildContext context) => const RegisteredAddressScreen(),
         MAIN_CONTACT_PERSON: (BuildContext context) => const MainContactPersonScreen(),
         TWO_STEP_VERIFICATION: (BuildContext context) => const TwoStepVerificationScreen(),
+        TWO_STEP_FINAL: (BuildContext context) => const TwoStepFinalScreen(),
+        TWO_STEP_FAILED: (BuildContext context) => const TwoStepFailedScreen(),
+        ALMOST_DONE: (BuildContext context) => const AlmostDoneScreen(),
         MAIN_SCREEN: (BuildContext context) =>  const MainScreen(),
       },
       initialRoute: LOADING_SCREEN,
