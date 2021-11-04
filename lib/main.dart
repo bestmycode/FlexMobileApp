@@ -7,6 +7,11 @@ import 'package:flexflutter/ui/auth/signin/signin.dart';
 import 'package:flexflutter/ui/auth/signin/signin_auth.dart';
 import 'package:flexflutter/ui/auth/signin/forgotpwd.dart';
 import 'package:flexflutter/ui/auth/signup/index.dart';
+import 'package:flexflutter/ui/auth/signup/mail_verify.dart';
+import 'package:flexflutter/ui/auth/signup/company_detail.dart';
+import 'package:flexflutter/ui/auth/signup/registered_address.dart';
+import 'package:flexflutter/ui/auth/signup/main_contact_person.dart';
+import 'package:flexflutter/ui/auth/signup/two_step_verification.dart';
 import 'package:flexflutter/ui/main.dart';
 
 void main() => runApp(MyApp());
@@ -29,6 +34,11 @@ class MyApp extends StatelessWidget {
         SIGN_IN_AUTH: (BuildContext context) =>  const SignInAuthScreen(),
         FORGOT_PWD: (BuildContext context) =>  const ForgotPwdScreen(),
         SIGN_UP: (BuildContext context) =>  const SignUpScreen(),
+        MAIL_VERIFY: (BuildContext context) => const MailVerifyScreen(),
+        COMPANY_DETAIL: (BuildContext context) => const CompanyDetailScreen(),
+        REGISTERED_ADDRESS: (BuildContext context) => const RegisteredAddressScreen(),
+        MAIN_CONTACT_PERSON: (BuildContext context) => const MainContactPersonScreen(),
+        TWO_STEP_VERIFICATION: (BuildContext context) => const TwoStepVerificationScreen(),
         MAIN_SCREEN: (BuildContext context) =>  const MainScreen(),
       },
       initialRoute: LOADING_SCREEN,

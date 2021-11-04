@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
@@ -41,7 +42,7 @@ class SignUpScreenState extends State<SignUpScreen> {
   }
 
   handleContinue() {
-    Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
+    Navigator.of(context).pushReplacementNamed(MAIL_VERIFY);
   }
 
   handleLogin() {
@@ -60,7 +61,7 @@ class SignUpScreenState extends State<SignUpScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              logo(),
+              const SignupProgressHeader(),
               const CustomSpacer(size: 38),
               CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: ' First Name '),
               const CustomSpacer(size: 32),
@@ -84,108 +85,6 @@ class SignUpScreenState extends State<SignUpScreen> {
           )
         )
       )
-    );
-  }
-
-  Widget backButton() {
-    return Positioned(
-      left: 24.0,
-      top: 0.0,
-      child: SizedBox(
-        width: hScale(40),
-        height: hScale(40),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: const Color(0xff727a80),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
-            ),
-            padding: const EdgeInsets.all(0)
-          ),
-          onPressed: () { handleBack(); },
-          child: Icon(Icons.arrow_back_ios, color: Colors.white, size:wScale(13)),
-        )
-      )
-    );
-  }
-
-  Widget logo() {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        height: hScale(174),
-        padding: EdgeInsets.only(top: hScale(44)),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/signup_top_background.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: hScale(40),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Text(
-                        "Create an account",
-                        style: TextStyle(color: const Color(0xffffffff), fontSize: fSize(24), fontWeight: FontWeight.w700 )),
-                    backButton()
-                  ]
-                )
-              ),
-              const CustomSpacer(size: 25),
-              signUpProgressField()
-            ]
-        )
-    );
-  }
-
-  Widget signUpProgressField() {
-    return (
-      SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: hScale(32),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            roundNumber(1, signUpProgress >= 1),
-            hypen(signUpProgress >= 1),
-            roundNumber(2, signUpProgress >= 2),
-            hypen(signUpProgress >= 2),
-            roundNumber(3, signUpProgress >= 3),
-            hypen(signUpProgress >= 3),
-            roundNumber(4, signUpProgress >= 4)
-          ],
-        ),
-      )
-    );
-  }
-  
-  Widget roundNumber(num, active) {
-    return Container(
-      width: hScale(32),
-      height: hScale(32),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: active ? const Color(0xff30E7A9) : Colors.white,
-        ),
-        borderRadius: BorderRadius.circular(hScale(16)),
-      ),
-      child: num != 4
-          ? Text(num.toString(), style: TextStyle(color: active ? const Color(0xff30E7A9) : Colors.white))
-          : Icon(Icons.check , color: active ? const Color(0xff30E7A9) : Colors.white, size: wScale(16)),
-    );
-  }
-
-  Widget hypen(active) {
-    return Container(
-      width: 30,
-      height: 1,
-      color: active ? const Color(0xff30E7A9) : Colors.white,
     );
   }
 
