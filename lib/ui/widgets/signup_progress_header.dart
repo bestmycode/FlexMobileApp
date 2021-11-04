@@ -50,9 +50,12 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
                   child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Text(
-                            widget.title,
-                            style: TextStyle(color: const Color(0xffffffff), fontSize: fSize(24), fontWeight: FontWeight.w700 )),
+                        Container(
+                          margin: widget.progress >=3 ? EdgeInsets.only(left: wScale(70)): const EdgeInsets.all(0),
+                          child: Text(
+                              widget.title,
+                              style: TextStyle(color: const Color(0xffffffff), fontSize: fSize(24), fontWeight: FontWeight.w700 )),
+                        ),
                         backButton()
                       ]
                   )
@@ -88,7 +91,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
 
   Widget backButton() {
     return Positioned(
-        left: 24.0,
+        left: wScale(24),
         top: 0.0,
         child: SizedBox(
             width: hScale(40),

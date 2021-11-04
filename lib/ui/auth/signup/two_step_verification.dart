@@ -1,11 +1,9 @@
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flutter/services.dart';
 
 class TwoStepVerificationScreen extends StatefulWidget {
   const TwoStepVerificationScreen({Key? key}) : super(key: key);
@@ -28,23 +26,19 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
     return Scale().fSize(context, size);
   }
 
-  final numCtl1 = TextEditingController();
-  final numCtl2 = TextEditingController();
-  final numCtl3 = TextEditingController();
-  final numCtl4 = TextEditingController();
-  final numCtl5 = TextEditingController();
-  final numCtl6 = TextEditingController();
-  bool flagValid = true;
+  final firstNameCtl = TextEditingController();
+  final lastNameCtl = TextEditingController();
+  final birthdayCtl = TextEditingController();
+  final countryCtl = TextEditingController();
+  final postalCodeCtl = TextEditingController();
+  final addressCtl = TextEditingController();
+  final billingNameCtl = TextEditingController();
+  final streetCtl = TextEditingController();
+  final cityCtl = TextEditingController();
+  final jobTitleCtl = TextEditingController();
+  final companyEmailCtl = TextEditingController();
 
-  handleVerify() {
-    bool flag = numCtl1.text == "1" && numCtl2.text == "1" && numCtl3.text == "1" && numCtl4.text == "1" && numCtl5.text == "1" && numCtl6.text == "1";
-    setState(() {
-      flagValid = flag;
-      if(flag) Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
-    });
-  }
-
-  resendEmail() {
+  handleContinue() {
 
   }
 
@@ -67,11 +61,11 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
               twoStepTitle(),
               const CustomSpacer(size: 26),
               twoStepSubTitle(),
-              const CustomSpacer(size: 36),
-              verifyNumberSection(),
-              flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
-              subSection(),
-              verifyButton(),
+              const CustomSpacer(size: 33),
+              personalDetailField(),
+              const CustomSpacer(size: 30),
+              continueButton(),
+              const CustomSpacer(size: 34),
             ]
           )
         )
@@ -99,7 +93,67 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
         style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w400 ));
   }
 
-  Widget verifyButton() {
+  Widget personalDetailField() {
+    return Container(
+      padding: EdgeInsets.only(left: wScale(16), top: hScale(14), right: wScale(16), bottom: hScale(20)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          detailTitle('Personal Details'),
+          const CustomSpacer(size: 22),
+          CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Select Date of Birth', label: 'Date of Birth (DD/MM/YY)'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Select Country', label: 'Country'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Enter Home Address', label: 'Home Address'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Building Name, Level and Unit Number', label: 'Building Name, Level and Unit Number'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Enter Street', label: 'Street'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Select City', label: 'City'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Enter Job Title', label: 'Job Title'),
+          const CustomSpacer(size: 32),
+          CustomTextField(ctl: birthdayCtl, hint: 'Enter Company Email Address', label: 'Company Email Address'),
+        ],
+      ),
+    );
+  }
+
+  Widget detailTitle(title) {
+    return SizedBox(
+      width: wScale(295),
+      child: Text(
+          title,
+          textAlign: TextAlign.start,
+          style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, )),
+    );
+  }
+
+  Widget continueButton() {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -111,95 +165,11 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
                 borderRadius: BorderRadius.circular(16)
             ),
           ),
-          onPressed: () { handleVerify(); },
+          onPressed: () { handleContinue(); },
           child: Text(
-              "Verify",
+              "Continue",
               style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
         )
-    );
-  }
-
-  Widget verifyNumber(num) {
-    return Container(
-        width: wScale(50),
-        height: wScale(50),
-        margin: EdgeInsets.only(right: wScale(4), left: wScale(4)),
-        child: TextField(
-          textAlign: TextAlign.center,
-          controller: num == 1 ? numCtl1 : num == 2 ? numCtl2 : num == 3 ? numCtl3 : num == 4 ? numCtl4 : num == 5 ? numCtl5 : numCtl6,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: fSize(24),
-          ),
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(1),
-            FilteringTextInputFormatter.digitsOnly
-          ], // Only numbers can be entered
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.all(0),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
-          ),
-        ),
-    );
-  }
-
-  Widget verifyNumberSection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        verifyNumber(1),
-        verifyNumber(2),
-        verifyNumber(3),
-        verifyNumber(4),
-        verifyNumber(5),
-        verifyNumber(6),
-      ],
-    );
-  }
-
-  Widget validError(errorFlag) {
-    return SizedBox(
-      height: errorFlag ? 0 : hScale(18),
-      child: Text(
-          "Verification code is invalid",
-          style: TextStyle(fontSize: fSize(14), color: const Color(0xffEB5757) )),
-    );
-  }
-
-  Widget expireTitle() {
-    return Text(
-        "This OTP expires in 30 minutes",
-        style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.bold ));
-  }
-
-  Widget subSection() {
-    return SizedBox(
-      height: hScale(137),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          validError(flagValid),
-          expireTitle(),
-          resendButton()
-        ],
-      ),
-    );
-  }
-
-  Widget resendButton() {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff21C990),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff21C990), fontWeight: FontWeight.bold),
-      ),
-      onPressed: () { resendEmail(); },
-      child: const Text('Resend OTP to jasmine@gmail.com'),
     );
   }
 }
