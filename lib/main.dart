@@ -15,7 +15,7 @@ import 'package:flexflutter/ui/auth/signup/main_contact_person.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_verification.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_final.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_failed.dart';
-import 'package:flexflutter/ui/main.dart';
+import 'package:flexflutter/ui/main/main.dart';
 
 void main() => runApp(MyApp());
 

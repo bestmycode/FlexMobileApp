@@ -1,17 +1,17 @@
-import 'dart:async';
-
+import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+class Cards extends StatefulWidget {
+  const Cards({Key? key}) : super(key: key);
 
   @override
-  MainScreenState createState() => MainScreenState();
+  CardsState createState() => CardsState();
 }
 
-class MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin {
+class CardsState extends State<Cards> {
+
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -23,6 +23,7 @@ class MainScreenState extends State<MainScreen> with SingleTickerProviderStateMi
     return Scale().fSize(context, size);
   }
 
+
   @override
   void initState() {
     super.initState();
@@ -30,9 +31,17 @@ class MainScreenState extends State<MainScreen> with SingleTickerProviderStateMi
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-        "Main Page",
-        style: TextStyle(fontSize: fSize(30), fontWeight: FontWeight.w700 )
+    return Material(
+        child: Scaffold(
+            body: Align(
+                child: Column(
+                    children: [
+                      Text("Cards")
+                    ]
+                )
+            )
+        )
     );
   }
+
 }
