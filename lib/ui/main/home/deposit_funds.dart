@@ -1,4 +1,5 @@
 import 'package:flexflutter/constants/constants.dart';
+import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,28 +52,15 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
             body: SingleChildScrollView(
                 child: Column(
                     children: [
-                      CustomSpacer(size: 44),
-                      headerDepositFunds(),
-                      CustomSpacer(size: 39),
+                      const CustomSpacer(size: 44),
+                      const CustomHeader(title: 'Deposit Funds'),
+                      const CustomSpacer(size: 39),
                       depositFundsField(),
                       const CustomSpacer(size: 70),
                     ]
                 )
             )
         )
-    );
-  }
-
-  Widget headerDepositFunds() {
-    return Row(
-        children: [
-          SizedBox(width: wScale(20)),
-          IconButton(
-            icon: Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
-            onPressed: () { handleBack();},),
-          SizedBox(width: wScale(30)),
-          Text('Deposit Funds', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-        ]
     );
   }
 
