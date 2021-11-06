@@ -51,26 +51,33 @@ class MainScreenState extends State<MainScreen> {
         ),
       ],
     ),
-    tabBuilder: (BuildContext context, int index) {
-      switch (index) {
-        case 0:
-          return const Home();
-          break;
-        case 1:
-          return const Cards();
-          break;
-        case 2:
-          return const Transactions();
-          break;
-        case 3:
-          return const Credit();
-          break;
-        case 4:
-          return const More();
-          break;
-        default:
-          return const Home();
-        }
+      tabBuilder: (BuildContext context, int index) {
+      // switch (index) {
+      //   case 0:
+      //     return const Home();
+      //     break;
+      //   case 1:
+      //     return const Cards();
+      //     break;
+      //   case 2:
+      //     return const Transactions();
+      //     break;
+      //   case 3:
+      //     return const Credit();
+      //     break;
+      //   case 4:
+      //     return const More();
+      //     break;
+      //   default:
+      //     return const Home();
+      //   }
+      return CupertinoTabView(
+        builder: (BuildContext context) {
+        return CupertinoPageScaffold(
+          child: index == 0 ? Home(): Cards()
+            );
+          },
+        );
       },
     );
   }

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flexflutter/ui/main/home/deposit_funds.dart';
+import 'package:flexflutter/ui/main/home/notification.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,22 @@ class HomeState extends State<Home> {
 
   }
 
+  handleNotification() {
+    Navigator.of(context).push(
+      CupertinoPageRoute (
+        builder: (context) => const NotificationScreen()
+      ),
+    );
+  }
+
+  handleDepositFunds() {
+    Navigator.of(context).push(
+      CupertinoPageRoute (
+          builder: (context) => const DepositFundsScreen()
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -69,7 +87,11 @@ class HomeState extends State<Home> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             welcomeUser(),
-                            customImage('assets/notification.png', 16),
+                            IconButton(
+                              icon: customImage('assets/notification.png', 16),
+                              iconSize: hScale(10),
+                              onPressed: () { handleNotification();},
+                            )
                           ]
                         ),
                         const CustomSpacer(size: 20),
@@ -176,7 +198,7 @@ class HomeState extends State<Home> {
                 borderRadius: BorderRadius.circular(10)
             ),
           ),
-          onPressed: () {  },
+          onPressed: () { handleDepositFunds(); },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
