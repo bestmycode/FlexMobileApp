@@ -1,3 +1,4 @@
+import 'package:flexflutter/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,9 @@ import 'package:flexflutter/utils/scale.dart';
 class SignupProgressHeader extends StatefulWidget {
   final String title;
   final int progress;
+  final String prev;
 
-  const SignupProgressHeader({Key? key, this.title="Create an account", this.progress = 1}) : super(key: key);
+  const SignupProgressHeader({Key? key, this.title="Create an account", this.progress = 1, this.prev = SIGN_UP}) : super(key: key);
 
   @override
   _SignupProgressHeader createState() => _SignupProgressHeader();
@@ -28,10 +30,10 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
 
   @override
   Widget build(BuildContext context) {
-      return logo();
+      return logo(widget.prev);
   }
 
-  Widget logo() {
+  Widget logo(prev) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: hScale(174),
@@ -56,7 +58,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
                               widget.title,
                               style: TextStyle(color: const Color(0xffffffff), fontSize: fSize(24), fontWeight: FontWeight.w700 )),
                         ),
-                        backButton()
+                        backButton(prev)
                       ]
                   )
               ),
@@ -89,7 +91,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
     );
   }
 
-  Widget backButton() {
+  Widget backButton(prev) {
     return Positioned(
         left: wScale(24),
         top: 0.0,
@@ -104,7 +106,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
                   ),
                   padding: const EdgeInsets.all(0)
               ),
-              onPressed: () {  },
+              onPressed: () { Navigator.of(context).pushReplacementNamed(prev); },
               child: Icon(Icons.arrow_back_ios, color: Colors.white, size:wScale(13)),
             )
         )

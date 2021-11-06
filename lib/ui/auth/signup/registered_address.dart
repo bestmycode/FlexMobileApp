@@ -5,7 +5,7 @@ import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flutter/services.dart';
+import 'package:localstorage/localstorage.dart';
 
 class RegisteredAddressScreen extends StatefulWidget {
   const RegisteredAddressScreen({Key? key}) : super(key: key);
@@ -15,7 +15,6 @@ class RegisteredAddressScreen extends StatefulWidget {
 }
 
 class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -28,12 +27,13 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
     return Scale().fSize(context, size);
   }
 
-  final companyNameCtl = TextEditingController();
-  final companyNumberCtl = TextEditingController();
-  final countryCtl = TextEditingController();
-  final companyTypeCtl = TextEditingController();
-  final companyIndustryCtl = TextEditingController();
-  final companyPhoneNumberCtl = TextEditingController();
+  final LocalStorage storage = LocalStorage('sign_up_info3');
+
+  final postalCodeCtl = TextEditingController();
+  final streetCtl = TextEditingController();
+  final cityCtl = TextEditingController();
+  final operatingAddressCtl = TextEditingController();
+  final operatingAddressPostalCodeCtl = TextEditingController();
   bool flagAddress = false;
 
   handleBack() {
@@ -41,12 +41,25 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
   }
 
   handleContinue() {
+    storage.setItem('postalCode', postalCodeCtl.text);
+    storage.setItem('street', streetCtl.text);
+    storage.setItem('city', cityCtl.text);
+    storage.setItem('operatingAddress', operatingAddressCtl.text);
+    storage.setItem('operatingAddressPostalCode', operatingAddressPostalCodeCtl.text);
+    storage.setItem('flagAddress', flagAddress);
+
     Navigator.of(context).pushReplacementNamed(MAIN_CONTACT_PERSON);
   }
 
   @override
   void initState() {
     super.initState();
+    postalCodeCtl.text = storage.getItem('postalCode');
+    streetCtl.text = storage.getItem('street');
+    cityCtl.text = storage.getItem('city');
+    operatingAddressCtl.text = storage.getItem('operatingAddress');
+    operatingAddressPostalCodeCtl.text =  storage.getItem('operatingAddressPostalCode');
+    flagAddress = storage.getItem('flagAddress') ?? false;
   }
 
   @override
@@ -115,11 +128,11 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         children: [
           addressTitle('Registered Address'),
           const CustomSpacer(size: 22),
-          CustomTextField(ctl: companyNameCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
+          CustomTextField(ctl: postalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyNumberCtl, hint: 'Enter Street', label: 'Street'),
+          CustomTextField(ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: countryCtl, hint: 'Select City', label: 'City'),
+          CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
         ],
       ),
     );
@@ -249,12 +262,11 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         children: [
           addressTitle('Main Operating Address'),
           const CustomSpacer(size: 22),
-          CustomTextField(ctl: companyNameCtl, hint: 'Enter Operating Address', label: 'Operating Address'),
+          CustomTextField(ctl: operatingAddressCtl, hint: 'Enter Operating Address', label: 'Operating Address'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyNumberCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
+          CustomTextField(ctl: operatingAddressPostalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
         ],
       ),
     );
   }
-
 }

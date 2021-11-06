@@ -47,7 +47,7 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(title: '2-step verification process', progress: 3),
+              const SignupProgressHeader(title: '2-step verification process', progress: 3, prev: TWO_STEP_VERIFICATION,),
               const CustomSpacer(size: 34),
               finalStepBoldTitle('You have reached the final step!', 0xff1A2831),
               const CustomSpacer(size: 19),

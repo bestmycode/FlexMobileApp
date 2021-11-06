@@ -43,7 +43,7 @@ class AlmostDoneScreenState extends State<AlmostDoneScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(title: '2-step verification process', progress: 4),
+              const SignupProgressHeader(title: '2-step verification process', progress: 4, prev: TWO_STEP_FINAL),
               const CustomSpacer(size: 34),
               finalStepBoldTitle('You have successfully completed your\nsign up for a Flex account!', 0xff1A2831),
               const CustomSpacer(size: 40),

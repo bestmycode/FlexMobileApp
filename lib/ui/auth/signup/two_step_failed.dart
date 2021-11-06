@@ -43,7 +43,7 @@ class TwoStepFailedScreenState extends State<TwoStepFailedScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(title: '2-step verification process', progress: 3),
+              const SignupProgressHeader(title: '2-step verification process', progress: 3, prev: TWO_STEP_VERIFICATION,),
               const CustomSpacer(size: 149),
               finalStepErrorIcon(),
               const CustomSpacer(size: 22),

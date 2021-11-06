@@ -6,6 +6,7 @@ import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/services.dart';
+import 'package:localstorage/localstorage.dart';
 
 class MainContactPersonScreen extends StatefulWidget {
   const MainContactPersonScreen({Key? key}) : super(key: key);
@@ -28,12 +29,10 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
     return Scale().fSize(context, size);
   }
 
-  final companyNameCtl = TextEditingController();
-  final companyNumberCtl = TextEditingController();
-  final countryCtl = TextEditingController();
-  final companyTypeCtl = TextEditingController();
-  final companyIndustryCtl = TextEditingController();
-  final companyPhoneNumberCtl = TextEditingController();
+  final LocalStorage storage = LocalStorage('sign_up_info4');
+
+  final fullNameCtl = TextEditingController();
+  final mobileNumCtl = TextEditingController();
   bool flagMainContact = false;
 
   handleBack() {
@@ -41,12 +40,18 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
   }
 
   handleContinue() {
+    storage.setItem('fullName', fullNameCtl.text);
+    storage.setItem('mobileNum', mobileNumCtl.text);
+    storage.setItem('flagMainContact', flagMainContact);
     Navigator.of(context).pushReplacementNamed(TWO_STEP_VERIFICATION);
   }
 
   @override
   void initState() {
     super.initState();
+    fullNameCtl.text = storage.getItem('fullName');
+    mobileNumCtl.text =  storage.getItem('mobileNum');
+    flagMainContact = storage.getItem('flagMainContact') ?? false;
   }
 
   @override
@@ -56,7 +61,7 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(title: 'Company Detail', progress: 2,),
+              const SignupProgressHeader(title: 'Company Detail', progress: 2, prev: REGISTERED_ADDRESS,),
               const CustomSpacer(size: 20),
               groupIcon(),
               const CustomSpacer(size: 15),
@@ -113,9 +118,9 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
           const CustomSpacer(size: 12),
           termsField(),
           const CustomSpacer(size: 24),
-          CustomTextField(ctl: companyNameCtl, hint: 'Enter Full Name', label: 'Full Name'),
+          CustomTextField(ctl: fullNameCtl, hint: 'Enter Full Name', label: 'Full Name'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyNumberCtl, hint: 'Enter Mobile Number', label: 'Mobile Number'),
+          CustomTextField(ctl: mobileNumCtl, hint: 'Enter Mobile Number', label: 'Mobile Number'),
         ],
       ),
     );

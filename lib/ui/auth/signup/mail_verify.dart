@@ -28,12 +28,12 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
     return Scale().fSize(context, size);
   }
 
-  final numCtl1 = TextEditingController();
-  final numCtl2 = TextEditingController();
-  final numCtl3 = TextEditingController();
-  final numCtl4 = TextEditingController();
-  final numCtl5 = TextEditingController();
-  final numCtl6 = TextEditingController();
+  final numCtl1 = TextEditingController(text: '1');
+  final numCtl2 = TextEditingController(text: '1');
+  final numCtl3 = TextEditingController(text: '1');
+  final numCtl4 = TextEditingController(text: '1');
+  final numCtl5 = TextEditingController(text: '1');
+  final numCtl6 = TextEditingController(text: '1');
   bool flagValid = true;
 
   handleVerify() {

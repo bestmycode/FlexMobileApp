@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:localstorage/localstorage.dart';
 
 class TwoStepVerificationScreen extends StatefulWidget {
   const TwoStepVerificationScreen({Key? key}) : super(key: key);
@@ -27,6 +28,8 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
     return Scale().fSize(context, size);
   }
 
+  final LocalStorage storage = LocalStorage('two_step_info1');
+
   final firstNameCtl = TextEditingController();
   final lastNameCtl = TextEditingController();
   final birthdayCtl = TextEditingController();
@@ -40,12 +43,35 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   final companyEmailCtl = TextEditingController();
 
   handleContinue() {
+    storage.setItem('firstName', firstNameCtl);
+    storage.setItem('lastName', lastNameCtl);
+    storage.setItem('birthday', birthdayCtl);
+    storage.setItem('country', countryCtl);
+    storage.setItem('postalCode', postalCodeCtl);
+    storage.setItem('address', addressCtl);
+    storage.setItem('billingName', billingNameCtl);
+    storage.setItem('street', streetCtl);
+    storage.setItem('city', cityCtl);
+    storage.setItem('jobTitle', jobTitleCtl);
+    storage.setItem('companyEmail', companyEmailCtl);
+
     Navigator.of(context).pushReplacementNamed(TWO_STEP_FINAL);
   }
 
   @override
   void initState() {
     super.initState();
+    firstNameCtl.text = storage.getItem('firstName');
+    lastNameCtl.text = storage.getItem('lastName');
+    birthdayCtl.text = storage.getItem('birthday');
+    countryCtl.text = storage.getItem('country');
+    postalCodeCtl.text = storage.getItem('postalCode');
+    addressCtl.text = storage.getItem('address');
+    billingNameCtl.text = storage.getItem('billingName');
+    streetCtl.text = storage.getItem('street');
+    cityCtl.text = storage.getItem('city');
+    jobTitleCtl.text = storage.getItem('jobTitle');
+    companyEmailCtl.text = storage.getItem('companyEmail');
   }
 
   @override
@@ -55,7 +81,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(title: '2-step verification process', progress: 3,),
+              const SignupProgressHeader(title: '2-step verification process', progress: 3, prev: MAIN_CONTACT_PERSON,),
               const CustomSpacer(size: 30),
               securityIcon(),
               const CustomSpacer(size: 21),
@@ -124,21 +150,21 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           const CustomSpacer(size: 32),
           CustomTextField(ctl: birthdayCtl, hint: 'Select Date of Birth', label: 'Date of Birth (DD/MM/YY)'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Select Country', label: 'Country'),
+          CustomTextField(ctl: countryCtl, hint: 'Select Country', label: 'Country'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
+          CustomTextField(ctl: postalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Enter Home Address', label: 'Home Address'),
+          CustomTextField(ctl: addressCtl, hint: 'Enter Home Address', label: 'Home Address'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Building Name, Level and Unit Number', label: 'Building Name, Level and Unit Number'),
+          CustomTextField(ctl: billingNameCtl, hint: 'Building Name, Level and Unit Number', label: 'Building Name, Level and Unit Number'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Enter Street', label: 'Street'),
+          CustomTextField(ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Select City', label: 'City'),
+          CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Enter Job Title', label: 'Job Title'),
+          CustomTextField(ctl: jobTitleCtl, hint: 'Enter Job Title', label: 'Job Title'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Enter Company Email Address', label: 'Company Email Address'),
+          CustomTextField(ctl: companyEmailCtl, hint: 'Enter Company Email Address', label: 'Company Email Address'),
         ],
       ),
     );

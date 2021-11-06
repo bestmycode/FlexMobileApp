@@ -1,10 +1,12 @@
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
+
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -27,6 +29,8 @@ class SignUpScreenState extends State<SignUpScreen> {
     return Scale().fSize(context, size);
   }
 
+  final LocalStorage storage = LocalStorage('sign_up_info1');
+
   final firstNameCtl = TextEditingController();
   final lastNameCtl = TextEditingController();
   final mobileNumberCtl = TextEditingController();
@@ -42,6 +46,14 @@ class SignUpScreenState extends State<SignUpScreen> {
   }
 
   handleContinue() {
+    storage.setItem('firstName', firstNameCtl.text);
+    storage.setItem('lastName', lastNameCtl.text);
+    storage.setItem('mobileNumber', mobileNumberCtl.text);
+    storage.setItem('companyName', companyNameCtl.text);
+    storage.setItem('companyEmail', companyEmailCtl.text);
+    storage.setItem('password', passwordCtl.text);
+    storage.setItem('flagTerm', flagTerm);
+
     Navigator.of(context).pushReplacementNamed(MAIL_VERIFY);
   }
 
@@ -52,6 +64,13 @@ class SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
+    firstNameCtl.text = storage.getItem('firstName');
+    lastNameCtl.text = storage.getItem('lastName');
+    mobileNumberCtl.text = storage.getItem('mobileNumber');
+    companyNameCtl.text = storage.getItem('companyName');
+    companyEmailCtl.text = storage.getItem('companyEmail');
+    passwordCtl.text = storage.getItem('password');
+    flagTerm = storage.getItem('flagTerm') ?? false;
   }
 
   @override

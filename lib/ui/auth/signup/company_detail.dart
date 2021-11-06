@@ -6,6 +6,7 @@ import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/services.dart';
+import 'package:localstorage/localstorage.dart';
 
 class CompanyDetailScreen extends StatefulWidget {
   const CompanyDetailScreen({Key? key}) : super(key: key);
@@ -28,6 +29,8 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
     return Scale().fSize(context, size);
   }
 
+  final LocalStorage storage = LocalStorage('sign_up_info2');
+
   final companyNameCtl = TextEditingController();
   final companyNumberCtl = TextEditingController();
   final countryCtl = TextEditingController();
@@ -36,12 +39,25 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
   final companyPhoneNumberCtl = TextEditingController();
 
   handleContinue() {
+    storage.setItem('companyName', companyNameCtl.text);
+    storage.setItem('companyNumber', companyNumberCtl.text);
+    storage.setItem('country', countryCtl.text);
+    storage.setItem('companyType', companyTypeCtl.text);
+    storage.setItem('companyIndustry', companyIndustryCtl.text);
+    storage.setItem('companyPhoneNumber', companyPhoneNumberCtl.text);
+
     Navigator.of(context).pushReplacementNamed(REGISTERED_ADDRESS);
   }
 
   @override
   void initState() {
     super.initState();
+    companyNameCtl.text = storage.getItem('companyName');
+    companyNumberCtl.text = storage.getItem('companyNumber');
+    countryCtl.text = storage.getItem('country');
+    companyTypeCtl.text = storage.getItem('companyType');
+    companyIndustryCtl.text = storage.getItem('companyIndustry');
+    companyPhoneNumberCtl.text = storage.getItem('companyPhoneNumber');
   }
 
   @override
@@ -51,7 +67,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(title: 'Company Detail', progress: 2,),
+              const SignupProgressHeader(title: 'Company Detail', progress: 2, prev: MAIL_VERIFY,),
               const CustomSpacer(size: 20),
               groupIcon(),
               const CustomSpacer(size: 15),
