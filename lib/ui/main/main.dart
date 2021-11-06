@@ -25,28 +25,28 @@ class MainScreenState extends State<MainScreen> {
       activeColor: const Color(0xff29C490),
       items: [
         BottomNavigationBarItem(
-            icon: Image.asset('assets/tab_icons/grey_home.png', height: hScale(18), fit: BoxFit.contain,),
-            activeIcon: Image.asset('assets/tab_icons/green_home.png', height: hScale(18), fit: BoxFit.contain,),
+            icon: Image.asset('assets/grey_home.png', height: hScale(18), fit: BoxFit.contain,),
+            activeIcon: Image.asset('assets/green_home.png', height: hScale(18), fit: BoxFit.contain,),
             label:'Home'
         ),
         BottomNavigationBarItem(
-            icon: Image.asset('assets/tab_icons/grey_card.png', height: hScale(18), fit: BoxFit.contain,),
-            activeIcon: Image.asset('assets/tab_icons/green_card.png', height: hScale(18), fit: BoxFit.contain,),
+            icon: Image.asset('assets/grey_card.png', height: hScale(18), fit: BoxFit.contain,),
+            activeIcon: Image.asset('assets/green_card.png', height: hScale(18), fit: BoxFit.contain,),
             label:'Cards'
         ),
         BottomNavigationBarItem(
-            icon: Image.asset('assets/tab_icons/grey_transaction.png', height: hScale(18), fit: BoxFit.contain,),
-            activeIcon: Image.asset('assets/tab_icons/green_transaction.png', height: hScale(18), fit: BoxFit.contain,),
+            icon: Image.asset('assets/grey_transaction.png', height: hScale(18), fit: BoxFit.contain,),
+            activeIcon: Image.asset('assets/green_transaction.png', height: hScale(18), fit: BoxFit.contain,),
             label:'Transactions'
         ),
         BottomNavigationBarItem(
-            icon: Image.asset('assets/tab_icons/grey_credit.png', height: hScale(18), fit: BoxFit.contain,),
-            activeIcon: Image.asset('assets/tab_icons/green_credit.png', height: hScale(18), fit: BoxFit.contain,),
+            icon: Image.asset('assets/grey_credit.png', height: hScale(18), fit: BoxFit.contain,),
+            activeIcon: Image.asset('assets/green_credit.png', height: hScale(18), fit: BoxFit.contain,),
             label:'Credit'
         ),
         BottomNavigationBarItem(
-            icon: Image.asset('assets/tab_icons/grey_more.png', height: hScale(18), fit: BoxFit.contain,),
-            activeIcon: Image.asset('assets/tab_icons/green_more.png', height: hScale(18), fit: BoxFit.contain,),
+            icon: Image.asset('assets/grey_more.png', height: hScale(18), fit: BoxFit.contain,),
+            activeIcon: Image.asset('assets/green_more.png', height: hScale(18), fit: BoxFit.contain,),
             label:'More'
         ),
       ],
@@ -57,16 +57,16 @@ class MainScreenState extends State<MainScreen> {
           return const Home();
           break;
         case 1:
-          return Cards();
+          return const Cards();
           break;
         case 2:
-          return Transactions();
+          return const Transactions();
           break;
         case 3:
-          return Credit();
+          return const Credit();
           break;
         case 4:
-          return More();
+          return const More();
           break;
         default:
           return const Home();
