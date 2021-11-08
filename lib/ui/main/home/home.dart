@@ -29,7 +29,7 @@ class HomeState extends State<Home> {
     return Scale().fSize(context, size);
   }
 
-  int cardType = 1;
+  double cardType = 1.0;
   var transactionArr = [
     {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
     {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
@@ -81,14 +81,14 @@ class HomeState extends State<Home> {
               child: Align(
                   child: Column(
                       children: [
-                        const CustomSpacer(size: 55),
+                        const CustomSpacer(size: 30),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             welcomeUser(),
                             IconButton(
-                              icon: customImage('assets/notification.png', 16),
+                              icon: customImage('assets/notification.png', 16.00),
                               iconSize: hScale(10),
                               onPressed: () { handleNotification();},
                             )
@@ -97,9 +97,9 @@ class HomeState extends State<Home> {
                         const CustomSpacer(size: 20),
                         cardValanceField(),
                         const CustomSpacer(size: 20),
-                        welcomeHandleField('assets/deposit_funds.png', 27, "Deposit Funds"),
+                        welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
                         const CustomSpacer(size: 10),
-                        welcomeHandleField('assets/get_credit_line.png', 21, "Get Credit Line"),
+                        welcomeHandleField('assets/get_credit_line.png', 21.0, "Get Credit Line"),
                         const CustomSpacer(size: 16),
                         quickActionsField(),
                         const CustomSpacer(size: 16),
@@ -156,11 +156,11 @@ class HomeState extends State<Home> {
         ),
         child: Column(
             children: [
-              moneyValue('Total Funds', '50,000.00', 20, FontWeight.bold, const Color(0xff30E7A9)),
+              moneyValue('Total Funds', '50,000.00', 20.0, FontWeight.bold, const Color(0xff30E7A9)),
               const CustomSpacer(size: 8,),
-              moneyValue('Credit Line', '40,000.00', 16, FontWeight.w600, const Color(0xffADD2C8)),
+              moneyValue('Credit Line', '40,000.00', 16.0, FontWeight.w600, const Color(0xffADD2C8)),
               const CustomSpacer(size: 8,),
-              moneyValue('Business Account', '10,000.00', 16, FontWeight.w600, const Color(0xffADD2C8)),
+              moneyValue('Business Account', '10,000.00', 16.0, FontWeight.w600, const Color(0xffADD2C8)),
             ]
         )
     );
@@ -254,7 +254,7 @@ class HomeState extends State<Home> {
           ),
         ),
         onPressed: () {  },
-        child: Container(
+        child: SizedBox(
           width: wScale(99),
           height: hScale(86),
           child: Column(
@@ -294,7 +294,7 @@ class HomeState extends State<Home> {
       child: Column(
         children: [
           cardGroupField(),
-          CustomSpacer(size: 16),
+          const CustomSpacer(size: 16),
           cardTypeField()
         ],
       ),
@@ -307,7 +307,7 @@ class HomeState extends State<Home> {
       height: hScale(34),
       padding: EdgeInsets.all(hScale(2)),
       decoration: BoxDecoration(
-        color: Color(0xfff5f5f6),
+        color: const Color(0xfff5f5f6),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(hScale(17)),
           topRight: Radius.circular(hScale(17)),
@@ -317,8 +317,8 @@ class HomeState extends State<Home> {
       ),
       child: Row(
         children: [
-          cardGroupButton('My Cards', 1),
-          cardGroupButton('Company Cards', 2),
+          cardGroupButton('My Cards', 1.0),
+          cardGroupButton('Company Cards', 2.0),
         ]
       ),
     );
@@ -330,7 +330,7 @@ class HomeState extends State<Home> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
           primary: const Color(0xff4B5A63),
-          side: const BorderSide(width: 0,color: Color(0xff4B5A63)),
+          side: const BorderSide(width: 0 ,color: Color(0xff4B5A63)),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)
           ),
@@ -351,7 +351,7 @@ class HomeState extends State<Home> {
     ) : TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
       ),
       onPressed: () { handleCardType(type); },
@@ -364,7 +364,7 @@ class HomeState extends State<Home> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14), fontWeight: FontWeight.w600,
-              color: Color(0xff70828D)),
+              color: const Color(0xff70828D)),
         ),
       ),
     );
@@ -390,9 +390,9 @@ class HomeState extends State<Home> {
         const CustomSpacer(size: 8),
         Row(
           children: [
-            Text(cardName, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: Color(0xff465158))),
-            Text('  (${value})  ', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: Color(0xff30E7A9))),
-            Icon(Icons.arrow_forward_rounded, color: Color(0xff70828D), size: 12.0 ),
+            Text(cardName, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: const Color(0xff465158))),
+            Text('  ($value)  ', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: const Color(0xff30E7A9))),
+            const Icon(Icons.arrow_forward_rounded, color: Color(0xff70828D), size: 12 ),
           ],
         ),
       ],
@@ -457,15 +457,15 @@ class HomeState extends State<Home> {
           transactionTimeField(date, time),
           transactionStatus(transactionName, status),
           transactionUser(userName, cardNum),
-          moneyValue('', value, 14, FontWeight.w700, const Color(0xffADD2C8)),
+          moneyValue('', value, 14.0, FontWeight.w700, const Color(0xffADD2C8)),
         ],
       ),
     );
   }
 
   Widget transactionTimeField(date, time) {
-    return Text('${date}  |  ${time}',
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Color(0xff70828D)));
+    return Text('$date  |  $time',
+        style: TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w500, color: const Color(0xff70828D)));
   }
 
   Widget transactionStatus(name, status) {
@@ -478,7 +478,7 @@ class HomeState extends State<Home> {
         ),
         children: [
           TextSpan(text: name),
-          TextSpan(text: ' (${status})', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic),),
+          TextSpan(text: ' ($status)', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic),),
         ],
       ),
     );
@@ -494,7 +494,7 @@ class HomeState extends State<Home> {
         ),
         children: [
           TextSpan(text: name),
-          TextSpan(text: ' (**** **** **** ${cardNum})', style: TextStyle(color: Color(0xff70828D)),),
+          TextSpan(text: ' (**** **** **** $cardNum)', style: const TextStyle(color: Color(0xff70828D)),),
         ],
       ),
     );

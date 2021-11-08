@@ -1,3 +1,5 @@
+import 'package:flexflutter/ui/main/cards/my_card.dart';
+import 'package:flexflutter/ui/main/cards/team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,6 +27,7 @@ class CardsState extends State<Cards> {
   }
 
   int cardType = 1;
+
   handleBack() {
 
   }
@@ -44,7 +47,7 @@ class CardsState extends State<Cards> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: Align(
+            body: SingleChildScrollView(
                 child: Column(
                     children: [
                       const CustomSpacer(size: 44),
@@ -52,7 +55,7 @@ class CardsState extends State<Cards> {
                       const CustomSpacer(size: 38),
                       cardGroupField(),
                       const CustomSpacer(size: 31),
-                      // cardField()
+                      cardType == 1 ? const MyCards() : const TeamCards()
                     ]
                 )
             )
@@ -77,7 +80,7 @@ class CardsState extends State<Cards> {
       child: Row(
           children: [
             cardGroupButton('My Card', 1),
-            cardGroupButton('Company Cards', 2),
+            cardGroupButton('Team Cards', 2),
           ]
       ),
     );

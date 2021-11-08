@@ -128,9 +128,9 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
           const CustomSpacer(size: 25),
           Container(
             padding: EdgeInsets.only(left: wScale(10), right: wScale(10), top: hScale(4), bottom: hScale(4)),
-            color: Color(0xffE1FFEF),
+            color: const Color(0xffE1FFEF),
             child: Text('Funds will be credited within 1 business day',
-                style: TextStyle(color: Color(0xff2ED47A), fontWeight: FontWeight.w500, fontSize: fSize(12)))
+                style: TextStyle(color: const Color(0xff2ED47A), fontWeight: FontWeight.w500, fontSize: fSize(12)))
           )
         ],
       ),
@@ -138,11 +138,11 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
   }
 
   Widget title(text) {
-    return Text(text, style:TextStyle(color: Color(0xff70828D), fontSize: fSize(12)));
+    return Text(text, style:TextStyle(color: const Color(0xff70828D), fontSize: fSize(12)));
   }
 
   Widget detail(text) {
-    return Text(text, style:TextStyle(color: Color(0xff040415), fontSize: fSize(14), fontWeight: FontWeight.w500));
+    return Text(text, style:TextStyle(color: const Color(0xff040415), fontSize: fSize(14), fontWeight: FontWeight.w500));
   }
 
 }
