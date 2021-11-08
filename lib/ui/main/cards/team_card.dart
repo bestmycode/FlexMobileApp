@@ -297,7 +297,6 @@ class TeamCardsState extends State<TeamCards> {
   Widget cardBody(data) {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(left: wScale(16), right: wScale(16)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
@@ -305,8 +304,6 @@ class TeamCardsState extends State<TeamCards> {
           ),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             cardBodyDetail('Available Limit', data['available']),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
@@ -317,9 +314,8 @@ class TeamCardsState extends State<TeamCards> {
             TextButton(
               style: TextButton.styleFrom(
                 primary: const Color(0xff1da7ff),
-                padding: EdgeInsets.only(top: hScale(7), bottom: hScale(7)),
-                textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: const Color(
-                    0xff1da7ff), decoration: TextDecoration.underline),
+                textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500,
+                    color: const Color(0xff1da7ff), decoration: TextDecoration.underline),
               ),
               onPressed: () { handleCardDetail(data); },
               child: const Text('View Card Details'),
@@ -331,7 +327,7 @@ class TeamCardsState extends State<TeamCards> {
 
   Widget cardBodyDetail(title, value) {
     return Container(
-      padding: EdgeInsets.only(top:hScale(7), bottom: hScale(7)),
+      padding: EdgeInsets.only(top:hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
