@@ -80,7 +80,7 @@ class SignUpScreenState extends State<SignUpScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const SignupProgressHeader(),
+              const SignupProgressHeader(prev: SPLASH_SCREEN),
               const CustomSpacer(size: 38),
               CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: ' First Name '),
               const CustomSpacer(size: 32),

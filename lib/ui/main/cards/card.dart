@@ -1,5 +1,6 @@
 import 'package:flexflutter/ui/main/cards/my_card.dart';
 import 'package:flexflutter/ui/main/cards/team_card.dart';
+import 'package:flexflutter/ui/main/home/home.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,7 +52,16 @@ class CardsState extends State<Cards> {
                 child: Column(
                     children: [
                       const CustomSpacer(size: 44),
-                      const CustomHeader(title: 'Physical Card'),
+                      Row(
+                          children: [
+                            SizedBox(width: wScale(20)),
+                            IconButton(
+                              icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
+                              onPressed: () { DefaultTabController.of(context)!.animateTo(1); }),
+                            SizedBox(width: wScale(30)),
+                            Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                          ]
+                      ),
                       const CustomSpacer(size: 38),
                       cardGroupField(),
                       const CustomSpacer(size: 31),

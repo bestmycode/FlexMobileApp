@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:expandable/expandable.dart';
+import 'package:indexed/indexed.dart';
 
 class TeamCards extends StatefulWidget {
   const TeamCards({Key? key}) : super(key: key);
@@ -66,7 +67,6 @@ class TeamCardsState extends State<TeamCards> {
     setState(() {
       showModal = false;
     });
-    print('------++++++++++++++');
   }
 
   sortAvailableLimit() {
@@ -81,7 +81,7 @@ class TeamCardsState extends State<TeamCards> {
     });
   }
 
-  @override
+    @override
   void initState() {
     super.initState();
   }
@@ -90,62 +90,67 @@ class TeamCardsState extends State<TeamCards> {
   Widget build(BuildContext context) {
     return Container(
         padding: EdgeInsets.only(left:wScale(24), right: wScale(24)),
-        child: Column(
+        child: Indexer(
             children: [
-              headerField(),
-              const CustomSpacer(size: 15),
-              searchField(),
-              const CustomSpacer(size: 15),
-              getTransactionArrWidgets(transactionArr),
-              const CustomSpacer(size: 70),
+              Indexed(index: 100, child: headerField()),
+              Indexed(index: 50, child: Column(
+                children: [
+                  const CustomSpacer(size: 45),
+                  searchField(),
+                  const CustomSpacer(size: 15),
+                  getTransactionArrWidgets(transactionArr),
+                  const CustomSpacer(size: 70),
+                ],
+              )),
+
             ]
         ),
     );
   }
 
   Widget headerField() {
-    return Container(
-        // width: MediaQuery.of(context).size.width,
-        child: Stack(
-          // alignment: Alignment.center,
-            overflow: Overflow.visible,
-            children: [
-              headerSortField(),
-              showModal ? Positioned(
-                  top: hScale(50),
-                  right:0,
-                  child: modalField()
-              ): const SizedBox()
-            ]
-        )
+    return Stack(
+        overflow: Overflow.visible,
+        children: [
+          headerSortField(),
+          showModal ? Positioned(
+              top: hScale(35),
+              right:0,
+              child: modalField()
+          ): const SizedBox()
+        ]
     );
   }
 
   Widget headerSortField() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
+    return Container(
+      height: hScale(200),
+      alignment: Alignment.topCenter,
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            activeButton('Active Cards', 1),
-            activeButton('Inactive Cards', 2),
-          ]
-        ),
-        TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+            Row(
+                children: [
+                  activeButton('Active Cards', 1),
+                  activeButton('Inactive Cards', 2),
+                ]
             ),
-            onPressed: () { handleSort(); },
-            child:Row(
-              children: [
-                Icon(Icons.swap_vert_rounded, color: const Color(0xff29C490),size: hScale(18)),
-                Text('Sort by', style: TextStyle(fontSize: fSize(12)))
-              ],
-            )
-        ),
-      ]
+            TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xff70828D),
+                  padding: const EdgeInsets.all(0),
+                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+                ),
+                onPressed: () { handleSort(); },
+                child:Row(
+                  children: [
+                    Icon(Icons.swap_vert_rounded, color: const Color(0xff29C490),size: hScale(18)),
+                    Text('Sort by', style: TextStyle(fontSize: fSize(12)))
+                  ],
+                )
+            ),
+          ]
+      ),
     );
   }
 
