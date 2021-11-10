@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
-class PersonalCard extends StatefulWidget {
-  const PersonalCard({Key? key}) : super(key: key);
+class PhysicalPersonalCard extends StatefulWidget {
+  const PhysicalPersonalCard({Key? key}) : super(key: key);
 
   @override
-  PersonalCardState createState() => PersonalCardState();
+  PhysicalPersonalCardState createState() => PhysicalPersonalCardState();
 }
 
-class PersonalCardState extends State<PersonalCard> {
+class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);

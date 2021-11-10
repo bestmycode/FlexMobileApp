@@ -1,20 +1,22 @@
-import 'package:flexflutter/ui/main/cards/my_card.dart';
-import 'package:flexflutter/ui/main/cards/team_card.dart';
-import 'package:flexflutter/ui/main/home/home.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
+import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
+import 'package:flexflutter/ui/main/cards/virtual_my_transaction.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
-class Cards extends StatefulWidget {
-  const Cards({Key? key}) : super(key: key);
+class VirtualCards extends StatefulWidget {
+  final CupertinoTabController controller;
+  final GlobalKey<NavigatorState> navigatorKey;
+
+  const VirtualCards({Key? key,  required this.controller, required this.navigatorKey}) : super(key: key);
 
   @override
-  CardsState createState() => CardsState();
+  VirtualCardsState createState() => VirtualCardsState();
 }
 
-class CardsState extends State<Cards> {
+class VirtualCardsState extends State<VirtualCards> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -30,7 +32,7 @@ class CardsState extends State<Cards> {
   int cardType = 1;
 
   handleBack() {
-
+    DefaultTabController.of(context)!.animateTo(1);
   }
 
   handleCardType(type) {
@@ -57,15 +59,20 @@ class CardsState extends State<Cards> {
                             SizedBox(width: wScale(20)),
                             IconButton(
                               icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
-                              onPressed: () { DefaultTabController.of(context)!.animateTo(1); }),
+                                onPressed: () {
+                                  widget.controller.index = 0;
+                                  // await Future.delayed(const Duration(seconds: 1), () {});
+                                  widget.navigatorKey.currentState!.pushNamed("/");
+                                }),
                             SizedBox(width: wScale(30)),
-                            Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                            Text('Virtual Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
                           ]
                       ),
                       const CustomSpacer(size: 38),
                       cardGroupField(),
                       const CustomSpacer(size: 31),
-                      cardType == 1 ? const MyCards() : const TeamCards()
+                      cardType == 1 ? const VirtualMyTransactions() : cardType == 2 ? const PhysicalTeamCards(): const PhysicalTeamCards(),
+                      const CustomSpacer(size: 70),
                     ]
                 )
             )
@@ -76,7 +83,7 @@ class CardsState extends State<Cards> {
   Widget cardGroupField() {
     return Container(
       width: wScale(327),
-      height: hScale(40),
+      height: hScale(46),
       padding: EdgeInsets.all(hScale(2)),
       decoration: BoxDecoration(
         color: const Color(0xfff5f5f6),
@@ -87,12 +94,17 @@ class CardsState extends State<Cards> {
           bottomRight: Radius.circular(hScale(20)),
         ),
       ),
-      child: Row(
-          children: [
-            cardGroupButton('My Card', 1),
-            cardGroupButton('Team Cards', 2),
-          ]
-      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
+        child: Row(
+            children: [
+              cardGroupButton('My Transactions', 1),
+              cardGroupButton('My Cards', 2),
+              cardGroupButton('Team Cards', 3),
+            ]
+        )
+      )
     );
   }
 
@@ -109,7 +121,7 @@ class CardsState extends State<Cards> {
         ),
         onPressed: () { handleCardType(type); },
         child: Container(
-          width: wScale(160),
+          width: wScale(130),
           height: hScale(35),
           alignment: Alignment.center,
           child: Text(
@@ -128,7 +140,7 @@ class CardsState extends State<Cards> {
       ),
       onPressed: () { handleCardType(type); },
       child: Container(
-        width: wScale(160),
+        width: wScale(130),
         height: hScale(35),
         alignment: Alignment.center,
         child: Text(

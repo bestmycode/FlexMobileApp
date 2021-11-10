@@ -10,7 +10,9 @@ import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final CupertinoTabController controller;
+  final GlobalKey<NavigatorState> navigatorKey;
+  const Home({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
 
   @override
   HomeState createState() => HomeState();
@@ -374,19 +376,26 @@ class HomeState extends State<Home> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        cardTypeImage('assets/physical_card.png', 'Physical Cards', 4),
-        cardTypeImage('assets/virtual_card.png', 'Virtual Cards', 16),
+        cardTypeImage('assets/physical_card.png', 'Physical Cards', 4, 'physical'),
+        cardTypeImage('assets/virtual_card.png', 'Virtual Cards', 16, 'virtual'),
       ]
     );
   }
 
-  Widget cardTypeImage(imageURL, cardName, value) {
+  Widget cardTypeImage(imageURL, cardName, value, type) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset(imageURL,
-            fit: BoxFit.contain,
-            width: wScale(142)),
+        IconButton(
+          iconSize: wScale(142),
+          padding: EdgeInsets.zero,
+          icon: Image.asset(imageURL, fit: BoxFit.contain,width: wScale(142)),
+          onPressed: () async {
+            // widget.navigatorKey.currentState!.pushNamed(type);
+            widget.controller.index = 1;
+            await Future.delayed(const Duration(seconds: 0), () {});
+            widget.navigatorKey.currentState!.pushNamed(type);
+          }),
         const CustomSpacer(size: 8),
         Row(
           children: [

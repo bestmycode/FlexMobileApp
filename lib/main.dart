@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         TWO_STEP_FINAL: (BuildContext context) => const TwoStepFinalScreen(),
         TWO_STEP_FAILED: (BuildContext context) => const TwoStepFailedScreen(),
         ALMOST_DONE: (BuildContext context) => const AlmostDoneScreen(),
-        MAIN_SCREEN: (BuildContext context) =>  const MainScreen(),
+        MAIN_SCREEN: (BuildContext context) =>  MainScreen(),
       },
       initialRoute: LOADING_SCREEN,
     );

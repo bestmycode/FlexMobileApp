@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
-class MyCards extends StatefulWidget {
-  const MyCards({Key? key}) : super(key: key);
+class PhysicalMyCards extends StatefulWidget {
+  const PhysicalMyCards({Key? key}) : super(key: key);
 
   @override
-  MyCardsState createState() => MyCardsState();
+  PhysicalMyCardsState createState() => PhysicalMyCardsState();
 }
 
-class MyCardsState extends State<MyCards> {
+class PhysicalMyCardsState extends State<PhysicalMyCards> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -75,7 +75,6 @@ class MyCardsState extends State<MyCards> {
         allTransactionField(),
         const CustomSpacer(size: 15),
         getTransactionArrWidgets(transactionArr),
-        const CustomSpacer(size: 70),
       ]
     );
   }
@@ -210,7 +209,7 @@ class MyCardsState extends State<MyCards> {
           padding: const EdgeInsets.all(0),
           icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
           iconSize: hScale(17),
-          onPressed: () {print("ksksk");},
+          onPressed: () { },
         )
     );
   }
@@ -263,7 +262,7 @@ class MyCardsState extends State<MyCards> {
               borderRadius: BorderRadius.circular(10)
           ),
         ),
-        onPressed: () {  },
+        onPressed: () { _showSimpleModalDialog(context); },
         child: SizedBox(
             width: wScale(102),
             height: hScale(82),
@@ -425,7 +424,7 @@ class MyCardsState extends State<MyCards> {
   }
 
   Widget transactionTimeField(date) {
-    return Text('${date}',
+    return Text('$date',
         style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Color(0xff70828D)));
   }
 
@@ -471,4 +470,60 @@ class MyCardsState extends State<MyCards> {
     }).toList());
   }
 
+  _showSimpleModalDialog(context){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(12.0)),
+          child: modalField()
+        );
+    });
+  }
+
+  Widget modalField() {
+    return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container (
+              padding: EdgeInsets.symmetric(vertical: hScale(25)),
+              child: Column(
+                  children: [
+                    Image.asset('assets/snow_icon.png', fit: BoxFit.contain, height: wScale(30)),
+                    const CustomSpacer(size: 15),
+                    Text('Editing spend limit?', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w700)),
+                    const CustomSpacer(size: 10),
+                    Text('To make changes to the spend limit\nassigned to this card, please reach out to\nyour company administrator.',
+                      style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400), textAlign: TextAlign.center,),
+                  ]
+              )
+          ),
+          Container(height: 1,color: const Color(0xFFD5DBDE)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: hScale(30), horizontal: wScale(25)),
+                  primary: const Color(0xff30E7A9),
+                  textStyle: TextStyle(fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                ),
+                onPressed: () => Navigator.of(context, rootNavigator: true).pop('dialog'),
+                child: const Text('Cancel'),
+              ),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              TextButton(
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: hScale(30)),
+                  primary: const Color(0xff30E7A9),
+                  textStyle: TextStyle(fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                ),
+                onPressed: () { Navigator.of(context, rootNavigator: true).pop('dialog'); },
+                child: const Text('Ok'),
+              )
+            ],
+          )
+        ]
+    );
+  }
 }

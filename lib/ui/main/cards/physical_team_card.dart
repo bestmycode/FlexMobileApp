@@ -1,4 +1,4 @@
-import 'package:flexflutter/ui/main/cards/personal_card.dart';
+import 'package:flexflutter/ui/main/cards/physical_personal_card.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +6,14 @@ import 'package:flexflutter/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 import 'package:indexed/indexed.dart';
 
-class TeamCards extends StatefulWidget {
-  const TeamCards({Key? key}) : super(key: key);
+class PhysicalTeamCards extends StatefulWidget {
+  const PhysicalTeamCards({Key? key}) : super(key: key);
 
   @override
-  TeamCardsState createState() => TeamCardsState();
+  PhysicalTeamCardsState createState() => PhysicalTeamCardsState();
 }
 
-class TeamCardsState extends State<TeamCards> {
+class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -58,7 +58,7 @@ class TeamCardsState extends State<TeamCards> {
   handleCardDetail(data) {
     Navigator.of(context).push(
       CupertinoPageRoute (
-          builder: (context) => const PersonalCard()
+          builder: (context) => const PhysicalPersonalCard()
       ),
     );
   }
@@ -99,7 +99,6 @@ class TeamCardsState extends State<TeamCards> {
                   searchField(),
                   const CustomSpacer(size: 15),
                   getTransactionArrWidgets(transactionArr),
-                  const CustomSpacer(size: 70),
                 ],
               )),
 
@@ -184,7 +183,8 @@ class TeamCardsState extends State<TeamCards> {
 
   Widget searchField() {
     return Container(
-      padding: EdgeInsets.only(left: wScale(15), right: wScale(15), top: hScale(6), bottom: hScale(6)),
+      height: hScale(36),
+      padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
           border: Border.all(color: Color(0xff040415), width: hScale(1)),
@@ -200,7 +200,7 @@ class TeamCardsState extends State<TeamCards> {
         children: [
           SizedBox(
             width: wScale(260),
-            height: hScale(24),
+            // height: hScale(24),
             child: TextField(
               textAlignVertical: TextAlignVertical.center,
               controller: searchCtl,
