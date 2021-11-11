@@ -115,15 +115,16 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget cardField() {
     return Container(
         width: wScale(295),
+        height: wScale(187),
         padding: EdgeInsets.all(hScale(10)),
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/physical_card_detail.png"),
-            fit: BoxFit.fill,
+            fit: BoxFit.contain,
           ),
         ),
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -133,16 +134,19 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                   eyeIconField()
                 ],
               ),
-              const CustomSpacer(size: 26),
-              Text('Angel Matthews', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w100, fontSize: fSize(14))),
-              const CustomSpacer(size: 6),
-              Row(
-                children:[
-                  Text('2145 4587 4875 1211', style: TextStyle(color: Colors.white, fontSize: fSize(16))),
-                  const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
-                ]
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Angel Matthews', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w100, fontSize: fSize(14))),
+                  const CustomSpacer(size: 6),
+                  Row(
+                      children:[
+                        Text('2145 4587 4875 1211', style: TextStyle(color: Colors.white, fontSize: fSize(16))),
+                        const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
+                      ]
+                  ),
+                ],
               ),
-              const CustomSpacer(size: 30),
               Row(
                   children:[
                     Column(

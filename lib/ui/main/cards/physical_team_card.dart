@@ -101,7 +101,6 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                   getTransactionArrWidgets(transactionArr),
                 ],
               )),
-
             ]
         ),
     );
@@ -205,15 +204,14 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
               textAlignVertical: TextAlignVertical.center,
               controller: searchCtl,
               decoration: InputDecoration(
-                contentPadding: const EdgeInsets.all(0),
+                contentPadding: EdgeInsets.zero,
                 enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
                 hintText: 'Card Holders , Cards…',
-                hintStyle: TextStyle(
-                    color: const Color(0xff040415).withOpacity(0.5),
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w500),
+                hintStyle: TextStyle( color: const Color(0xff040415).withOpacity(0.5), fontSize: fSize(12), fontWeight: FontWeight.w500),
                 focusedBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
               ),
+              style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500),
+              scrollPadding: EdgeInsets.zero,
             )
           ),
           SizedBox(
@@ -235,37 +233,35 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   Widget collapseField(data) {
     return ExpandableNotifier(
-      child: Padding(
-        padding: const EdgeInsets.all(1),
-        child: Card(
-          child: Column(
-            children: [
-              ScrollOnExpand(
-                child: ExpandablePanel(
-                  theme: const ExpandableThemeData(
-                      tapBodyToCollapse: true,
-                      tapBodyToExpand: true
-                  ),
-                  expanded: Column(
-                    children: [
-                      cardHeader(data),
-                      cardBody(data)
-                    ],
-                  ),
-                  collapsed: cardHeader(data),
-                  builder: (_, collapsed, expanded) {
-                    return SizedBox(
-                      child: Expandable(
-                        collapsed: collapsed,
-                        expanded: expanded,
-                        theme: const ExpandableThemeData(crossFadePoint: 0),
-                      ),
-                    );
-                  },
+      child: Container(
+        margin: EdgeInsets.only(bottom: hScale(6)),
+        child: Column(
+          children: [
+            ScrollOnExpand(
+              child: ExpandablePanel(
+                theme: const ExpandableThemeData(
+                    tapBodyToCollapse: true,
+                    tapBodyToExpand: true
                 ),
+                expanded: Column(
+                  children: [
+                    cardHeader(data),
+                    cardBody(data)
+                  ],
+                ),
+                collapsed: cardHeader(data),
+                builder: (_, collapsed, expanded) {
+                  return SizedBox(
+                    child: Expandable(
+                      collapsed: collapsed,
+                      expanded: expanded,
+                      theme: const ExpandableThemeData(crossFadePoint: 0),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

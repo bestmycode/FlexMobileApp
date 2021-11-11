@@ -250,21 +250,20 @@ class HomeState extends State<Home> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
           primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0, color: Color(0xffffffff)),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)
           ),
         ),
         onPressed: () {  },
-        child: SizedBox(
+        child: Container(
           width: wScale(99),
-          height: hScale(86),
+          padding: EdgeInsets.symmetric(vertical: hScale(16)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset(imageUrl, fit: BoxFit.contain, height: wScale(24)),
-              const CustomSpacer(size: 10,),
+              Image.asset(imageUrl, fit: BoxFit.contain, height: hScale(24)),
+              const CustomSpacer(size: 8),
               Text(text, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: Colors.black), textAlign: TextAlign.center,),
             ],
           )
