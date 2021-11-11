@@ -82,6 +82,7 @@ class HomeState extends State<Home> {
               padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
               child: Align(
                   child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const CustomSpacer(size: 30),
                         Row(
@@ -104,6 +105,8 @@ class HomeState extends State<Home> {
                         welcomeHandleField('assets/get_credit_line.png', 21.0, "Get Credit Line"),
                         const CustomSpacer(size: 16),
                         quickActionsField(),
+                        const CustomSpacer(size: 16),
+                        customText('Cards Overview'),
                         const CustomSpacer(size: 16),
                         cardOverviewField(),
                         const CustomSpacer(size: 16),
@@ -236,7 +239,7 @@ class HomeState extends State<Home> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children:[
-            actionButton('assets/invite_user.png', 'Request\nPhysical Card'),
+            actionButton('assets/invite_user.png', 'Invite\nUser'),
             actionButton('assets/issue_virtual_card.png', 'Issue\nVirtual Card'),
             actionButton('assets/green_card.png', 'Request\nPhysical Card')
           ]
@@ -385,16 +388,17 @@ class HomeState extends State<Home> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconButton(
-          iconSize: wScale(142),
-          padding: EdgeInsets.zero,
-          icon: Image.asset(imageURL, fit: BoxFit.contain,width: wScale(142)),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.zero
+          ),
+          child: Image.asset(imageURL, fit: BoxFit.contain, width: wScale(142)),
           onPressed: () async {
             // widget.navigatorKey.currentState!.pushNamed(type);
             widget.controller.index = 1;
             await Future.delayed(const Duration(seconds: 0), () {});
             widget.navigatorKey.currentState!.pushNamed(type);
-          }),
+        }),
         const CustomSpacer(size: 8),
         Row(
           children: [

@@ -62,7 +62,7 @@ class VirtualCardsState extends State<VirtualCards> {
                                 onPressed: () {
                                   widget.controller.index = 0;
                                   // await Future.delayed(const Duration(seconds: 1), () {});
-                                  widget.navigatorKey.currentState!.pushNamed("/");
+                                  widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
                                 }),
                             SizedBox(width: wScale(30)),
                             Text('Virtual Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))

@@ -57,8 +57,8 @@ class PhysicalCardsState extends State<PhysicalCards> {
                               icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
                               onPressed: () {
                                 widget.controller.index = 0;
-                                // await Future.delayed(const Duration(seconds: 1), () {});
-                                widget.navigatorKey.currentState!.pushNamed("/");
+                                // Future.delayed(const Duration(seconds: 1), () {});
+                                widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
                               }),
                             SizedBox(width: wScale(30)),
                             Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
