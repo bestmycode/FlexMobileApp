@@ -5,7 +5,8 @@ import 'package:flexflutter/ui/main/cards/virtual_card.dart';
 import 'package:flexflutter/ui/main/credit/credit.dart';
 import 'package:flexflutter/ui/main/home/home.dart';
 import 'package:flexflutter/ui/main/more/more.dart';
-import 'package:flexflutter/ui/main/transactions/transaction.dart';
+import 'package:flexflutter/ui/main/transactions/transaction_admin.dart';
+import 'package:flexflutter/ui/main/transactions/transaction_user.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class MainScreenState extends State<MainScreen> {
                 navigatorKey: navigatorKeyList[index],
                 routes: {
                   '/': (context) => WillPopScope(
-                    child: PhysicalCards(controller: controller, navigatorKey: navigatorKeyList[0]),
+                    child: TransactionAdmin(controller: controller, navigatorKey: navigatorKeyList[0]),
                     onWillPop: () => Future<bool>.value(true),
                   )
                 },
@@ -119,7 +120,7 @@ class MainScreenState extends State<MainScreen> {
                 navigatorKey: navigatorKeyList[index],
                 routes: {
                   '/': (context) => WillPopScope(
-                    child: PhysicalCards(controller: controller, navigatorKey: navigatorKeyList[0]),
+                    child: TransactionUser(controller: controller, navigatorKey: navigatorKeyList[0]),
                     onWillPop: () => Future<bool>.value(true),
                   )
                 },

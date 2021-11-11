@@ -1,4 +1,4 @@
-import 'package:flexflutter/ui/main/cards/physical_personal_card.dart';
+import 'package:flexflutter/ui/main/cards/virtual_personal_card.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +6,14 @@ import 'package:flexflutter/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 import 'package:indexed/indexed.dart';
 
-class PhysicalTeamCards extends StatefulWidget {
-  const PhysicalTeamCards({Key? key}) : super(key: key);
+class VirtualTeamCards extends StatefulWidget {
+  const VirtualTeamCards({Key? key}) : super(key: key);
 
   @override
-  PhysicalTeamCardsState createState() => PhysicalTeamCardsState();
+  VirtualTeamCardsState createState() => VirtualTeamCardsState();
 }
 
-class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
+class VirtualTeamCardsState extends State<VirtualTeamCards> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -31,13 +31,15 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   final searchCtl = TextEditingController();
   bool showModal = false;
   var transactionArr = [
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
+    {'userName':'G-Suit', 'cardNum':'2314', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2315', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2316', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2317', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2318', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2319', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2320', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2321', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2322', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
   ];
 
   handleCardType(type) {
@@ -59,7 +61,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   handleCardDetail(data) {
     Navigator.of(context).push(
       CupertinoPageRoute (
-          builder: (context) => const PhysicalPersonalCard()
+          builder: (context) => const VirtualPersonalCard()
       ),
     );
   }
@@ -99,7 +101,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
               Indexed(index: 100, child: headerField()),
               Indexed(index: 50, child: Column(
                 children: [
-                  const CustomSpacer(size: 55),
+                  const CustomSpacer(size: 50),
                   searchField(),
                   const CustomSpacer(size: 15),
                   getTransactionArrWidgets(transactionArr),
@@ -190,7 +192,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
       padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: Color(0xff040415), width: hScale(1)),
+          border: Border.all(color: const Color(0xff040415), width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -310,7 +312,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(data['userName'], style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-          Text('**** **** **** ${data["cardNum"]}', style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+          Text('**** **** **** ${data["cardNum"]} | ${data['type']}', style: TextStyle(fontSize: fSize(12), color: Colors.white)),
         ],
       )
     );

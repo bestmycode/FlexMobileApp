@@ -20,9 +20,37 @@ class CustomHeader extends StatelessWidget {
     return Row(
         children: [
           SizedBox(width: wScale(20)),
-          IconButton(
-            icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
-            onPressed: () { Navigator.of(context).pop(); },),
+          Container(
+            width: hScale(40),
+            height: hScale(40),
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(hScale(10)),
+                topRight: Radius.circular(hScale(10)),
+                bottomLeft: Radius.circular(hScale(10)),
+                bottomRight: Radius.circular(hScale(10)),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.25),
+                  spreadRadius: 4,
+                  blurRadius: 20,
+                  offset: const Offset(0, 1), // changes position of shadow
+                ),
+              ],
+            ),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xff70828D),
+                  padding: const EdgeInsets.all(0),
+                ),
+                child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 12,),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                }),
+          ),
           SizedBox(width: wScale(30)),
           Text(title, style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
         ]

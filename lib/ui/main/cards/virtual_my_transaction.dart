@@ -73,6 +73,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         headerStatusField(),
         const CustomSpacer(size: 17),
         searchRow(),
+        showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
         showDateRange ? dateRangeField() : const SizedBox(),
         const CustomSpacer(size: 15),
         getTransactionArrWidgets(transactionArr),
@@ -189,11 +190,16 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           searchField(),
-          IconButton(
-            icon: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
-            highlightColor: Colors.transparent,
-            iconSize: hScale(10),
-            onPressed: () { handleCalendar();},
+          SizedBox(
+            width: wScale(24),
+            height: wScale(24),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.all(0),
+              ),
+              child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+              onPressed: () { handleCalendar();},
+            ),
           )
         ],
       )

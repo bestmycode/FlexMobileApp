@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
-class PhysicalPersonalCard extends StatefulWidget {
-  const PhysicalPersonalCard({Key? key}) : super(key: key);
+class VirtualPersonalCard extends StatefulWidget {
+  const VirtualPersonalCard({Key? key}) : super(key: key);
 
   @override
-  PhysicalPersonalCardState createState() => PhysicalPersonalCardState();
+  VirtualPersonalCardState createState() => VirtualPersonalCardState();
 }
 
-class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
+class VirtualPersonalCardState extends State<VirtualPersonalCard> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -70,7 +70,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                 child: Column(
                     children: [
                       const CustomSpacer(size: 44),
-                      const CustomHeader(title: 'Angel Matthew’s Card'),
+                      const CustomHeader(title: 'My Grab Expenses’ Trans...'),
                       const CustomSpacer(size: 31),
                       cardDetailField(),
                       const CustomSpacer(size: 10),
@@ -129,7 +129,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
         padding: EdgeInsets.all(hScale(10)),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/physical_card_detail.png"),
+            image: AssetImage("assets/virtual_card_detail.png"),
             fit: BoxFit.contain,
           ),
         ),

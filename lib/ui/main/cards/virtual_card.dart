@@ -1,6 +1,6 @@
-import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/main/cards/virtual_my_transaction.dart';
+import 'package:flexflutter/ui/main/cards/virtual_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -57,26 +57,56 @@ class VirtualCardsState extends State<VirtualCards> {
                       Row(
                           children: [
                             SizedBox(width: wScale(20)),
-                            IconButton(
-                              icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
-                                onPressed: () {
-                                  widget.controller.index = 0;
-                                  // await Future.delayed(const Duration(seconds: 1), () {});
-                                  widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
-                                }),
-                            SizedBox(width: wScale(30)),
-                            Text('Virtual Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                            backButton(),
+                            SizedBox(width: wScale(20)),
+                            Text('Virtual Cards', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
                           ]
                       ),
                       const CustomSpacer(size: 38),
                       cardGroupField(),
                       const CustomSpacer(size: 31),
-                      cardType == 1 ? const VirtualMyTransactions() : cardType == 2 ? const PhysicalTeamCards(): const PhysicalTeamCards(),
+                      cardType == 1 ? const VirtualMyTransactions() : cardType == 2 ? const VirtualTeamCards(): const PhysicalTeamCards(),
                       const CustomSpacer(size: 70),
                     ]
                 )
             )
         )
+    );
+  }
+
+  Widget backButton() {
+    return Container(
+      width: hScale(40),
+      height: hScale(40),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xff70828D),
+            padding: const EdgeInsets.all(0),
+          ),
+          child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 12,),
+          onPressed: () async {
+            widget.controller.index = 0;
+            // await Future.delayed(const Duration(seconds: 1), () {});
+            widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
+          }),
     );
   }
 
@@ -116,7 +146,7 @@ class VirtualCardsState extends State<VirtualCards> {
           primary: const Color(0xffffffff),
           side: const BorderSide(width: 0,color: Color(0xffffffff)),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+              borderRadius: BorderRadius.circular(260)
           ),
         ),
         onPressed: () { handleCardType(type); },

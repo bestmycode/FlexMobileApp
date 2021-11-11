@@ -53,14 +53,8 @@ class PhysicalCardsState extends State<PhysicalCards> {
                       Row(
                           children: [
                             SizedBox(width: wScale(20)),
-                            IconButton(
-                              icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
-                              onPressed: () {
-                                widget.controller.index = 0;
-                                // Future.delayed(const Duration(seconds: 1), () {});
-                                widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
-                              }),
-                            SizedBox(width: wScale(30)),
+                            backButton(),
+                            SizedBox(width: wScale(20)),
                             Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
                           ]
                       ),
@@ -73,6 +67,42 @@ class PhysicalCardsState extends State<PhysicalCards> {
                 )
             )
         )
+    );
+  }
+
+  Widget backButton() {
+    return Container(
+      width: hScale(40),
+      height: hScale(40),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xff70828D),
+            padding: const EdgeInsets.all(0),
+          ),
+          child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 12,),
+          onPressed: () async {
+            widget.controller.index = 0;
+            // Future.delayed(const Duration(seconds: 1), () {});
+            widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
+          }),
     );
   }
 
@@ -107,7 +137,7 @@ class PhysicalCardsState extends State<PhysicalCards> {
           primary: const Color(0xffffffff),
           side: const BorderSide(width: 0,color: Color(0xffffffff)),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+              borderRadius: BorderRadius.circular(260)
           ),
         ),
         onPressed: () { handleCardType(type); },
