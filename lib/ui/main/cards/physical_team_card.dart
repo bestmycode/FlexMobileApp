@@ -116,7 +116,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         children: [
           headerSortField(),
           showModal ? Positioned(
-              top: hScale(40),
+              top: hScale(50),
               right:0,
               child: modalField()
           ): const SizedBox()
@@ -410,7 +410,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: sortType == type ? const Color(0xFF29C490) : Colors.black,
-        padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
+        padding: EdgeInsets.only(top: hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
       onPressed: () {

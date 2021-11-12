@@ -352,7 +352,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
         children: [
           searchRow(),
           showModal ? Positioned(
-              top: hScale(40),
+              top: hScale(50),
               right:0,
               child: modalField()
           ): const SizedBox()
