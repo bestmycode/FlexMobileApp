@@ -165,16 +165,16 @@ class SignInScreenState extends State<SignInScreen> {
       margin: EdgeInsets.only(left: wScale(17)),
       child: Text(
           "Remember Me",
-          style: TextStyle(fontSize: fSize(14))),
+          style: TextStyle(fontSize: fSize(14), color: const Color(0xFF515151))),
     );
   }
 
   Widget forgotPwdButton() {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xff515151),
+        primary: const Color(0xff515151).withOpacity(0.5),
         padding: EdgeInsets.zero,
-        textStyle: TextStyle(fontSize: fSize(14), decoration: TextDecoration.underline,color: const Color(0xff515151)),
+        textStyle: TextStyle(fontSize: fSize(14), decoration: TextDecoration.underline,color: const Color(0xff515151).withOpacity(0.5)),
       ),
       onPressed: () { handleForgotPwd(); },
       child: const Text('Forgot Password'),
@@ -207,7 +207,7 @@ class SignInScreenState extends State<SignInScreen> {
       children: [
         Text(
           "Don't have an account?",
-          style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
+          style: TextStyle(color: const Color(0xFF666666), fontSize: fSize(14) )),
         registerButton()
       ],
     );
@@ -216,8 +216,8 @@ class SignInScreenState extends State<SignInScreen> {
   Widget registerButton() {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xff30E7A9),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
+        primary: const Color(0xff29c490),
+        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff29c490)),
       ),
       onPressed: () { handleRegister(); },
       child: const Text('Register'),

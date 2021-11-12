@@ -40,7 +40,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   final streetCtl = TextEditingController();
   final cityCtl = TextEditingController();
   final jobTitleCtl = TextEditingController();
-  final companyEmailCtl = TextEditingController();
+  final companyEmailCtl = TextEditingController(text: 'james.tan@flex.com');
 
   handleContinue() {
     storage.setItem('firstName', firstNameCtl);
@@ -117,7 +117,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
     return Text(
         "We just need a few more details as part of\nregulatory requirements. Tell us more about\nyourself, James.",
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w400 ));
+        style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w400, color: const Color(0xFF515151), height: 1.7 ));
   }
 
   Widget personalDetailField() {
@@ -164,7 +164,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           const CustomSpacer(size: 32),
           CustomTextField(ctl: jobTitleCtl, hint: 'Enter Job Title', label: 'Job Title'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyEmailCtl, hint: 'Enter Company Email Address', label: 'Company Email Address'),
+          companyEmailAddress()
         ],
       ),
     );
@@ -196,6 +196,35 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           child: Text(
               "Continue",
               style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
+        )
+    );
+  }
+
+  Widget companyEmailAddress() {
+    return Container(
+        width: wScale(295),
+        height: hScale(56),
+        alignment: Alignment.center,
+        child: TextField(
+          controller: companyEmailCtl,
+          readOnly: true,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(
+                color: const Color(0xff040415).withOpacity(0.1),
+                width: 1.0)
+            ),
+            labelText: 'Company Email Address',
+            labelStyle: TextStyle(
+                color: const Color(0xff040415).withOpacity(0.4),
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: const Color(0xff040415).withOpacity(0.1),
+                    width: 1.0)
+            ),
+          ),
+          style: TextStyle(color: const Color(0xFF040415).withOpacity(0.5), fontSize: fSize(14), fontWeight: FontWeight.w500),
         )
     );
   }

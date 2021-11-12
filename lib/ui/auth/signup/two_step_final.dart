@@ -173,7 +173,7 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff30E7A9),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9), fontWeight: FontWeight.bold),
+        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9), fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
       ),
       onPressed: () { handleResendSMS(); },
       child: const Text('Resend SMS'),

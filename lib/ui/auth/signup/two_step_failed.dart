@@ -76,7 +76,7 @@ class TwoStepFailedScreenState extends State<TwoStepFailedScreen> {
     return Text(
         title,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(14), fontWeight: bold =='bold' ? FontWeight.bold: FontWeight.normal, color: Color(color) ));
+        style: TextStyle(fontSize: fSize(14), fontWeight: bold =='bold' ? FontWeight.bold: FontWeight.normal, color: Color(color),height: 1.7 ));
   }
 
   Widget tryAgainButton() {
@@ -93,7 +93,7 @@ class TwoStepFailedScreenState extends State<TwoStepFailedScreen> {
           ),
           onPressed: () { handleTryAgain(); },
           child: Text(
-              "Continue",
+              "Try Again",
               style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
         )
     );

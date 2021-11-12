@@ -105,23 +105,30 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
 
   Widget backButton() {
     return Positioned(
-        left: 24.0,
-        top: 0.0,
-        child: SizedBox(
-            width: hScale(40),
-            height: hScale(40),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  primary: const Color(0xff727a80),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-                  padding: const EdgeInsets.all(0)
-              ),
-              onPressed: () { handleBack(); },
-              child: Icon(Icons.arrow_back_ios, color: Colors.white, size:wScale(13)),
-            )
-        )
+      left: 24.0,
+      top: 0.0,
+      child:Container(
+        width: hScale(40),
+        height: hScale(40),
+        padding: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: const Color(0xffF5F5F5).withOpacity(0.4),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
+          ),
+        ),
+        child: TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xffF5F5F5).withOpacity(0.4),
+              padding: const EdgeInsets.all(0),
+            ),
+            child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.white, size: 12,),
+            onPressed: () { handleBack(); }
+          ),
+      )
     );
   }
 
@@ -146,9 +153,9 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
             color: Colors.black,
           ),
           children: const [
-            TextSpan(text: 'We have sent an e-mail to\n'),
-            TextSpan(text: 'jasmine.foo@flex.com', style: TextStyle(color: Colors.blue)),
-            TextSpan(text: '  Please follow the instructions in the e-mail\n on how to reset your password'),
+            TextSpan(text: 'We have sent an e-mail to\n', style: TextStyle(fontWeight: FontWeight.w600)),
+            TextSpan(text: 'jasmine.foo@flex.com', style: TextStyle(color: Color(0xFF3362c4), fontWeight: FontWeight.w600)),
+            TextSpan(text: '  Please follow the instructions in the e-mail\n on how to reset your password', style:TextStyle(fontWeight: FontWeight.w600)),
           ],
         ),
       )

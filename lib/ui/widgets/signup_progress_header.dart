@@ -93,25 +93,33 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
 
   Widget backButton(prev) {
     return Positioned(
-        left: wScale(24),
+        left: 24.0,
         top: 0.0,
-        child: SizedBox(
-            width: hScale(40),
-            height: hScale(40),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  primary: const Color(0xff727a80),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)
-                  ),
-                  padding: const EdgeInsets.all(0)
+        child:Container(
+          width: hScale(40),
+          height: hScale(40),
+          padding: EdgeInsets.zero,
+          decoration: BoxDecoration(
+            color: const Color(0xffF5F5F5).withOpacity(0.4),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(hScale(10)),
+              topRight: Radius.circular(hScale(10)),
+              bottomLeft: Radius.circular(hScale(10)),
+              bottomRight: Radius.circular(hScale(10)),
+            ),
+          ),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                primary: const Color(0xffF5F5F5).withOpacity(0.4),
+                padding: const EdgeInsets.all(0),
               ),
-              onPressed: () { Navigator.of(context).pushReplacementNamed(prev); },
-              child: Icon(Icons.arrow_back_ios, color: Colors.white, size:wScale(13)),
-            )
+              child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.white, size: 12,),
+            onPressed: () { Navigator.of(context).pushReplacementNamed(prev); },
+          ),
         )
     );
   }
+
 
   Widget roundNumber(num, active) {
     return Container(

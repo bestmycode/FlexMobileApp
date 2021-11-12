@@ -203,8 +203,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         margin: EdgeInsets.only(left: wScale(8), right: wScale(8)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xffc9c9c9),
-            side: const BorderSide(width: 0, color: Color(0xffc9c9c9)),
+            primary: const Color(0xffc9c9c9).withOpacity(0.1),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16)
             ),

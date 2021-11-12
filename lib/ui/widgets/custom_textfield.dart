@@ -33,15 +33,18 @@ class CustomTextField extends StatelessWidget {
           controller: ctl,
           obscureText: pwd,
           decoration: InputDecoration(
-            border: const OutlineInputBorder(),
+            enabledBorder: OutlineInputBorder(borderSide: BorderSide(
+                color: const Color(0xff040415).withOpacity(0.1),
+                width: 1.0)
+            ),
             hintText: hint,
             hintStyle: TextStyle(
-                color: const Color(0xff040415),
+                color: const Color(0xff040415).withOpacity(0.1),
                 fontSize: fSize(14),
                 fontWeight: FontWeight.w500),
             labelText: label,
             labelStyle: TextStyle(
-                color: const Color(0xff040415),
+                color: const Color(0xff040415).withOpacity(0.4),
                 fontSize: fSize(14),
                 fontWeight: FontWeight.w500),
             focusedBorder: const OutlineInputBorder(

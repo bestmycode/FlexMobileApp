@@ -89,6 +89,7 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   Widget mailTitle() {
     return Text(
         "Please verify your email address to start\nyour account creation process",
+        textAlign: TextAlign.center,
         style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600 ));
   }
 
@@ -204,7 +205,8 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff21C990),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff21C990), fontWeight: FontWeight.bold),
+        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff21C990),
+            fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
       ),
       onPressed: () { resendEmail(); },
       child: const Text('Resend OTP to jasmine@gmail.com'),

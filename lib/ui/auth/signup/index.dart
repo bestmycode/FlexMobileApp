@@ -153,10 +153,10 @@ class SignUpScreenState extends State<SignUpScreen> {
             color: Colors.black,
           ),
           children: const [
-            TextSpan(text: 'I agree to the '),
-            TextSpan(text: 'terms of use ', style: TextStyle(fontWeight: FontWeight.bold)),
-            TextSpan(text: 'and '),
-            TextSpan(text: 'privacy policy', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: 'I agree to the ', style: TextStyle(color: Color(0xFF515151))),
+            TextSpan(text: 'terms of use ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF515151))),
+            TextSpan(text: 'and ', style:TextStyle(color: Color(0xFF515151))),
+            TextSpan(text: 'privacy policy', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF515151))),
           ],
         ),
       )
@@ -189,20 +189,24 @@ class SignUpScreenState extends State<SignUpScreen> {
       children: [
         Text(
             "Already have an account?",
-            style: TextStyle(color: Colors.black, fontSize: fSize(14), fontWeight: FontWeight.w500 )),
+            style: TextStyle(color: const Color(0xFF666666), fontSize: fSize(14) )),
         loginButton()
       ],
     );
   }
 
   Widget loginButton() {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff30E7A9),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
-      ),
-      onPressed: () { handleLogin(); },
-      child: const Text('Login'),
+    return SizedBox(
+      width: wScale(40),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          primary: const Color(0xff29c490),
+          textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff29c490)),
+        ),
+        onPressed: () { handleLogin(); },
+        child: const Text('Login'),
+      )
     );
   }
 }
