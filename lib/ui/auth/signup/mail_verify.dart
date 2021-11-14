@@ -145,14 +145,11 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
             LengthLimitingTextInputFormatter(1),
             FilteringTextInputFormatter.digitsOnly
           ], // Only numbers can be entered
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.all(0),
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
+            enabledBorder: OutlineInputBorder( borderSide: BorderSide( color: flagValid == false? Color(0xffEB5757): Color(0xffE2E2E2), width: 1.0)),
+            focusedBorder: OutlineInputBorder( borderSide: BorderSide( color: flagValid == false? Color(0xffEB5757): Color(0xffE2E2E2), width: 1.0)),
           ),
         ),
     );

@@ -1,3 +1,6 @@
+import 'package:country_pickers/country.dart';
+import 'package:country_pickers/country_picker_dialog.dart';
+import 'package:country_pickers/utils/utils.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +32,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
   }
 
   final LocalStorage storage = LocalStorage('sign_up_info2');
-
+  Country _selectedDialogCountry = CountryPickerUtils.getCountryByPhoneCode('65');
   final companyNameCtl = TextEditingController();
   final companyNumberCtl = TextEditingController();
   final countryCtl = TextEditingController();
@@ -126,6 +129,10 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
           CustomTextField(ctl: companyNumberCtl, hint: 'Enter Company Registration Number', label: 'Company Registration Number'),
           const CustomSpacer(size: 32),
           CustomTextField(ctl: countryCtl, hint: 'Select Country', label: 'Country'),
+          // ListTile(
+          //   // contentPadding: const EdgeInsets.,
+          //     onTap: _openCountryPickerDialog,
+          //     title: _buildDialogItem(_selectedDialogCountry)),
           const CustomSpacer(size: 32),
           CustomTextField(ctl: companyTypeCtl, hint: 'Select Company Type', label: 'Company Type'),
           const CustomSpacer(size: 32),
@@ -181,5 +188,85 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
         "This OTP expires in 30 minutes",
         style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.bold ));
   }
+
+  void _openCountryPickerDialog() => showDialog(
+    context: context,
+    builder: (context) => Theme(
+      data: Theme.of(context).copyWith(primaryColor: Colors.black),
+      child: CountryPickerDialog(
+        contentPadding: const EdgeInsetsDirectional.all(0.0),
+        titlePadding: const EdgeInsetsDirectional.all(0.0),
+        searchCursorColor: Colors.black,
+        searchInputDecoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: 1.0)
+          ),
+          hintText: 'Search Country',
+          hintStyle: TextStyle(
+              color: const Color(0xff040415).withOpacity(0.1),
+              fontSize: fSize(14),
+              fontWeight: FontWeight.w500),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+                color: Color(0xff040415),
+                width: 1.0),
+          ),
+        ),
+        isSearchable: true,
+        title: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Select a country', style:TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600)),
+                SizedBox(
+                    width: wScale(20),
+                    height: wScale(20),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: const Color(0xff000000),
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: const Icon( Icons.close_rounded, color: Color(0xFFC8C4D9), size: 20,),
+                        onPressed: () { }
+                    )
+                )
+              ],
+            ),
+            const CustomSpacer(size: 20,)
+          ],
+        ),
+        onValuePicked: (Country country) =>
+            setState(() => _selectedDialogCountry = country),
+        itemBuilder: _showCountryDialogItem,
+      ),
+    ),
+  );
+
+  Widget _buildDialogItem(Country country) => Row(
+    children: [
+      SizedBox(width: wScale(24),height: hScale(16), child: CountryPickerUtils.getDefaultFlagImage(country),),
+      SizedBox(width: wScale(5)),
+      Text("+${country.phoneCode}", style: TextStyle(fontSize: fSize(14)))
+    ],
+  );
+
+  Widget _showCountryDialogItem(Country country) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              SizedBox(width: wScale(24),height: hScale(16), child: CountryPickerUtils.getDefaultFlagImage(country),),
+              SizedBox(width: wScale(16)),
+              SizedBox(
+                  width: wScale(140),
+                  child:Text(country.name, style: TextStyle(fontSize: fSize(14))))
+            ],
+          ),
+          Text("+${country.phoneCode}", style: TextStyle(fontSize: fSize(14)))
+        ],
+      );
 
 }

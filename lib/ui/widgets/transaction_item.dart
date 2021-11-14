@@ -90,7 +90,7 @@ class TransactionItemState extends State<TransactionItem> {
         ),
         children: [
           TextSpan(text: name),
-          TextSpan(text: ' ($status)', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic),),
+          TextSpan(text: status!="" ? ' ($status)': '', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic),),
         ],
       ),
     );

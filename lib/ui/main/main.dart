@@ -30,8 +30,8 @@ class MainScreenState extends State<MainScreen> {
     GlobalKey<NavigatorState>(),
     GlobalKey<NavigatorState>()
   ];
-  int currentIndex = 0;
-  var controller = CupertinoTabController(initialIndex: 0);
+  int currentIndex = 3;
+  var controller = CupertinoTabController(initialIndex: 3);
 
   @override
   void initState() {
@@ -120,7 +120,7 @@ class MainScreenState extends State<MainScreen> {
                 navigatorKey: navigatorKeyList[index],
                 routes: {
                   '/': (context) => WillPopScope(
-                    child: TransactionUser(controller: controller, navigatorKey: navigatorKeyList[0]),
+                    child: Credit(controller: controller, navigatorKey: navigatorKeyList[0]),
                     onWillPop: () => Future<bool>.value(true),
                   )
                 },
