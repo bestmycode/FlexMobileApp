@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/main/cards/view_limits.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
@@ -56,6 +57,16 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
 
   handleExport() {
 
+  }
+
+  handleAction(index) {
+    if(index == 1) {
+      Navigator.of(context).push(
+        CupertinoPageRoute (
+            builder: (context) => const ViewLimits()
+        ),
+      );
+    }
   }
 
   @override
@@ -273,7 +284,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
     );
   }
 
-  Widget actionButton(imageUrl, text) {
+  Widget actionButton(imageUrl, text, index) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
@@ -283,7 +294,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
               borderRadius: BorderRadius.circular(10)
           ),
         ),
-        onPressed: () {  },
+        onPressed: () { handleAction(index); },
         child: SizedBox(
             width: wScale(102),
             height: hScale(82),
@@ -306,9 +317,9 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            actionButton('assets/free.png', 'Freeze Card'),
-            actionButton('assets/limit.png', 'Edit Limit'),
-            actionButton('assets/cancel.png', 'Cancel Card'),
+            actionButton('assets/free.png', 'Freeze Card', 0),
+            actionButton('assets/limit.png', 'View Limit', 1),
+            actionButton('assets/cancel.png', 'Cancel Card', 2),
           ]
       ),
     );

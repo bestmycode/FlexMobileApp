@@ -3,6 +3,7 @@
 
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/main/cards/physical_card.dart';
+import 'package:flexflutter/ui/main/cards/view_limits.dart';
 import 'package:flexflutter/ui/main/cards/virtual_card.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';

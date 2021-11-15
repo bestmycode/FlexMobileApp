@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/main/cards/manage_limits.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,6 +58,21 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
 
   }
 
+  handleCloneSetting() {
+
+  }
+
+  handleAction(index) {
+    if(index == 0 ) _showSimpleModalDialog(context);
+    if(index == 1) {
+      Navigator.of(context).push(
+        CupertinoPageRoute (
+            builder: (context) => const ManageLimits()
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -104,11 +120,31 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          cardTitle(),
+          const CustomSpacer(size: 10),
           cardField(),
           const CustomSpacer(size: 14),
           cardValueField()
         ],
       ),
+    );
+  }
+
+  Widget cardTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('My Card', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+        TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xff60C094),
+            padding: EdgeInsets.zero,
+            textStyle: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w600, color: const Color(0xff60C094), decoration: TextDecoration.underline),
+          ),
+          onPressed: () { handleCloneSetting(); },
+          child: const Text('Clone Settings', style:TextStyle(decoration: TextDecoration.underline)),
+        ),
+      ],
     );
   }
 
@@ -239,24 +275,37 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Monthly Spend Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
-          const CustomSpacer(size: 12),
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: LinearProgressIndicator( value: 0.8, backgroundColor: const Color(0xFFF4F4F4), color: const Color(0xFF30E7A9), minHeight: hScale(10),),
-          ),
-          const CustomSpacer(size: 12),
-          Text('Great job, you are within your allocated limit!', style:TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
-        ],
+      child: TextButton(
+        style: TextButton.styleFrom(
+          primary: const Color(0xFFFFFFFF),
+          padding: EdgeInsets.zero,
+        ),
+        onPressed: () { handleCloneSetting(); },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Monthly Spend Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+                Text('5000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+              ],
+            ),
+            const CustomSpacer(size: 12),
+            ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              child: LinearProgressIndicator( value: 0.8, backgroundColor: const Color(0xFFF4F4F4), color: const Color(0xFF30E7A9), minHeight: hScale(10),),
+            ),
+            const CustomSpacer(size: 12),
+            Text('Great job, you are within your allocated limit!', style:TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
+          ],
+        )
       ),
     );
   }
 
-  Widget actionButton(imageUrl, text) {
+  Widget actionButton(imageUrl, text, index) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
@@ -266,7 +315,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               borderRadius: BorderRadius.circular(10)
           ),
         ),
-        onPressed: () { _showSimpleModalDialog(context); },
+        onPressed: () { handleAction(index); },
         child: SizedBox(
             width: wScale(102),
             height: hScale(82),
@@ -289,9 +338,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            actionButton('assets/free.png', 'Freeze Card'),
-            actionButton('assets/limit.png', 'Edit Limit'),
-            actionButton('assets/cancel.png', 'Cancel Card'),
+            actionButton('assets/free.png', 'Freeze Card', 0),
+            actionButton('assets/limit.png', 'Edit Limit', 1),
+            actionButton('assets/cancel.png', 'Cancel Card', 2),
           ]
       ),
     );
