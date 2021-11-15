@@ -1,4 +1,4 @@
-package com.perfect.flexflutter
+package one.fxr.flex
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterFragmentActivity
