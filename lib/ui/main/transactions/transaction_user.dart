@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flexflutter/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,9 +8,10 @@ import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:indexed/indexed.dart';
 
 class TransactionUser extends StatefulWidget {
-  final CupertinoTabController controller;
-  final GlobalKey<NavigatorState> navigatorKey;
-  const TransactionUser({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // final CupertinoTabController controller;
+  // final GlobalKey<NavigatorState> navigatorKey;
+  // const TransactionUser({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const TransactionUser({Key? key}) : super(key: key);
 
   @override
   TransactionUserState createState() => TransactionUserState();
@@ -88,39 +90,48 @@ class TransactionUserState extends State<TransactionUser> {
     return
       Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-                child: Align(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomSpacer(size: 57),
-                          cardValanceField(),
-                          const CustomSpacer(size: 20),
-                          welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                          const CustomSpacer(size: 10),
-                          welcomeHandleField('assets/get_credit_line.png', 21.0, "Increase Credit Line"),
-                          const CustomSpacer(size: 20),
-                          Indexer(
-                            children: [
-                              Indexed(index: 100, child: searchRowField()),
-                              Indexed(index: 50, child: Column(
-                                children: [
-                                  const CustomSpacer(size: 50),
-                                  transactionStatusField(),
-                                  showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
-                                  showDateRange ? dateRangeField() : const SizedBox(),
-                                  const CustomSpacer(size: 15),
-                                  getTransactionArrWidgets(transactionArr)
-                                ],
-                            )),
+            body: Stack(
+                children:[
+                  SingleChildScrollView(
+                      padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+                      child: Align(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const CustomSpacer(size: 57),
+                                cardValanceField(),
+                                const CustomSpacer(size: 20),
+                                welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
+                                const CustomSpacer(size: 10),
+                                welcomeHandleField('assets/get_credit_line.png', 21.0, "Increase Credit Line"),
+                                const CustomSpacer(size: 20),
+                                Indexer(
+                                    children: [
+                                      Indexed(index: 100, child: searchRowField()),
+                                      Indexed(index: 50, child: Column(
+                                        children: [
+                                          const CustomSpacer(size: 50),
+                                          transactionStatusField(),
+                                          showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
+                                          showDateRange ? dateRangeField() : const SizedBox(),
+                                          const CustomSpacer(size: 15),
+                                          getTransactionArrWidgets(transactionArr)
+                                        ],
+                                      )),
 
-                          ]
+                                    ]
+                                )
+                              ]
+                          )
                       )
-                    ]
-                )
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 2),
+                  )
+                ]
             )
-        )
     )
     );
   }

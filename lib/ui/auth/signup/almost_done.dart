@@ -27,7 +27,8 @@ class AlmostDoneScreenState extends State<AlmostDoneScreen> {
   }
 
   handleDone() {
-    Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
+    // Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
+    Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
   }
 
   @override

@@ -28,4 +28,16 @@ const String TWO_STEP_FAILED = 'two_step_failed';
 const String ALMOST_DONE = 'almost_done';
 // ignore: constant_identifier_names
 const String MAIN_SCREEN ='main';
+// ignore: constant_identifier_names
+const String HOME_SCREEN = 'home';
+// ignore: constant_identifier_names
+const PHYSICAL_CARD = 'physical_card';
+// ignore: constant_identifier_names
+const VIRTUAL_CARD = 'virtual_card';
+// ignore: constant_identifier_names
+const TRANSACTION_ADMIN = 'transaction_admin';
+// ignore: constant_identifier_names
+const TRANSACTION_USER = 'transaction_user';
+// ignore: constant_identifier_names
+const CREDIT_SCREEN = 'credit';
 

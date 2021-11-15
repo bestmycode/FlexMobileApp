@@ -1,4 +1,5 @@
 import 'package:flexflutter/ui/widgets/billing_item.dart';
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flexflutter/ui/widgets/transaction_item.dart';
@@ -8,17 +9,18 @@ import 'package:flexflutter/utils/scale.dart';
 
 import 'credit_payment.dart';
 
-class Credit extends StatefulWidget {
+class CreditScreen extends StatefulWidget {
 
-  final CupertinoTabController controller;
-  final GlobalKey<NavigatorState> navigatorKey;
-  const Credit({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // final CupertinoTabController controller;
+  // final GlobalKey<NavigatorState> navigatorKey;
+  // const Credit({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const CreditScreen({Key? key}) : super(key: key);
 
   @override
-  CreditState createState() => CreditState();
+  CreditScreenState createState() => CreditScreenState();
 }
 
-class CreditState extends State<Credit> {
+class CreditScreenState extends State<CreditScreen> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -85,52 +87,61 @@ class CreditState extends State<Credit> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(
-                    children: [
-                      const CustomSpacer(size: 44),
-                      // const CustomHeader(title: 'Flex PLUS Credit'),
-                      Row(
+            body:Stack(
+                children:[
+                  SingleChildScrollView(
+                      child: Column(
                           children: [
-                            SizedBox(width: wScale(20)),
-                            backButton(),
-                            SizedBox(width: wScale(20)),
-                            Text('Flex PLUS Credit', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                            const CustomSpacer(size: 44),
+                            // const CustomHeader(title: 'Flex PLUS Credit'),
+                            Row(
+                                children: [
+                                  SizedBox(width: wScale(20)),
+                                  backButton(),
+                                  SizedBox(width: wScale(20)),
+                                  Text('Flex PLUS Credit', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                                ]
+                            ),
+                            Container(
+                                padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+                                child: Column(
+                                  children: [
+                                    const CustomSpacer(size: 20),
+                                    titleField(),
+                                    FPL_enhancement == 2 ? const CustomSpacer(size: 15): const SizedBox(),
+                                    FPL_enhancement == 2 ? suspendedField() : const SizedBox(),
+                                    const CustomSpacer(size: 16),
+                                    cardAvailableValanceField(),
+                                    const CustomSpacer(size: 10),
+                                    cardTotalValanceField(),
+                                    FPL_enhancement == 1 ? const CustomSpacer(size: 30) : const SizedBox(),
+                                    FPL_enhancement == 1 ? welcomeHandleField('assets/deposit_funds.png', 27.0, "Increase Credit Line", 'deposit' ) : const SizedBox(),
+                                    const CustomSpacer(size: 10),
+                                    welcomeHandleField('assets/green_card.png', 21.0, FPL_enhancement == 3 ? "Get Credit Line" : "Payment", 'payment'),
+                                    const CustomSpacer(size: 26),
+                                    transactionTypeField(),
+                                    transactionType == 1
+                                        ? const CustomSpacer(size: 15)
+                                        : const SizedBox(),
+                                    transactionType == 1
+                                        ? billedTypeField()
+                                        : const SizedBox(),
+                                    const CustomSpacer(size: 15),
+                                    transactionType == 1
+                                        ? getTransactionArrWidgets(transactionArr)
+                                        : getBillingArrWidgets(billingArr),
+                                  ],
+                                )
+                            ),
                           ]
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
-                        child: Column(
-                          children: [
-                            const CustomSpacer(size: 20),
-                            titleField(),
-                            FPL_enhancement == 2 ? const CustomSpacer(size: 15): const SizedBox(),
-                            FPL_enhancement == 2 ? suspendedField() : const SizedBox(),
-                            const CustomSpacer(size: 16),
-                            cardAvailableValanceField(),
-                            const CustomSpacer(size: 10),
-                            cardTotalValanceField(),
-                            FPL_enhancement == 1 ? const CustomSpacer(size: 30) : const SizedBox(),
-                            FPL_enhancement == 1 ? welcomeHandleField('assets/deposit_funds.png', 27.0, "Increase Credit Line", 'deposit' ) : const SizedBox(),
-                            const CustomSpacer(size: 10),
-                            welcomeHandleField('assets/green_card.png', 21.0, FPL_enhancement == 3 ? "Get Credit Line" : "Payment", 'payment'),
-                            const CustomSpacer(size: 26),
-                            transactionTypeField(),
-                            transactionType == 1
-                                ? const CustomSpacer(size: 15)
-                                : const SizedBox(),
-                            transactionType == 1
-                              ? billedTypeField()
-                              : const SizedBox(),
-                            const CustomSpacer(size: 15),
-                            transactionType == 1
-                                ? getTransactionArrWidgets(transactionArr)
-                                : getBillingArrWidgets(billingArr),
-                          ],
-                        )
-                      ),
-                    ]
-                )
+                      )
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 3),
+                  )
+                ]
             )
         )
     );
@@ -165,9 +176,9 @@ class CreditState extends State<Credit> {
           ),
           child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 12,),
           onPressed: () async {
-            widget.controller.index = 0;
-            // Future.delayed(const Duration(seconds: 1), () {});
-            widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
+            // widget.controller.index = 0;
+            // // Future.delayed(const Duration(seconds: 1), () {});
+            // widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
           }),
     );
   }

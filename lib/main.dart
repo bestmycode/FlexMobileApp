@@ -1,4 +1,10 @@
 import 'package:flexflutter/ui/auth/signup/almost_done.dart';
+import 'package:flexflutter/ui/main/cards/physical_card.dart';
+import 'package:flexflutter/ui/main/cards/virtual_card.dart';
+import 'package:flexflutter/ui/main/credit/credit.dart';
+import 'package:flexflutter/ui/main/home/home.dart';
+import 'package:flexflutter/ui/main/transactions/transaction_admin.dart';
+import 'package:flexflutter/ui/main/transactions/transaction_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flexflutter/constants/constants.dart';
@@ -45,7 +51,13 @@ class MyApp extends StatelessWidget {
         TWO_STEP_FINAL: (BuildContext context) => const TwoStepFinalScreen(),
         TWO_STEP_FAILED: (BuildContext context) => const TwoStepFailedScreen(),
         ALMOST_DONE: (BuildContext context) => const AlmostDoneScreen(),
-        MAIN_SCREEN: (BuildContext context) =>  MainScreen(),
+        // MAIN_SCREEN: (BuildContext context) =>  MainScreen(),
+        HOME_SCREEN: (BuildContext context) => const HomeScreen(),
+        PHYSICAL_CARD: (BuildContext context) => const PhysicalCards(),
+        VIRTUAL_CARD: (BuildContext context) => const VirtualCards(),
+        TRANSACTION_ADMIN: (BuildContext context) => const TransactionAdmin(),
+        TRANSACTION_USER: (BuildContext context) => const TransactionUser(),
+        CREDIT_SCREEN: (BuildContext context) => const CreditScreen(),
       },
       initialRoute: LOADING_SCREEN,
     );

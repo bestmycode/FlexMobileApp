@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,24 +67,33 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   Widget build(BuildContext context) {
     return  Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(
-                    children: [
-                      const CustomSpacer(size: 44),
-                      const CustomHeader(title: 'My Grab Expenses’ Trans...'),
-                      const CustomSpacer(size: 31),
-                      cardDetailField(),
-                      const CustomSpacer(size: 10),
-                      spendLimitField(),
-                      const CustomSpacer(size: 20),
-                      actionButtonField(),
-                      const CustomSpacer(size: 20),
-                      allTransactionField(),
-                      const CustomSpacer(size: 15),
-                      getTransactionArrWidgets(transactionArr),
-                      const CustomSpacer(size: 70),
-                    ]
-                )
+            body: Stack(
+                children:[
+                  SingleChildScrollView(
+                      child: Column(
+                          children: [
+                            const CustomSpacer(size: 44),
+                            const CustomHeader(title: 'My Grab Expenses’ Trans...'),
+                            const CustomSpacer(size: 31),
+                            cardDetailField(),
+                            const CustomSpacer(size: 10),
+                            spendLimitField(),
+                            const CustomSpacer(size: 20),
+                            actionButtonField(),
+                            const CustomSpacer(size: 20),
+                            allTransactionField(),
+                            const CustomSpacer(size: 15),
+                            getTransactionArrWidgets(transactionArr),
+                            const CustomSpacer(size: 88),
+                          ]
+                      )
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 1),
+                  )
+                ]
             )
         )
     );

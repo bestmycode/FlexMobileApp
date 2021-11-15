@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flexflutter/ui/main/home/deposit_funds.dart';
 import 'package:flexflutter/ui/main/home/notification.dart';
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +10,18 @@ import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 
-class Home extends StatefulWidget {
-  final CupertinoTabController controller;
-  final GlobalKey<NavigatorState> navigatorKey;
-  const Home({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  // final CupertinoTabController controller;
+  // final GlobalKey<NavigatorState> navigatorKey;
+  // const Home({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  HomeState createState() => HomeState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class HomeState extends State<Home> {
+class HomeScreenState extends State<HomeScreen> {
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -78,45 +81,54 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-              padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-              child: Align(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CustomSpacer(size: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            welcomeUser(),
-                            IconButton(
-                              icon: customImage('assets/notification.png', 16.00),
-                              iconSize: hScale(10),
-                              onPressed: () { handleNotification();},
-                            )
-                          ]
-                        ),
-                        const CustomSpacer(size: 20),
-                        cardValanceField(),
-                        const CustomSpacer(size: 20),
-                        welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                        const CustomSpacer(size: 10),
-                        welcomeHandleField('assets/get_credit_line.png', 21.0, "Get Credit Line"),
-                        const CustomSpacer(size: 16),
-                        quickActionsField(),
-                        const CustomSpacer(size: 16),
-                        customText('Cards Overview'),
-                        const CustomSpacer(size: 16),
-                        cardOverviewField(),
-                        const CustomSpacer(size: 16),
-                        recentTransactionField(),
-                        const CustomSpacer(size: 16),
-                        getTransactionArrWidgets(transactionArr),
-                        const CustomSpacer(size: 70),
-                      ]
-                  )
-              )
+            body: Stack(
+              children:[
+                SingleChildScrollView(
+                    padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+                    child: Align(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CustomSpacer(size: 30),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    welcomeUser(),
+                                    IconButton(
+                                      icon: customImage('assets/notification.png', 16.00),
+                                      iconSize: hScale(10),
+                                      onPressed: () { handleNotification();},
+                                    )
+                                  ]
+                              ),
+                              const CustomSpacer(size: 20),
+                              cardValanceField(),
+                              const CustomSpacer(size: 20),
+                              welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
+                              const CustomSpacer(size: 10),
+                              welcomeHandleField('assets/get_credit_line.png', 21.0, "Get Credit Line"),
+                              const CustomSpacer(size: 16),
+                              quickActionsField(),
+                              const CustomSpacer(size: 16),
+                              customText('Cards Overview'),
+                              const CustomSpacer(size: 16),
+                              cardOverviewField(),
+                              const CustomSpacer(size: 16),
+                              recentTransactionField(),
+                              const CustomSpacer(size: 16),
+                              getTransactionArrWidgets(transactionArr),
+                              const CustomSpacer(size: 88),
+                            ]
+                        )
+                    )
+                ),
+                const Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: CustomBottomBar(active: 0),
+                )
+              ]
             )
         )
     );
@@ -395,9 +407,9 @@ class HomeState extends State<Home> {
           child: Image.asset(imageURL, fit: BoxFit.contain, width: wScale(142)),
           onPressed: () async {
             // widget.navigatorKey.currentState!.pushNamed(type);
-            widget.controller.index = 1;
-            await Future.delayed(const Duration(seconds: 0), () {});
-            widget.navigatorKey.currentState!.pushNamed(type);
+            // widget.controller.index = 1;
+            // await Future.delayed(const Duration(seconds: 0), () {});
+            // widget.navigatorKey.currentState!.pushNamed(type);
         }),
         const CustomSpacer(size: 8),
         Row(

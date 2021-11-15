@@ -1,17 +1,19 @@
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/main/cards/virtual_my_transaction.dart';
 import 'package:flexflutter/ui/main/cards/virtual_team_card.dart';
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
+import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
 class VirtualCards extends StatefulWidget {
-  final CupertinoTabController controller;
-  final GlobalKey<NavigatorState> navigatorKey;
+  // final CupertinoTabController controller;
+  // final GlobalKey<NavigatorState> navigatorKey;
 
-  const VirtualCards({Key? key,  required this.controller, required this.navigatorKey}) : super(key: key);
-
+  // const VirtualCards({Key? key,  required this.controller, required this.navigatorKey}) : super(key: key);
+  const VirtualCards({Key? key}) : super(key: key);
   @override
   VirtualCardsState createState() => VirtualCardsState();
 }
@@ -50,25 +52,35 @@ class VirtualCardsState extends State<VirtualCards> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(
-                    children: [
-                      const CustomSpacer(size: 44),
-                      Row(
+            body: Stack(
+                children:[
+                  SingleChildScrollView(
+                      child: Column(
                           children: [
-                            SizedBox(width: wScale(20)),
-                            backButton(),
-                            SizedBox(width: wScale(20)),
-                            Text('Virtual Cards', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                            const CustomSpacer(size: 44),
+                            // Row(
+                            //     children: [
+                            //       SizedBox(width: wScale(20)),
+                            //       backButton(),
+                            //       SizedBox(width: wScale(20)),
+                            //       Text('Virtual Cards', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                            //     ]
+                            // ),
+                            const CustomHeader(title: 'Virtual Cards'),
+                            const CustomSpacer(size: 38),
+                            cardGroupField(),
+                            const CustomSpacer(size: 31),
+                            cardType == 1 ? const VirtualMyTransactions() : cardType == 2 ? const VirtualTeamCards(): const PhysicalTeamCards(),
+                            const CustomSpacer(size: 88),
                           ]
-                      ),
-                      const CustomSpacer(size: 38),
-                      cardGroupField(),
-                      const CustomSpacer(size: 31),
-                      cardType == 1 ? const VirtualMyTransactions() : cardType == 2 ? const VirtualTeamCards(): const PhysicalTeamCards(),
-                      const CustomSpacer(size: 70),
-                    ]
-                )
+                      )
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 1),
+                  )
+                ]
             )
         )
     );
@@ -103,9 +115,9 @@ class VirtualCardsState extends State<VirtualCards> {
           ),
           child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 12,),
           onPressed: () async {
-            widget.controller.index = 0;
-            // await Future.delayed(const Duration(seconds: 1), () {});
-            widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
+            // widget.controller.index = 0;
+            // // await Future.delayed(const Duration(seconds: 1), () {});
+            // widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
           }),
     );
   }

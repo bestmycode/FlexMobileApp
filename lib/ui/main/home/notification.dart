@@ -1,3 +1,4 @@
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
@@ -50,16 +51,28 @@ class NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(
-                    children: [
-                      CustomSpacer(size: 44),
-                      headerNotification(),
-                      CustomSpacer(size: 39),
-                      showNotificationWidgets(notificationArr),
-                      const CustomSpacer(size: 70),
-                    ]
-                )
+            body: Stack(
+                children:[
+                  SizedBox(
+                    height: hScale(812),
+                    child: SingleChildScrollView(
+                        child: Column(
+                            children: [
+                              const CustomSpacer(size: 44),
+                              headerNotification(),
+                              const CustomSpacer(size: 39),
+                              showNotificationWidgets(notificationArr),
+                              const CustomSpacer(size: 88),
+                            ]
+                        )
+                    ),
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 0),
+                  )
+                ]
             )
         )
     );
@@ -70,7 +83,7 @@ class NotificationScreenState extends State<NotificationScreen> {
       children: [
         SizedBox(width: wScale(20)),
         IconButton(
-          icon: Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
+          icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
           onPressed: () { handleBack();},),
         SizedBox(width: wScale(30)),
         Text('Notifications', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
@@ -105,9 +118,9 @@ class NotificationScreenState extends State<NotificationScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
-          CustomSpacer(size: 4),
+          const CustomSpacer(size: 4),
           Text(detail, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500)),
-          CustomSpacer(size: 8),
+          const CustomSpacer(size: 8),
           Row(
             children: [
               Text('${date},', style: TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w500)),

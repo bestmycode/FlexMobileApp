@@ -1,4 +1,5 @@
 import 'package:flexflutter/constants/constants.dart';
+import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,18 +48,30 @@ class CreditPayNowScreenState extends State<CreditPayNowScreen> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(
-                    children: [
-                      const CustomSpacer(size: 44),
-                      const CustomHeader(title: 'Flex PLUS Credit'),
-                      const CustomSpacer(size: 21),
-                      titleField(),
-                      const CustomSpacer(size: 29),
-                      depositFundsField(),
-                      const CustomSpacer(size: 70),
-                    ]
-                )
+            body: Stack(
+                children:[
+                  SizedBox(
+                    height: hScale(812),
+                    child: SingleChildScrollView(
+                        child: Column(
+                            children: [
+                              const CustomSpacer(size: 44),
+                              const CustomHeader(title: 'Flex PLUS Credit'),
+                              const CustomSpacer(size: 21),
+                              titleField(),
+                              const CustomSpacer(size: 29),
+                              depositFundsField(),
+                              const CustomSpacer(size: 88),
+                            ]
+                        )
+                    )
+                  ),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 3),
+                  )
+                ]
             )
         )
     );
