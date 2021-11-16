@@ -339,26 +339,41 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   Widget actionButton(imageUrl, text, index) {
-    return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0, color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+    return Container(
+        width: wScale(102),
+        height: hScale(82),
+        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF106549).withOpacity(0.1),
+              spreadRadius: 4,
+              blurRadius: 40,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
         ),
-        onPressed: () { handleAction(index); },
-        child: SizedBox(
-            width: wScale(102),
-            height: hScale(82),
+
+        child: TextButton(
+            style: TextButton.styleFrom(
+                primary: const Color(0xFFFFFFFF),
+                padding: EdgeInsets.zero
+            ),
+            onPressed: () { handleAction(index); },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(imageUrl, fit: BoxFit.contain, height: wScale(24)),
+                Image.asset(imageUrl, fit: BoxFit.contain, height: hScale(24), width: wScale(28),),
                 const CustomSpacer(size: 10,),
-                Text(text, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: Colors.black), textAlign: TextAlign.center,),
+                Text(text, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: const Color(0xFF70828D)), textAlign: TextAlign.center,),
               ],
             )
         )
