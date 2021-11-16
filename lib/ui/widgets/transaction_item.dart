@@ -69,7 +69,7 @@ class TransactionItemState extends State<TransactionItem> {
           transactionTimeField(widget.date, widget.time),
           transactionStatus(widget.transactionName, widget.status),
           transactionUser(widget.userName, widget.cardNum),
-          moneyValue('', widget.value, 14.0, FontWeight.w700, const Color(0xffADD2C8)),
+          moneyValue('', widget.value, 14.0, FontWeight.w700, widget.status!= 'Cancelled' ? const Color(0xff60C094) : const Color(0xFF1A2831)),
         ],
       ),
     );
@@ -90,7 +90,7 @@ class TransactionItemState extends State<TransactionItem> {
         ),
         children: [
           TextSpan(text: name),
-          TextSpan(text: status!="" ? ' ($status)': '', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic),),
+          TextSpan(text: status!="" ? ' ($status)': '', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic, color: const Color(0xFF70828D)),),
         ],
       ),
     );
@@ -126,7 +126,8 @@ class TransactionItemState extends State<TransactionItem> {
               Text("SGD  ",
                   style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
               Text(value,
-                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
+                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color,
+                      decoration: widget.status == 'Cancelled' ? TextDecoration.lineThrough: TextDecoration.none)),
             ]
         )
       ],

@@ -37,11 +37,12 @@ class TransactionAdminState extends State<TransactionAdmin> {
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    // status => 0: Normal, 1: Deposit, 2: Refund, 3: Cancelled
+    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Deposit', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Refund', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
     {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Deposit', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Refund', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
     {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
     {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
 
@@ -63,6 +64,10 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   handleSearch() {
+
+  }
+
+  handleSort() {
 
   }
 
@@ -147,6 +152,14 @@ class TransactionAdminState extends State<TransactionAdmin> {
             image: AssetImage("assets/dashboard_header.png"),
             fit: BoxFit.cover,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF106549).withOpacity(0.02),
+              spreadRadius: 6,
+              blurRadius: 18,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
         ),
         child: Column(
             children: [
@@ -165,11 +178,11 @@ class TransactionAdminState extends State<TransactionAdmin> {
       children: [
         Text(
             title,
-            style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+            style: TextStyle(fontSize: fSize(14), color: Colors.white, fontWeight: FontWeight.w500)),
         Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children:[
-              Text("SGD  ",
+              Text("SGD ",
                   style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
               Text(value,
                   style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
@@ -225,6 +238,20 @@ class TransactionAdminState extends State<TransactionAdmin> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('All Transactions', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
+              TextButton(
+                  style: TextButton.styleFrom(
+                    primary: const Color(0xff70828D),
+                    padding: const EdgeInsets.all(0),
+                    textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+                  ),
+                  onPressed: () { handleSort(); },
+                  child:Row(
+                    children: [
+                      Icon(Icons.swap_vert_rounded, color: const Color(0xff29C490),size: hScale(18)),
+                      Text('Sort by', style: TextStyle(fontSize: fSize(12)))
+                    ],
+                  )
+              ),
             ],
           ),
           const CustomSpacer(size: 10),
@@ -337,7 +364,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(0),
                     enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
-                    hintText: 'Card Holders , Cards…',
+                    hintText: 'Type your search here',
                     hintStyle: TextStyle(
                         color: const Color(0xff040415).withOpacity(0.5),
                         fontSize: fSize(12),
@@ -356,7 +383,8 @@ class TransactionAdminState extends State<TransactionAdmin> {
                   textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
                 ),
                 onPressed: () { handleSearch(); },
-                child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+                // child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+                child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
               ),
             ),
           ],

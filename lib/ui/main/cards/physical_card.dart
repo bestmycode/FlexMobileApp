@@ -54,26 +54,28 @@ class PhysicalCardsState extends State<PhysicalCards> {
                 children:[
                   Container(
                     color: Colors.white,
-                    child:SingleChildScrollView(
-                        child: Column(
-                            children: [
-                              const CustomSpacer(size: 44),
-                              // Row(
-                              //     children: [
-                              //       SizedBox(width: wScale(20)),
-                              //       backButton(),
-                              //       SizedBox(width: wScale(20)),
-                              //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-                              //     ]
-                              // ),
-                              const CustomMainHeader(title: 'Physical Card'),
-                              const CustomSpacer(size: 38),
-                              cardGroupField(),
-                              const CustomSpacer(size: 31),
-                              cardType == 1 ? const PhysicalMyCards() : const PhysicalTeamCards(),
-                              const CustomSpacer(size: 88),
-                            ]
-                        )
+                    child: SizedBox(
+                      height: hScale(812),
+                      child: SingleChildScrollView(
+                          child: Column(
+                              children: [
+                                const CustomSpacer(size: 44),
+                                // Row(
+                                //     children: [
+                                //       SizedBox(width: wScale(20)),
+                                //       backButton(),
+                                //       SizedBox(width: wScale(20)),
+                                //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                                //     ]
+                                // ),
+                                const CustomMainHeader(title: 'Physical Card'),
+                                const CustomSpacer(size: 38),
+                                cardGroupField(),
+                                cardType == 1 ? const PhysicalMyCards() : const PhysicalTeamCards(),
+                                const CustomSpacer(size: 88),
+                              ]
+                          )
+                      )
                     ),
                   ),
                   const Positioned(

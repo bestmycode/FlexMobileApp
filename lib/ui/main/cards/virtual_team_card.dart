@@ -229,7 +229,8 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                 textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
               ),
               onPressed: () { handleSearch(); },
-              child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+              // child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+              child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
             ),
           ),
         ],

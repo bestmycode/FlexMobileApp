@@ -31,13 +31,13 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   final searchCtl = TextEditingController();
   bool showModal = false;
   var transactionArr = [
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
-    {'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'active'},
+    {'id': 0, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {'id': 1, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {'id': 2, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {'id': 3, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {'id': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {'id': 5, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {'id': 6, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Activeview'},
   ];
 
   handleCardType(type) {
@@ -160,8 +160,8 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
-        padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+        padding: EdgeInsets.symmetric(vertical: 0, horizontal: wScale(5)),
+        // textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
       ),
       onPressed: () { handleCardType(type); },
       child: Container(
@@ -169,7 +169,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(
-                color: type == activeType ? Color(0xFF29C490): Color(0xFFEEEEEE),
+                color: type == activeType ? const Color(0xFF29C490): const Color(0xFFEEEEEE),
                 width: type == activeType ? hScale(2): hScale(1)))
         ),
         alignment: Alignment.center,
@@ -178,7 +178,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: const Color(0xff70828D)),
+              color: type == activeType ? const Color(0xff1A2831) : const Color(0xff70828D)),
         ),
       ),
     );
@@ -190,7 +190,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
       padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: Color(0xff040415), width: hScale(1)),
+          border: Border.all(color: const Color(0xff040415).withOpacity(0.1), width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -227,7 +227,8 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                 textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
               ),
               onPressed: () { handleSearch(); },
-              child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+              // child: _rounded, color: Color(0xFF7B7E80), size: 20 ),
+              child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
             ),
           ),
         ],
@@ -237,8 +238,9 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   Widget collapseField(data) {
     return ExpandableNotifier(
+      initialExpanded: data['id'] == 0 ? true : false,
       child: Container(
-        margin: EdgeInsets.only(bottom: hScale(10)),
+        margin: EdgeInsets.only(bottom: hScale(5)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -327,17 +329,17 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         ),
         child: Column(
           children: [
-            cardBodyDetail('Available Limit', data['available']),
+            cardBodyDetail('Available Limit', data['available'], 0),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Monthly Spend Limit', data['monthly']),
+            cardBodyDetail('Monthly Spend Limit', data['monthly'], 1),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Status', data['status']),
+            cardBodyDetail('Status', data['status'], 2),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             TextButton(
               style: TextButton.styleFrom(
                 primary: const Color(0xff1da7ff),
                 textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500,
-                    color: const Color(0xff1da7ff), decoration: TextDecoration.underline),
+                    color: const Color(0xff1da7ff)),
               ),
               onPressed: () { handleCardDetail(data); },
               child: const Text('View Card Details'),
@@ -347,7 +349,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     );
   }
 
-  Widget cardBodyDetail(title, value) {
+  Widget cardBodyDetail(title, value, type) {
     return Container(
       padding: EdgeInsets.only(top:hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
       child: Row(
@@ -358,7 +360,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
           Container(
               padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
               decoration: BoxDecoration(
-                color: const Color(0xFFDEFEE9),
+                color: type!=1 ? const Color(0xFFDEFEE9) : Colors.transparent,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(hScale(16)),
                   topRight: Radius.circular(hScale(16)),
@@ -366,8 +368,16 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                   bottomRight: Radius.circular(hScale(16)),
                 ),
               ),
-              child: Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(
-                  0xFF30E7A9)))
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  type != 2 ? Text('SGD ', style: TextStyle(fontSize: fSize(8),
+                      color: type != 1 ? const Color(0xFF30E7A9): const Color(0xFF1A2831))) : SizedBox(),
+                  Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600,
+                      color: type != 1 ? const Color(0xFF30E7A9): const Color(0xFF1A2831)))
+                ]
+              )
           )
         ],
       )

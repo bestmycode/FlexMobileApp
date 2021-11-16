@@ -2,9 +2,11 @@ import 'package:flexflutter/ui/main/cards/manage_limits.dart';
 import 'package:flexflutter/ui/main/cards/request_card.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'package:indexed/indexed.dart';
 
 class PhysicalMyCards extends StatefulWidget {
   const PhysicalMyCards({Key? key}) : super(key: key);
@@ -29,15 +31,20 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   int cardType = 1;
   int transactionStatus = 1;
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
-
+    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
   ];
+  bool showDateRange = false;
+  bool showCalendarModal = false;
+  int dateType = 1;
+  final searchCtl = TextEditingController();
+  final startDateCtl = TextEditingController();
+  final endDateCtl = TextEditingController();
 
   handleBack() {
 
@@ -56,11 +63,30 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   handleExport() {
-
+    setState(() {
+      showDateRange = !showDateRange;
+    });
   }
 
   handleCloneSetting() {
 
+  }
+
+  handleSearch() {
+
+  }
+
+  handleCalendar() {
+    setState(() {
+      showCalendarModal = !showCalendarModal;
+    });
+  }
+
+  setDateType(type) {
+    setState(() {
+      showCalendarModal = false;
+      dateType = type;
+    });
   }
 
   handleMonthlySpendLimit() {
@@ -91,6 +117,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const CustomSpacer(size: 31),
         cardDetailField(),
         const CustomSpacer(size: 10),
         spendLimitField(),
@@ -99,7 +126,20 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         const CustomSpacer(size: 20),
         allTransactionField(),
         const CustomSpacer(size: 15),
-        getTransactionArrWidgets(transactionArr),
+        Indexer(
+            children: [
+              Indexed(index: 100, child: searchRowField()),
+              Indexed(index: 50, child: Column(
+                children: [
+                  // allTransactionField(),
+                  // const CustomSpacer(size: 15),
+                  const CustomSpacer(size: 65),
+                  getTransactionArrWidgets(transactionArr),
+                ],
+              )),
+
+            ]
+        ),
       ]
     );
   }
@@ -107,7 +147,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget cardDetailField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), bottom: hScale(16)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -403,14 +443,14 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('All Transactions', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
-                ),
-                onPressed: () { handleExport(); },
-                child: const Text('Export', style:TextStyle(decoration: TextDecoration.underline)),
-              ),
+              // TextButton(
+              //   style: TextButton.styleFrom(
+              //     primary: const Color(0xff30E7A9),
+              //     textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
+              //   ),
+              //   onPressed: () { handleExport(); },
+              //   child: const Text('Export', style:TextStyle(decoration: TextDecoration.underline)),
+              // ),
             ],
           ),
           const CustomSpacer(size: 10),
@@ -490,7 +530,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     );
   }
 
-  Widget transactionField(date, transactionName, value) {
+  Widget transactionField(date, transactionName, value, status) {
     return Container(
       width: wScale(327),
       padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
@@ -505,22 +545,37 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: const Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
             blurRadius: 20,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          transactionTimeField(date),
-          transactionNameField(transactionName),
-          moneyValue('', value, 14.0, FontWeight.w700, const Color(0xffADD2C8)),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              transactionTimeField(date),
+              const CustomSpacer(size: 6),
+              transactionNameField(transactionName),
+              const CustomSpacer(size: 6),
+              moneyValue('', value, 14.0, FontWeight.w700, status==0 ? const Color(0xFF1A2831) : const Color(0xff60C094)),
+            ],
+          ),
+          SizedBox(
+            width: wScale(16),
+            height: hScale(18),
+            child: status == 0
+                ? Image.asset( 'assets/add_transaction.png', fit: BoxFit.contain, width: wScale(16))
+                : Image.asset( 'assets/check_transaction.png', fit: BoxFit.contain, width: wScale(16))
+          )
         ],
-      ),
+      )
     );
   }
 
@@ -545,29 +600,32 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   Widget moneyValue(title, value, size, weight, color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-            title,
-            style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
-              Text("SGD  ",
-                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
-              Text(value,
-                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
-            ]
-        )
-      ],
+    return SizedBox(
+      width: wScale(263),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+              title,
+              style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:[
+                Text("SGD  ",
+                    style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
+                Text(value,
+                    style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
+              ]
+          )
+        ],
+      ),
     );
   }
 
   Widget getTransactionArrWidgets(arr) {
     return Column(children: arr.map<Widget>((item) {
-      return transactionField(item['date'], item['transactionName'], item['value']);
+      return transactionField(item['date'], item['transactionName'], item['value'], item['status']);
     }).toList());
   }
 
@@ -627,4 +685,221 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ]
     );
   }
+
+  Widget searchField() {
+    return Container(
+        width: wScale(212),
+        height: hScale(36),
+        padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
+        decoration: BoxDecoration(
+          color: const Color(0xffffffff),
+          border: Border.all(color: const Color(0xff040415).withOpacity(0.1), width: hScale(1)),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+                width: wScale(150),
+                child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  controller: searchCtl,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(0),
+                    enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
+                    hintText: 'Type your search here',
+                    hintStyle: TextStyle(
+                        color: const Color(0xff040415).withOpacity(0.5),
+                        fontSize: fSize(12),
+                        fontWeight: FontWeight.w500),
+                    focusedBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
+                  ),
+                  style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500),
+                )
+            ),
+            SizedBox(
+              width: wScale(20),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xff70828D),
+                  padding: const EdgeInsets.all(0),
+                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+                ),
+                onPressed: () { handleSearch(); },
+                // child: const Icon( Icons.search_rounded, color: Color(0xFFBFBFBF), size: 20 ),
+                  child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
+              ),
+            ),
+          ],
+        )
+    );
+  }
+
+  Widget searchRowField() {
+    return Stack(
+        overflow: Overflow.visible,
+        children: [
+          searchRow(),
+          showCalendarModal ? Positioned(
+              top: hScale(50),
+              right:0,
+              child: calendarModalField()
+          ): const SizedBox()
+        ]
+    );
+  }
+
+  Widget searchRow() {
+    return Container(
+        width: wScale(327),
+        height: hScale(200),
+        alignment: Alignment.topCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            searchField(),
+            SizedBox(
+              width: wScale(24),
+              height: wScale(24),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.all(0),
+                ),
+                child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                onPressed: () { handleCalendar();},
+              ),
+            ),
+            SizedBox(
+              width: wScale(40),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xff30E7A9),
+                  padding: const EdgeInsets.all(0),
+                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff30E7A9),decoration: TextDecoration.underline),
+                ),
+                onPressed: () { handleExport(); },
+                child: const Text('Export'),
+              ),
+            )
+          ],
+        )
+    );
+  }
+
+  Widget dateRangeField() {
+    return Container(
+        width: wScale(327),
+        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        margin: EdgeInsets.only(bottom: hScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+              const CustomSpacer(size: 23),
+              CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+              const CustomSpacer(size: 17),
+              exportButton()
+            ]
+        )
+    );
+  }
+
+  Widget exportButton() {
+    return SizedBox(
+        width: wScale(295),
+        height: hScale(56),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)
+            ),
+          ),
+          onPressed: () { handleSearch(); },
+          child: Text(
+              "Export",
+              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
+        )
+    );
+  }
+
+  Widget calendarModalField() {
+    return Container(
+      width: wScale(177),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          modalButton('Last 7 Days', 1),
+          modalButton('Last 30 Days', 2),
+          modalButton('Last 90 Days', 3),
+          modalButton('Date Range', 4),
+        ],
+      ),
+    );
+  }
+
+  Widget modalButton(title, type) {
+    return TextButton(
+      style: TextButton.styleFrom(
+        primary: dateType == type ? const Color(0xFF29C490) : Colors.black,
+        // padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
+        textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
+      ),
+      onPressed: () { setDateType(type); },
+      child: Container(
+        width: wScale(177),
+        // padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          textAlign: TextAlign.start,
+          style: TextStyle(fontSize: fSize(12)),
+        ),
+      ),
+    );
+  }
+
 }
