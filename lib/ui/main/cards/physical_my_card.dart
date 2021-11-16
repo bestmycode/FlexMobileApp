@@ -234,7 +234,15 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               bottomRight: Radius.circular(hScale(16)),
             ),
           ),
-          child: Text('3,000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF30E7A9)))
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('SGD', style:TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w600, color: const Color(0xFF30E7A9))),
+                SizedBox(width: wScale(3)),
+                Text('3,000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF30E7A9)))
+              ],
+            )
         )
       ],
     );
