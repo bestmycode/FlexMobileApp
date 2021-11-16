@@ -260,20 +260,27 @@ class TransactionAdminState extends State<TransactionAdmin> {
 
   Widget transactionStatusButton(status, type, textColor) {
     return type == transactionStatus ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+    Container(
+      width: wScale(107),
+      height: hScale(35),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(260),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
           ),
-        ),
-        onPressed: () { handleTransactionStatus(type); },
-        child: Container(
-          width: wScale(107),
-          height: hScale(30),
-          alignment: Alignment.center,
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xFFFFFFFF),
+            padding: const EdgeInsets.all(0),
+          ),
           child: Text(
             status,
             textAlign: TextAlign.center,
@@ -281,7 +288,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
                 fontSize: fSize(14),
                 color: textColor),
           ),
-        )
+          onPressed: () { handleTransactionStatus(type); }),
     ) : TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),

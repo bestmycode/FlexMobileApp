@@ -380,29 +380,36 @@ class CreditScreenState extends State<CreditScreen> {
 
   Widget cardGroupButton(cardName, type) {
     return type == billedType ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(260)
+    Container(
+      width: wScale(160),
+      height: hScale(35),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(260),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
           ),
-        ),
-        onPressed: () { handleBilledType(type); },
-        child: Container(
-          width: wScale(160),
-          height: hScale(35),
-          alignment: Alignment.center,
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xFFFFFFFF),
+            padding: const EdgeInsets.all(0),
+          ),
           child: Text(
             cardName,
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: fSize(14),
-                color: const Color(0xff70828D)),
+                color: const Color(0xff1A2831)),
           ),
-        )
-    ) : TextButton(
+          onPressed: () { handleBilledType(type); }),
+    ): TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
         padding: const EdgeInsets.all(0),
@@ -418,7 +425,7 @@ class CreditScreenState extends State<CreditScreen> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: const Color(0xff1A2831)),
+              color: const Color(0xff70828D)),
         ),
       ),
     );

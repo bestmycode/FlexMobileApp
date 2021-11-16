@@ -150,23 +150,29 @@ class VirtualCardsState extends State<VirtualCards> {
       )
     );
   }
-
   Widget cardGroupButton(cardName, type) {
     return type == cardType ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(260)
+    Container(
+      width: wScale(130),
+      height: hScale(35),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(260),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
           ),
-        ),
-        onPressed: () { handleCardType(type); },
-        child: Container(
-          width: wScale(130),
-          height: hScale(35),
-          alignment: Alignment.center,
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xFFFFFFFF),
+            padding: const EdgeInsets.all(0),
+          ),
           child: Text(
             cardName,
             textAlign: TextAlign.center,
@@ -174,8 +180,8 @@ class VirtualCardsState extends State<VirtualCards> {
                 fontSize: fSize(14),
                 color: const Color(0xff1A2831)),
           ),
-        )
-    ) : TextButton(
+          onPressed: () { handleCardType(type); }),
+    ): TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
         padding: const EdgeInsets.all(0),
