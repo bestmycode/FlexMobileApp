@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flexflutter/ui/main/cards/name_on_card.dart';
-import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
@@ -11,6 +11,7 @@ import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'dart:math' as math;
 
 class RequestCard extends StatefulWidget {
 
@@ -222,19 +223,23 @@ class RequestCardState extends State<RequestCard> {
           const CustomSpacer(size: 20),
           Row(
             children: [
-              // CircleProgressBar(
-              //   200.0,
-              //   backgroundColor: Colors.red,
-              //   foreColor: Colors.amberAccent,
-              //   startNumber: 0,
-              //   maxNumber: 50,
-              //   duration: 3000,
-              //   textPercent: false,
-              // )
-              Container(
-                width: hScale(88),
-                height: hScale(88),
-                color: const Color(0xFF30E7A9),
+              Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationY(math.pi),
+                child: SizedBox(
+                  width: hScale(88),
+                  height: hScale(88),
+                  child: CircularPercentIndicator(
+                    radius: hScale(88),
+                    lineWidth: wScale(8),
+                    animation: true,
+                    animationDuration: 5,
+                    percent: 0.4,
+                    circularStrokeCap: CircularStrokeCap.round,
+                    backgroundColor: const Color(0xFFFAFBFC),
+                    progressColor: const Color(0xFF30E7A9),
+                  ),
+                ),
               ),
               SizedBox(width: wScale(18)),
               Column(

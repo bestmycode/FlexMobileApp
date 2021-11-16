@@ -39,6 +39,7 @@ dependencies:
   expandable: ^5.0.1
   indexed: ^0.0.6
   country_pickers: ^2.0.0
+  percent_indicator: ^3.4.0
 
 dev_dependencies:
   flutter_test:
