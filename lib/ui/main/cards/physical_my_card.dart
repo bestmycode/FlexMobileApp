@@ -118,7 +118,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: const Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
             blurRadius: 20,
             offset: const Offset(0, 1), // changes position of shadow
@@ -285,7 +285,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: const Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
             blurRadius: 20,
             offset: const Offset(0, 1), // changes position of shadow
@@ -306,7 +306,16 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Monthly Spend Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
-                Text('5000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SGD', style:TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+                    SizedBox(width: wScale(3)),
+                    Text('5000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+                  ]
+                )
+
               ],
             ),
             const CustomSpacer(size: 12),
@@ -315,7 +324,14 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               child: LinearProgressIndicator( value: 0.8, backgroundColor: const Color(0xFFF4F4F4), color: const Color(0xFF30E7A9), minHeight: hScale(10),),
             ),
             const CustomSpacer(size: 12),
-            Text('Great job, you are within your allocated limit!', style:TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
+            Row(
+              children: [
+                Image.asset('assets/happy_emoji.png', fit: BoxFit.contain, width: wScale(18)),
+                SizedBox(width: wScale(10)),
+                Text('Great job, you are within your allocated limit!', style:TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
+              ],
+            )
+
           ],
         )
       ),
