@@ -3,6 +3,7 @@ import 'package:flexflutter/ui/main/cards/virtual_my_transaction.dart';
 import 'package:flexflutter/ui/main/cards/virtual_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class VirtualCardsState extends State<VirtualCards> {
                             //       Text('Virtual Cards', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
                             //     ]
                             // ),
-                            const CustomHeader(title: 'Virtual Cards'),
+                            const CustomMainHeader(title: 'Virtual Cards'),
                             const CustomSpacer(size: 38),
                             cardGroupField(),
                             const CustomSpacer(size: 31),

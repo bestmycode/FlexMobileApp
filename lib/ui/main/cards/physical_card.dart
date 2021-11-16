@@ -2,6 +2,7 @@ import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,26 +52,29 @@ class PhysicalCardsState extends State<PhysicalCards> {
         child: Scaffold(
             body: Stack(
                 children:[
-                  SingleChildScrollView(
-                      child: Column(
-                          children: [
-                            const CustomSpacer(size: 44),
-                            // Row(
-                            //     children: [
-                            //       SizedBox(width: wScale(20)),
-                            //       backButton(),
-                            //       SizedBox(width: wScale(20)),
-                            //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-                            //     ]
-                            // ),
-                            const CustomHeader(title: 'Physical Card'),
-                            const CustomSpacer(size: 38),
-                            cardGroupField(),
-                            const CustomSpacer(size: 31),
-                            cardType == 1 ? const PhysicalMyCards() : const PhysicalTeamCards(),
-                            const CustomSpacer(size: 88),
-                          ]
-                      )
+                  Container(
+                    color: Colors.white,
+                    child:SingleChildScrollView(
+                        child: Column(
+                            children: [
+                              const CustomSpacer(size: 44),
+                              // Row(
+                              //     children: [
+                              //       SizedBox(width: wScale(20)),
+                              //       backButton(),
+                              //       SizedBox(width: wScale(20)),
+                              //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+                              //     ]
+                              // ),
+                              const CustomMainHeader(title: 'Physical Card'),
+                              const CustomSpacer(size: 38),
+                              cardGroupField(),
+                              const CustomSpacer(size: 31),
+                              cardType == 1 ? const PhysicalMyCards() : const PhysicalTeamCards(),
+                              const CustomSpacer(size: 88),
+                            ]
+                        )
+                    ),
                   ),
                   const Positioned(
                     bottom: 0,

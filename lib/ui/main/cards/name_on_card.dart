@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,7 +55,7 @@ class NameOnCardState extends State<NameOnCard> {
                       child: Column(
                           children: [
                             const CustomSpacer(size: 44),
-                            const CustomHeader(title: 'Preferred Name on Card'),
+                            const CustomMainHeader(title: 'Preferred Name on Card'),
                             preferredNameOnCard(),
                             const CustomSpacer(size: 30),
                             buttonField(),

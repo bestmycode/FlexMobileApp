@@ -1,6 +1,7 @@
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class CreditPayNowScreenState extends State<CreditPayNowScreen> {
                         child: Column(
                             children: [
                               const CustomSpacer(size: 44),
-                              const CustomHeader(title: 'Flex PLUS Credit'),
+                              const CustomMainHeader(title: 'Flex PLUS Credit'),
                               const CustomSpacer(size: 21),
                               titleField(),
                               const CustomSpacer(size: 29),

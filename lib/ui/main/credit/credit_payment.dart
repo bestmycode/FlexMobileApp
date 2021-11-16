@@ -4,6 +4,7 @@ import 'package:flexflutter/ui/main/credit/credit_manually_trasfer.dart';
 import 'package:flexflutter/ui/main/credit/credit_paynow.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +80,7 @@ class CreditPaymentScreenState extends State<CreditPaymentScreen> {
                         child: Column(
                             children: [
                               const CustomSpacer(size: 44),
-                              const CustomHeader(title: 'Flex PLUS Credit'),
+                              const CustomMainHeader(title: 'Flex PLUS Credit'),
                               const CustomSpacer(size: 21),
                               titleField(),
                               const CustomSpacer(size: 29),

@@ -5,6 +5,7 @@ import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
@@ -93,7 +94,7 @@ class RequestCardState extends State<RequestCard> {
                       child: Column(
                           children: [
                             const CustomSpacer(size: 44),
-                            const CustomHeader(title: 'Request For Physical Card'),
+                            const CustomMainHeader(title: 'Request For Physical Card'),
                             const CustomSpacer(size: 38),
                             cardDetailField(),
                             const CustomSpacer(size: 20),

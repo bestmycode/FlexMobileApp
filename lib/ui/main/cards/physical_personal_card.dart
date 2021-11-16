@@ -1,6 +1,7 @@
 import 'package:flexflutter/ui/main/cards/view_limits.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                       child: Column(
                           children: [
                             const CustomSpacer(size: 44),
-                            const CustomHeader(title: 'Angel Matthew’s Card'),
+                            const CustomMainHeader(title: 'Angel Matthew’s Card'),
                             const CustomSpacer(size: 31),
                             cardDetailField(),
                             const CustomSpacer(size: 10),

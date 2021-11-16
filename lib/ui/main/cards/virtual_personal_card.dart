@@ -1,5 +1,6 @@
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
+import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                       child: Column(
                           children: [
                             const CustomSpacer(size: 44),
-                            const CustomHeader(title: 'My Grab Expenses’ Trans...'),
+                            const CustomMainHeader(title: 'My Grab Expenses’ Trans...'),
                             const CustomSpacer(size: 31),
                             cardDetailField(),
                             const CustomSpacer(size: 10),
