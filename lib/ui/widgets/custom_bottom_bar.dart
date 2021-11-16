@@ -75,7 +75,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 navItem(widget.active == 0 ? 'assets/green_home.png' : 'assets/grey_home.png', 'Home', 0),
@@ -94,7 +94,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xFFFFFFFF),
-        padding: EdgeInsets.symmetric(horizontal: wScale(15)),
+        padding: EdgeInsets.symmetric(horizontal: wScale(0)),
       ),
       onPressed: () { handleTabItem(active); },
       child: Column(

@@ -1,4 +1,5 @@
 import 'package:flexflutter/ui/main/cards/manage_limits.dart';
+import 'package:flexflutter/ui/main/cards/request_card.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -60,6 +61,14 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
 
   handleCloneSetting() {
 
+  }
+
+  handleMonthlySpendLimit() {
+    Navigator.of(context).push(
+      CupertinoPageRoute (
+          builder: (context) => const RequestCard()
+      ),
+    );
   }
 
   handleAction(index) {
@@ -280,7 +289,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           primary: const Color(0xFFFFFFFF),
           padding: EdgeInsets.zero,
         ),
-        onPressed: () { handleCloneSetting(); },
+        onPressed: () { handleMonthlySpendLimit(); },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
