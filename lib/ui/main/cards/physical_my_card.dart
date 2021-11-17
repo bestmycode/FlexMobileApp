@@ -1,5 +1,4 @@
 import 'package:flexflutter/ui/main/cards/manage_limits.dart';
-import 'package:flexflutter/ui/main/cards/request_card.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
@@ -41,7 +40,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   ];
   bool showDateRange = false;
   bool showCalendarModal = false;
-  bool showCardDetail = false;
+  bool showCardDetail = true;
   int dateType = 1;
   final searchCtl = TextEditingController();
   final startDateCtl = TextEditingController();
@@ -91,11 +90,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   handleMonthlySpendLimit() {
-    Navigator.of(context).push(
-      CupertinoPageRoute (
-          builder: (context) => const RequestCard()
-      ),
-    );
+
   }
 
   handleAction(index) {
@@ -233,7 +228,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                   const CustomSpacer(size: 6),
                   Row(
                       children:[
-                        Text(showCardDetail ? '* * * *  * * * *  * * * *  * * * *' : '2145 4587 4875 1211', style: TextStyle(color: Colors.white, fontSize: fSize(16))),
+                        Text(showCardDetail ? '2145 4587 4875 1211': '* * * *  * * * *  * * * *  * * * *' , style: TextStyle(color: Colors.white, fontSize: fSize(16))),
                         SizedBox(width: wScale(7)),
                         const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
                       ]
@@ -313,7 +308,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         child: IconButton(
           padding: const EdgeInsets.all(0),
           // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
-          icon: Image.asset(showCardDetail ? 'assets/show_eye.png' : 'assets/hide_eye.png', fit: BoxFit.contain, height: hScale(16)),
+          icon: Image.asset(showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png', fit: BoxFit.contain, height: hScale(16)),
           iconSize: hScale(17),
           onPressed: () { handleShowCardDetail(); },
         )

@@ -98,37 +98,34 @@ class TransactionAdminState extends State<TransactionAdmin> {
                 children:[
                   SingleChildScrollView(
                       padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-                      child: Align(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const CustomSpacer(size: 57),
-                                cardValanceField(),
-                                const CustomSpacer(size: 20),
-                                welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                                const CustomSpacer(size: 10),
-                                welcomeHandleField('assets/get_credit_line.png', 21.0, "Increase Credit Line"),
-                                const CustomSpacer(size: 20),
-                                allTransactionField(),
-                                const CustomSpacer(size: 17),
-                                Indexer(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const CustomSpacer(size: 57),
+                            cardValanceField(),
+                            const CustomSpacer(size: 20),
+                            welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
+                            const CustomSpacer(size: 10),
+                            welcomeHandleField('assets/get_credit_line.png', 21.0, "Increase Credit Line"),
+                            const CustomSpacer(size: 20),
+                            allTransactionField(),
+                            const CustomSpacer(size: 17),
+                            Indexer(
+                                children: [
+                                  Indexed(index: 100, child: searchRowField()),
+                                  Indexed(index: 50, child: Column(
                                     children: [
-                                      Indexed(index: 100, child: searchRowField()),
-                                      Indexed(index: 50, child: Column(
-                                        children: [
-                                          const CustomSpacer(size: 50),
-                                          showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
-                                          showDateRange ? dateRangeField() : const SizedBox(),
-                                          const CustomSpacer(size: 15),
-                                          getTransactionArrWidgets(transactionArr)
-                                        ],
-                                      )),
-
-                                    ]
-                                ),
-                                const CustomSpacer(size: 88),
-                              ]
-                          )
+                                      const CustomSpacer(size: 50),
+                                      showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
+                                      showDateRange ? dateRangeField() : const SizedBox(),
+                                      const CustomSpacer(size: 15),
+                                      getTransactionArrWidgets(transactionArr),
+                                      const CustomSpacer(size: 88),
+                                    ],
+                                  )),
+                                ]
+                            ),
+                          ]
                       )
                   ),
                   const Positioned(

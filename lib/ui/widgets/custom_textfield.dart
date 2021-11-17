@@ -9,8 +9,8 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final TextEditingController ctl;
   final bool pwd;
-
-  const CustomTextField({Key? key, required this.ctl, required this.hint, required this.label, this.pwd= false }) : super(key: key);
+  final Color fillColor;
+  const CustomTextField({Key? key, required this.ctl, required this.hint, required this.label, this.pwd= false, this.fillColor = const Color(0xFFFFFFFF) }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,8 @@ class CustomTextField extends StatelessWidget {
           controller: ctl,
           obscureText: pwd,
           decoration: InputDecoration(
+            filled: true,
+            fillColor: fillColor,
             enabledBorder: OutlineInputBorder(borderSide: BorderSide(
                 color: const Color(0xff040415).withOpacity(0.1),
                 width: 1.0)

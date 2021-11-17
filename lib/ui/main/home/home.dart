@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flexflutter/ui/main/home/deposit_funds.dart';
 import 'package:flexflutter/ui/main/home/notification.dart';
+import 'package:flexflutter/ui/main/home/request_card.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -70,6 +71,20 @@ class HomeScreenState extends State<HomeScreen> {
           builder: (context) => const DepositFundsScreen()
       ),
     );
+  }
+
+  handleQuickActions(index) {
+    if(index == 0) {
+
+    } else if(index == 1) {
+
+    } else if(index == 2) {
+      Navigator.of(context).push(
+        CupertinoPageRoute (
+            builder: (context) => const RequestCard()
+        ),
+      );
+    }
   }
 
   @override
@@ -251,16 +266,16 @@ class HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children:[
-            actionButton('assets/invite_user.png', 'Invite\nUser'),
-            actionButton('assets/issue_virtual_card.png', 'Issue\nVirtual Card'),
-            actionButton('assets/green_card.png', 'Request\nPhysical Card')
+            actionButton('assets/invite_user.png', 'Invite\nUser', 0),
+            actionButton('assets/issue_virtual_card.png', 'Issue\nVirtual Card', 1),
+            actionButton('assets/green_card.png', 'Request\nPhysical Card', 2)
           ]
         )
       ],
     );
   }
 
-  Widget actionButton(imageUrl, text) {
+  Widget actionButton(imageUrl, text, index) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
@@ -269,7 +284,7 @@ class HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(10)
           ),
         ),
-        onPressed: () {  },
+        onPressed: () { handleQuickActions(index); },
         child: Container(
           width: wScale(99),
           padding: EdgeInsets.symmetric(vertical: hScale(16)),

@@ -92,7 +92,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                   const Positioned(
                     bottom: 0,
                     left: 0,
-                    child: CustomBottomBar(active: 1),
+                    child: CustomBottomBar(active: 11),
                   )
                 ]
             )
