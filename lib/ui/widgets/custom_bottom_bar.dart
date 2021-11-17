@@ -44,7 +44,8 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     } else if(active == 3) {
       Navigator.of(context).pushReplacementNamed(CREDIT_SCREEN);
     } else if(active == 4) {
-      Navigator.of(context).pushReplacementNamed(PHYSICAL_CARD);
+      _openCardTypeDialog();
+      // Navigator.of(context).pushReplacementNamed(PHYSICAL_CARD);
     }
   }
 
@@ -137,6 +138,34 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     },
   );
 
+  void _openMenuDialog() => showModalBottomSheet<void>(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(hScale(24)),
+        topRight: Radius.circular(hScale(24)),
+      ),
+    ),
+    builder: (BuildContext context) {
+      return Container(
+        height: hScale(209),
+        padding: EdgeInsets.symmetric(horizontal: hScale(24)),
+        child: Center(
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const CustomSpacer(size: 35),
+              modalItem('Physical Cards', () => handleCard(1)),
+              const CustomSpacer(size: 18),
+              modalItem('Virtual Cards', () => handleCard(2)),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+
   Widget modalItem(title, event) {
     return TextButton(
         style: TextButton.styleFrom(
@@ -170,6 +199,4 @@ class CustomBottomBarState extends State<CustomBottomBar> {
         )
     );
   }
-
-
 }

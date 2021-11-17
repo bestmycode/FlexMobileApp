@@ -381,7 +381,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget actionButton(imageUrl, text, index) {
     return Container(
         width: wScale(102),
-        height: hScale(82),
+        // height: hScale(82),
         padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
