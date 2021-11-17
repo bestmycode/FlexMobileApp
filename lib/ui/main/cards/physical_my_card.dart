@@ -41,6 +41,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   ];
   bool showDateRange = false;
   bool showCalendarModal = false;
+  bool showCardDetail = false;
   int dateType = 1;
   final searchCtl = TextEditingController();
   final startDateCtl = TextEditingController();
@@ -106,6 +107,12 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ),
       );
     }
+  }
+
+  handleShowCardDetail() {
+    setState(() {
+      showCardDetail = !showCardDetail;
+    });
   }
 
   @override
@@ -201,7 +208,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     return Container(
         width: wScale(295),
         height: wScale(187),
-        padding: EdgeInsets.all(hScale(10)),
+        padding: EdgeInsets.all(hScale(16)),
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/physical_card_detail.png"),
@@ -226,7 +233,8 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                   const CustomSpacer(size: 6),
                   Row(
                       children:[
-                        Text('2145 4587 4875 1211', style: TextStyle(color: Colors.white, fontSize: fSize(16))),
+                        Text(showCardDetail ? '* * * *  * * * *  * * * *  * * * *' : '2145 4587 4875 1211', style: TextStyle(color: Colors.white, fontSize: fSize(16))),
+                        SizedBox(width: wScale(7)),
                         const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
                       ]
                   ),
@@ -237,16 +245,16 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Valid Thru', style: TextStyle(color: Colors.white, fontSize: fSize(8))),
-                        Text('12/20', style: TextStyle(color: Colors.white, fontSize: fSize(8), fontWeight: FontWeight.bold))
+                        Text('Valid Thru', style: TextStyle(color: Colors.white, fontSize: fSize(10))),
+                        Text(showCardDetail ? '12/20' : 'MM / DD', style: TextStyle(color: Colors.white, fontSize: fSize(11), fontWeight: FontWeight.bold))
                       ],
                     ),
                     SizedBox(width: wScale(10)),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('CVV', style: TextStyle(color: Colors.white, fontSize: fSize(8))),
-                        Text('214', style: TextStyle(color: Colors.white, fontSize: fSize(8), fontWeight: FontWeight.bold))
+                        Text('CVV', style: TextStyle(color: Colors.white, fontSize: fSize(10))),
+                        Text(showCardDetail ? '214' : '* * *', style: TextStyle(color: Colors.white, fontSize: fSize(11), fontWeight: FontWeight.bold))
                       ],
                     ),
                     SizedBox(width: wScale(6)),
@@ -304,9 +312,10 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ),
         child: IconButton(
           padding: const EdgeInsets.all(0),
-          icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
+          // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
+          icon: Image.asset(showCardDetail ? 'assets/show_eye.png' : 'assets/hide_eye.png', fit: BoxFit.contain, height: hScale(16)),
           iconSize: hScale(17),
-          onPressed: () { },
+          onPressed: () { handleShowCardDetail(); },
         )
     );
   }
