@@ -136,7 +136,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: Color(0xff040415), width: hScale(1)),
+          border: Border.all(color: const Color(0xff040415).withOpacity(0.1), width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
