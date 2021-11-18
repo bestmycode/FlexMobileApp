@@ -34,7 +34,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   }
 
   handleTabItem(active) {
-    if(widget.active == active && active%10 != 1 && active%10 != 4) {
+    if(widget.active%10 == active%10 && active%10 != 1 && active%10 != 4) {
       return;
     } else if(active == 0){
       Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
@@ -232,11 +232,11 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                 color: const Color(0xFFDAE3E9)
               ),
               const CustomSpacer(size: 30),
-              modalItem('Company Settings', 'assets/green_company_setting.png', 'assets/white_company_setting.png', () => handleMenu('company_setting', 100), 4),
+              modalItem('Company Settings', 'assets/green_company_setting.png', 'assets/white_company_setting.png', () => handleMenu('company_setting', 4), 4),
               const CustomSpacer(size: 18),
-              modalItem('Account Settings', 'assets/green_user_setting.png', 'assets/white_user_setting.png',() => handleMenu('account_setting', 101), 14),
+              modalItem('Account Settings', 'assets/green_user_setting.png', 'assets/white_user_setting.png',() => handleMenu('account_setting', 14), 14),
               const CustomSpacer(size: 18),
-              modalItem('Log Out', 'assets/green_logout.png', 'assets/white_logout.png',() => handleMenu('logout', 102), 102),
+              modalItem('Log Out', 'assets/green_logout.png', 'assets/white_logout.png',() => handleMenu('logout', 5), 5),
             ],
           ),
         )

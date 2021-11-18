@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:expandable/expandable.dart';
 import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
+import 'package:flexflutter/ui/main/more/new_subsidiary.dart';
 import 'package:flexflutter/ui/main/more/user_profile.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
@@ -54,7 +55,11 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   ];
 
   handleNewSubsidiay() {
-
+    Navigator.of(context).push(
+      CupertinoPageRoute (
+          builder: (context) => const NewSubsidiary()
+      ),
+    );
   }
 
   handleSwitchSubsidiary(data) {
