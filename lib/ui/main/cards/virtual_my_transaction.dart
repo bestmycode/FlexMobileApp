@@ -6,6 +6,7 @@ import 'package:flexflutter/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'package:indexed/indexed.dart';
 
 class VirtualMyTransactions extends StatefulWidget {
 
@@ -40,7 +41,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   ];
 
   int activeType = 1;
+  int dateType = 1;
   bool showDateRange = false;
+  bool showCalendarModal = false;
   final searchCtl = TextEditingController();
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
@@ -51,14 +54,42 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     });
   }
 
+  setDateType(type) {
+    if(type == 4) {
+      setState(() {
+        showDateRange = !showDateRange;
+        showCalendarModal = false;
+        dateType = type;
+      });
+    } else {
+      setState(() {
+        showCalendarModal = false;
+        showDateRange = false;
+        dateType = type;
+      });
+    }
+  }
+
+  handleExport() {
+
+  }
+
   handleSearch() {
 
   }
 
   handleCalendar() {
     setState(() {
-      showDateRange = !showDateRange;
+      showCalendarModal = !showCalendarModal;
     });
+  }
+
+  handleStartDateCalendar() {
+
+  }
+
+  handleEndDateCalendar() {
+
   }
 
   @override
@@ -72,7 +103,19 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
       children: [
         headerStatusField(),
         const CustomSpacer(size: 17),
-        searchRow(),
+        // searchRow(),
+        Indexer(
+            children: [
+              Indexed(index: 100, child: searchRowField()),
+              Indexed(index: 50, child: Column(
+                children: [
+                  const CustomSpacer(size: 45),
+                  showDateRange ? dateRangeField() : const SizedBox(),
+                  getTransactionArrWidgets(transactionArr),
+                ],
+              )),
+            ]
+        ),
         showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
         showDateRange ? dateRangeField() : const SizedBox(),
         const CustomSpacer(size: 15),
@@ -131,7 +174,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
 
   Widget searchField() {
     return Container(
-        width: wScale(273),
+        width: wScale(212),
         height: hScale(36),
         padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
@@ -148,14 +191,14 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-                width: wScale(210),
+                width: wScale(150),
                 child: TextField(
                   textAlignVertical: TextAlignVertical.center,
                   controller: searchCtl,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(0),
                     enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
-                    hintText: 'Card Holders , Cards…',
+                    hintText: 'Type your search here',
                     hintStyle: TextStyle(
                         color: const Color(0xff040415).withOpacity(0.5),
                         fontSize: fSize(12),
@@ -168,13 +211,14 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
             SizedBox(
               width: wScale(20),
               child: TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff70828D),
-                  padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-                ),
-                onPressed: () { handleSearch(); },
-                child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+                  style: TextButton.styleFrom(
+                    primary: const Color(0xff70828D),
+                    padding: const EdgeInsets.all(0),
+                    textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+                  ),
+                  onPressed: () { handleSearch(); },
+                  // child: const Icon( Icons.search_rounded, color: Color(0xFFBFBFBF), size: 20 ),
+                  child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
               ),
             ),
           ],
@@ -182,27 +226,55 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     );
   }
 
-  Widget searchRow() {
-    return SizedBox(
-      width: wScale(327),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
+  Widget searchRowField() {
+    return Stack(
+        overflow: Overflow.visible,
         children: [
-          searchField(),
-          SizedBox(
-            width: wScale(24),
-            height: wScale(24),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.all(0),
+          searchRow(),
+          showCalendarModal ? Positioned(
+              top: hScale(50),
+              right:0,
+              child: calendarModalField()
+          ): const SizedBox()
+        ]
+    );
+  }
+
+  Widget searchRow() {
+    return Container(
+        width: wScale(327),
+        height: hScale(200),
+        alignment: Alignment.topCenter,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            searchField(),
+            SizedBox(
+              width: wScale(24),
+              height: wScale(24),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.all(0),
+                ),
+                child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                onPressed: () { handleCalendar();},
               ),
-              child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
-              onPressed: () { handleCalendar();},
             ),
-          )
-        ],
-      )
+            SizedBox(
+              width: wScale(40),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xff30E7A9),
+                  padding: const EdgeInsets.all(0),
+                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff30E7A9),decoration: TextDecoration.underline),
+                ),
+                onPressed: () { handleExport(); },
+                child: const Text('Export'),
+              ),
+            )
+          ],
+        )
     );
   }
 
@@ -213,7 +285,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
   Widget dateRangeField() {
-    return Container(
+    return  Container(
       width: wScale(327),
       padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
       margin: EdgeInsets.only(bottom: hScale(16)),
@@ -240,9 +312,41 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           children: [
             Text('Date Range', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
             const CustomSpacer(size: 23),
-            CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+                Positioned(
+                  // bottom: 0,
+                  right: 0,
+                  child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(0),
+                      ),
+                      child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                      onPressed: () { handleStartDateCalendar();},
+                    )
+                  ),
+              ],
+            ),
             const CustomSpacer(size: 23),
-            CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+                Positioned(
+                  // bottom: 0,
+                    right: 0,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(0),
+                      ),
+                      child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                      onPressed: () { handleEndDateCalendar();},
+                    )
+                ),
+              ],
+            ),
             const CustomSpacer(size: 17),
             searchButton()
           ]
@@ -271,4 +375,57 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
 
+  Widget calendarModalField() {
+    return Container(
+      width: wScale(177),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          modalButton('Last 7 Days', 1),
+          modalButton('Last 30 Days', 2),
+          modalButton('Last 90 Days', 3),
+          modalButton('Date Range', 4),
+        ],
+      ),
+    );
+  }
+
+  Widget modalButton(title, type) {
+    return TextButton(
+      style: TextButton.styleFrom(
+        primary: dateType == type ? const Color(0xFF29C490) : Colors.black,
+        // padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
+        textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
+      ),
+      onPressed: () { setDateType(type); },
+      child: Container(
+        width: wScale(177),
+        // padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          textAlign: TextAlign.start,
+          style: TextStyle(fontSize: fSize(12)),
+        ),
+      ),
+    );
+  }
 }

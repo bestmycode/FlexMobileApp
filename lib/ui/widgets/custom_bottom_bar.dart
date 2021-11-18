@@ -51,6 +51,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   }
 
   handleCard(type) {
+    Navigator.pop(context);
     if(type == 1) {
       Navigator.of(context).push(
         CupertinoPageRoute (
@@ -67,6 +68,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   }
 
   handleMenu(type, active) {
+    Navigator.pop(context);
     if(widget.active == active) {
       return;
     }

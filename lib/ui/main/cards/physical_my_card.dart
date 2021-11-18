@@ -63,9 +63,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   handleExport() {
-    setState(() {
-      showDateRange = !showDateRange;
-    });
+
   }
 
   handleCloneSetting() {
@@ -83,10 +81,19 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   setDateType(type) {
-    setState(() {
-      showCalendarModal = false;
-      dateType = type;
-    });
+    if(type == 4) {
+      setState(() {
+        showDateRange = !showDateRange;
+        showCalendarModal = false;
+        dateType = type;
+      });
+    } else {
+      setState(() {
+        showCalendarModal = false;
+        showDateRange = false;
+        dateType = type;
+      });
+    }
   }
 
   handleMonthlySpendLimit() {
@@ -108,6 +115,14 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     setState(() {
       showCardDetail = !showCardDetail;
     });
+  }
+
+  handleStartDateCalendar() {
+
+  }
+
+  handleEndDateCalendar() {
+
   }
 
   @override
@@ -133,13 +148,11 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               Indexed(index: 100, child: searchRowField()),
               Indexed(index: 50, child: Column(
                 children: [
-                  // allTransactionField(),
-                  // const CustomSpacer(size: 15),
-                  const CustomSpacer(size: 65),
+                  const CustomSpacer(size: 45),
+                  showDateRange ? dateRangeField() : const SizedBox(),
                   getTransactionArrWidgets(transactionArr),
                 ],
               )),
-
             ]
         ),
       ]
@@ -796,42 +809,6 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     );
   }
 
-  Widget dateRangeField() {
-    return Container(
-        width: wScale(327),
-        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
-        margin: EdgeInsets.only(bottom: hScale(16)),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.25),
-              spreadRadius: 4,
-              blurRadius: 20,
-              offset: const Offset(0, 1), // changes position of shadow
-            ),
-          ],
-        ),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
-              const CustomSpacer(size: 23),
-              CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
-              const CustomSpacer(size: 17),
-              exportButton()
-            ]
-        )
-    );
-  }
-
   Widget exportButton() {
     return SizedBox(
         width: wScale(295),
@@ -906,4 +883,93 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     );
   }
 
+  Widget dateRangeField() {
+    return  Container(
+        width: wScale(327),
+        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        margin: EdgeInsets.only(bottom: hScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Date Range', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
+              const CustomSpacer(size: 23),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+                  Positioned(
+                    // bottom: 0,
+                      right: 0,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                        onPressed: () { handleStartDateCalendar();},
+                      )
+                  ),
+                ],
+              ),
+              const CustomSpacer(size: 23),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+                  Positioned(
+                    // bottom: 0,
+                      right: 0,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                        onPressed: () { handleEndDateCalendar();},
+                      )
+                  ),
+                ],
+              ),
+              const CustomSpacer(size: 17),
+              searchButton()
+            ]
+        )
+    );
+  }
+
+  Widget searchButton() {
+    return SizedBox(
+        width: wScale(295),
+        height: hScale(56),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)
+            ),
+          ),
+          onPressed: () { handleSearch(); },
+          child: Text(
+              "Search",
+              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
+        )
+    );
+  }
 }
