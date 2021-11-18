@@ -217,13 +217,13 @@ class CustomBottomBarState extends State<CustomBottomBar> {
             children: [
               const CustomSpacer(size: 52),
               modalItem('Home', 'assets/green_home.png', 'assets/white_home.png', () => handleMenu('home', 0), 0),
-              const CustomSpacer(size: 18),
+              // const CustomSpacer(size: 18),
               modalItem('Physical Cards', 'assets/green_card.png', 'assets/white_card.png', () => handleMenu('physical_card', 1), 1),
-              const CustomSpacer(size: 18),
+              // const CustomSpacer(size: 18),
               modalItem('Virtual Cards', 'assets/issue_virtual_card.png', 'assets/white_virtual_card.png', () => handleMenu('virtual_card', 11), 11),
-              const CustomSpacer(size: 18),
+              // const CustomSpacer(size: 18),
               modalItem('Transactions', 'assets/green_transaction.png', 'assets/white_transaction.png', () => handleMenu('transaction', 2), 2),
-              const CustomSpacer(size: 18),
+              // const CustomSpacer(size: 18),
               modalItem('Flex PLUS Credit','assets/green_credit.png', 'assets/white_credit.png', () => handleMenu('credit', 3), 3),
               const CustomSpacer(size: 31),
               Container(
@@ -233,9 +233,9 @@ class CustomBottomBarState extends State<CustomBottomBar> {
               ),
               const CustomSpacer(size: 30),
               modalItem('Company Settings', 'assets/green_company_setting.png', 'assets/white_company_setting.png', () => handleMenu('company_setting', 4), 4),
-              const CustomSpacer(size: 18),
+              // const CustomSpacer(size: 18),
               modalItem('Account Settings', 'assets/green_user_setting.png', 'assets/white_user_setting.png',() => handleMenu('account_setting', 14), 14),
-              const CustomSpacer(size: 18),
+              // const CustomSpacer(size: 18),
               modalItem('Log Out', 'assets/green_logout.png', 'assets/white_logout.png',() => handleMenu('logout', 5), 5),
             ],
           ),
@@ -245,37 +245,40 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   );
 
   Widget modalItem(title, inactiveIcon, activeIcon, event, activeNum) {
-    return TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xFFFFFFFF),
-          padding: EdgeInsets.zero
-        ),
-        onPressed: event,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: hScale(46),
-                  height: hScale(46),
-                  padding: EdgeInsets.all(hScale(12)),
-                  decoration: BoxDecoration(
-                      color: widget.active == activeNum ? const Color(0xFF29C490) : const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(hScale(46)),
-                      border: Border.all(width: 1, color: widget.active == activeNum ? const Color(0xFF29C490) :const Color(0xFFE5E5E5))
-                  ),
-                  child: Image.asset(widget.active == activeNum ? activeIcon : inactiveIcon, height: hScale(18), fit: BoxFit.contain),
-                ),
-                const SizedBox(width: 20),
-                Text(title, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600,
-                    color: widget.active == activeNum ? const Color(0xFF29C490) : const Color(0xFF515151).withOpacity(0.7)))
-              ]
-            ),
-            Icon(Icons.arrow_forward_ios_rounded, color: widget.active == activeNum ? const Color(0xFF30E7A9) : const Color(0xFFB4DEDD),size: 16,)
-          ],
-        )
+    return Container(
+      margin: EdgeInsets.zero,
+      child: TextButton(
+          style: TextButton.styleFrom(
+              primary: const Color(0xFFFFFFFF),
+              padding: EdgeInsets.zero
+          ),
+          onPressed: event,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                  children: [
+                    Container(
+                      width: hScale(46),
+                      height: hScale(46),
+                      padding: EdgeInsets.all(hScale(12)),
+                      decoration: BoxDecoration(
+                          color: widget.active == activeNum ? const Color(0xFF29C490) : const Color(0xFFFFFFFF),
+                          borderRadius: BorderRadius.circular(hScale(46)),
+                          border: Border.all(width: 1, color: widget.active == activeNum ? const Color(0xFF29C490) :const Color(0xFFE5E5E5))
+                      ),
+                      child: Image.asset(widget.active == activeNum ? activeIcon : inactiveIcon, height: hScale(18), fit: BoxFit.contain),
+                    ),
+                    const SizedBox(width: 20),
+                    Text(title, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600,
+                        color: widget.active == activeNum ? const Color(0xFF29C490) : const Color(0xFF515151).withOpacity(0.7)))
+                  ]
+              ),
+              Icon(Icons.arrow_forward_ios_rounded, color: widget.active == activeNum ? const Color(0xFF30E7A9) : const Color(0xFFB4DEDD),size: 16,)
+            ],
+          )
+      )
     );
   }
 }
