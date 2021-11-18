@@ -10,6 +10,7 @@ import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
+import 'dart:io' show Platform;
 
 class CustomBottomBar extends StatefulWidget {
   final int active;
@@ -219,13 +220,13 @@ class CustomBottomBarState extends State<CustomBottomBar> {
             children: [
               const CustomSpacer(size: 52),
               modalItem('Home', 'assets/green_home.png', 'assets/white_home.png', () => handleMenu('home', 0), 0),
-              // const CustomSpacer(size: 18),
+              Platform.isAndroid ? const CustomSpacer(size: 0) : const CustomSpacer(size: 18),
               modalItem('Physical Cards', 'assets/green_card.png', 'assets/white_card.png', () => handleMenu('physical_card', 1), 1),
-              // const CustomSpacer(size: 18),
+              Platform.isAndroid ? const CustomSpacer(size: 0) : const CustomSpacer(size: 18),
               modalItem('Virtual Cards', 'assets/issue_virtual_card.png', 'assets/white_virtual_card.png', () => handleMenu('virtual_card', 11), 11),
-              // const CustomSpacer(size: 18),
+              Platform.isAndroid ? const CustomSpacer(size: 0) : const CustomSpacer(size: 18),
               modalItem('Transactions', 'assets/green_transaction.png', 'assets/white_transaction.png', () => handleMenu('transaction', 2), 2),
-              // const CustomSpacer(size: 18),
+              Platform.isAndroid ? const CustomSpacer(size: 0) : const CustomSpacer(size: 18),
               modalItem('Flex PLUS Credit','assets/green_credit.png', 'assets/white_credit.png', () => handleMenu('credit', 3), 3),
               const CustomSpacer(size: 31),
               Container(
@@ -235,9 +236,9 @@ class CustomBottomBarState extends State<CustomBottomBar> {
               ),
               const CustomSpacer(size: 30),
               modalItem('Company Settings', 'assets/green_company_setting.png', 'assets/white_company_setting.png', () => handleMenu('company_setting', 4), 4),
-              // const CustomSpacer(size: 18),
+              Platform.isAndroid ? const CustomSpacer(size: 0) : const CustomSpacer(size: 18),
               modalItem('Account Settings', 'assets/green_user_setting.png', 'assets/white_user_setting.png',() => handleMenu('account_setting', 14), 14),
-              // const CustomSpacer(size: 18),
+              Platform.isAndroid ? const CustomSpacer(size: 0) : const CustomSpacer(size: 18),
               modalItem('Log Out', 'assets/green_logout.png', 'assets/white_logout.png',() => handleMenu('logout', 5), 5),
             ],
           ),
