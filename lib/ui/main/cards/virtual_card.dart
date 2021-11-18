@@ -59,14 +59,6 @@ class VirtualCardsState extends State<VirtualCards> {
                       child: Column(
                           children: [
                             const CustomSpacer(size: 44),
-                            // Row(
-                            //     children: [
-                            //       SizedBox(width: wScale(20)),
-                            //       backButton(),
-                            //       SizedBox(width: wScale(20)),
-                            //       Text('Virtual Cards', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-                            //     ]
-                            // ),
                             const CustomMainHeader(title: 'Virtual Cards'),
                             const CustomSpacer(size: 38),
                             cardGroupField(),

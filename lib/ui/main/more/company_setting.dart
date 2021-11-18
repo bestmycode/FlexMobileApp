@@ -1,5 +1,8 @@
 import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
+import 'package:flexflutter/ui/main/more/app_setting.dart';
+import 'package:flexflutter/ui/main/more/company_profile.dart';
+import 'package:flexflutter/ui/main/more/team_setting.dart';
 import 'package:flexflutter/ui/main/more/user_profile.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
 import 'package:flexflutter/ui/widgets/custom_header.dart';
@@ -50,16 +53,17 @@ class CompanySettingState extends State<CompanySetting> {
                 children:[
                   Container(
                     color: Colors.white,
-                    child: SizedBox(
+                    child: Container(
                         height: hScale(812),
+                        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
                         child: SingleChildScrollView(
                             child: Column(
                                 children: [
-                                  const CustomSpacer(size: 44),
-                                  const CustomMainHeader(title: 'Company Setting'),
-                                  const CustomSpacer(size: 49),
+                                  const CustomSpacer(size: 57),
+                                  companyTitle(),
+                                  const CustomSpacer(size: 40),
                                   userSettingTypeField(),
-                                  settingType == 1 ? const UserProfile() : const PhysicalTeamCards(),
+                                  settingType == 1 ? const CompanyProfile() : settingType == 2 ? const TeamSetting() : const AppSetting(),
                                   const CustomSpacer(size: 88),
                                 ]
                             )
@@ -77,20 +81,43 @@ class CompanySettingState extends State<CompanySetting> {
     );
   }
 
+  Widget companyTitle() {
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.all(hScale(24)),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(hScale(10)),
+          image: const DecorationImage(
+            image: AssetImage("assets/dashboard_header.png"),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF106549).withOpacity(0.02),
+              spreadRadius: 6,
+              blurRadius: 18,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Text('Green Grocer Pte Ltd', style:TextStyle(fontSize: fSize(22), fontWeight: FontWeight.w700, color:Colors.white))
+    );
+  }
+
   Widget userSettingTypeField() {
     return Container(
       width: wScale(327),
       alignment: Alignment.topCenter,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-                children: [
-                  statusButton('User Profile', 1),
-                  statusButton('My Subsibiaries', 2),
-                ]
-            ),
-          ]
+      child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.zero,
+          child: Row(
+            children: [
+              statusButton('Company Profile', 1),
+              statusButton('Team', 2),
+              statusButton('App', 3),
+            ]
+        ),
       ),
     );
   }
@@ -104,12 +131,12 @@ class CompanySettingState extends State<CompanySetting> {
       ),
       onPressed: () { handleSettingType(type); },
       child: Container(
-        width: wScale(163),
+        width: wScale(123),
         height: hScale(35),
-        // padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
+        // padding: EdgeInsets.only(left: wScale(10),right: wScale(10)),
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(
-                color: type == 3 && settingType == 3 ? const Color(0xFFEB5757) : type == settingType ? const Color(0xFF29C490): const Color(0xFFEEEEEE),
+                color: type == settingType ? const Color(0xFF29C490): const Color(0xFFEEEEEE),
                 width: type == settingType ? hScale(2): hScale(1)))
         ),
         alignment: Alignment.center,
@@ -118,7 +145,7 @@ class CompanySettingState extends State<CompanySetting> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: type == 3 ? Color(0xFFEB5757) : type == settingType ? Colors.black : const Color(0xff70828D)),
+              color: type == settingType ? Colors.black : const Color(0xff70828D)),
         ),
       ),
     );

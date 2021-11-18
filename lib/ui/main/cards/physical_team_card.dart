@@ -37,7 +37,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     {'id': 3, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
     {'id': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
     {'id': 5, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 6, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Activeview'},
+    {'id': 6, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
   ];
 
   handleCardType(type) {

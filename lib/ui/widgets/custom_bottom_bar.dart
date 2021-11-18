@@ -188,7 +188,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
           child:  Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CustomSpacer(size: 67),
+              Platform.isAndroid ? const CustomSpacer(size: 35) : const CustomSpacer(size: 67),
               modalItem('Physical Cards', 'assets/green_card.png', 'assets/green_card.png', () => handleCard(1), 100),
               const CustomSpacer(size: 18),
               modalItem('Virtual Cards', 'assets/issue_virtual_card.png', 'assets/green_card.png', () => handleCard(2), 100),
