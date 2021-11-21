@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flexflutter/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
@@ -14,8 +15,16 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
 
-  double get widthRatio => MediaQuery.of(context).size.width/375;
-  double get heightRatio => MediaQuery.of(context).size.height/812;
+  hScale(double scale) {
+    return Scale().hScale(context, scale);
+  }
+  wScale(double scale) {
+    return Scale().wScale(context, scale);
+  }
+
+  fSize(double size) {
+    return Scale().fSize(context, size);
+  }
 
   handleExistingUser() {
     Navigator.of(context).pushReplacementNamed(SIGN_IN);
@@ -49,7 +58,7 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
                   logo(),
                   const CustomSpacer(size: 130),
                   existingUserButton(),
-                  const CustomSpacer(size: 24),
+                  const CustomSpacer(size: 26),
                   newCustomerButton()
                 ]
             )
@@ -63,13 +72,13 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
    return Image.asset(
     'assets/logo.png',
     fit: BoxFit.contain,
-    width: 187 * widthRatio,);
+    width: wScale(187));
   }
 
   Widget existingUserButton() {
     return Container(
-      width: 295 * widthRatio,
-      height: 56 * heightRatio,
+      width: wScale(295),
+      height: hScale(54),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all()
@@ -91,8 +100,8 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
 
   Widget newCustomerButton() {
     return Container(
-        width: 295 * widthRatio,
-        height: 56 * heightRatio,
+        width: wScale(295),
+        height: hScale(54),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white, width: 2)

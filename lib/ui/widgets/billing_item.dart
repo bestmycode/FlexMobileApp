@@ -60,7 +60,7 @@ class BillingItemState extends State<BillingItem> {
           children: [
             detailField('Statement Date', widget.statementDate, const Color(0xFF1A2831)),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            detailField('Total Amount', widget.totalAmount, widget.status == 1 ? const Color(0xFFEB5757): const Color(0xFF1A2831)),
+            amountDetailField('Total Amount', widget.totalAmount, widget.status == 1 ? const Color(0xFFEB5757): const Color(0xFF1A2831)),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             detailField('Due Date', widget.dueDate, widget.status == 1 ? const Color(0xFFEB5757): const Color(0xFF1A2831)),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
@@ -79,8 +79,28 @@ class BillingItemState extends State<BillingItem> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF70828D), height: 1.7)),
-          Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500,color: valueColor),)
+          Text(title, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: Color(0xFF70828D), height: 1.7)),
+          Text(value, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500,color: valueColor),)
+        ],
+      ),
+    );
+  }
+
+  Widget amountDetailField(title, value, valueColor) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: hScale(6), horizontal: wScale(16)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(title, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: const Color(0xFF70828D), height: 1.7)),
+          Row(
+            children: [
+              Text('SGD ', style: TextStyle(fontSize: fSize(8), fontWeight: FontWeight.w500,color: valueColor, height: 1.2)),
+              Text(value, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500,color: valueColor))
+            ],
+          )
+
         ],
       ),
     );

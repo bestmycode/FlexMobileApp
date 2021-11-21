@@ -8,7 +8,7 @@ class TransactionItem extends StatefulWidget {
   final String date;
   final String time;
   final String transactionName;
-  final String status;
+  final int status;
   final String userName;
   final String cardNum;
   final String value;
@@ -17,7 +17,7 @@ class TransactionItem extends StatefulWidget {
     this.date='9 Nov 2021',
     this.time='12:00 AM',
     this.transactionName='Flex Transaction Name',
-    this.status = 'Deposit',
+    this.status = 0,
     this.userName = 'Justin Curtis',
     this.cardNum = '0000',
     this.value = '0.00'
@@ -62,16 +62,29 @@ class TransactionItemState extends State<TransactionItem> {
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          transactionTimeField(widget.date, widget.time),
-          transactionStatus(widget.transactionName, widget.status),
-          transactionUser(widget.userName, widget.cardNum),
-          moneyValue('', widget.value, 14.0, FontWeight.w700, widget.status!= 'Cancelled' ? const Color(0xff60C094) : const Color(0xFF1A2831)),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              transactionTimeField(widget.date, widget.time),
+              transactionStatus(widget.transactionName, widget.status),
+              transactionUser(widget.userName, widget.cardNum),
+              moneyValue('', widget.value, 14.0, FontWeight.w700, widget.status!= 4 ? const Color(0xff60C094) : const Color(0xFF1A2831)),
+            ],
+          ),
+          (widget.status == 0 || widget.status == 1) ? SizedBox(
+              width: wScale(16),
+              height: hScale(18),
+              child: widget.status == 0
+                  ? Image.asset( 'assets/add_transaction.png', fit: BoxFit.contain, width: wScale(16))
+                  : Image.asset( 'assets/check_transaction.png', fit: BoxFit.contain, width: wScale(16))
+          ) : SizedBox(width: wScale(16))
         ],
-      ),
+      )
     );
   }
 
@@ -90,7 +103,8 @@ class TransactionItemState extends State<TransactionItem> {
         ),
         children: [
           TextSpan(text: name),
-          TextSpan(text: status!="" ? ' ($status)': '', style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic, color: const Color(0xFF70828D)),),
+          TextSpan(text: status ==2 ? ' (Deposit)': status == 3 ? ' (Refund)' : status == 4 ? ' (Cancelled)' : '',
+            style: TextStyle(fontSize: fSize(12), fontStyle: FontStyle.italic, color: const Color(0xFF70828D)),),
         ],
       ),
     );
@@ -113,24 +127,27 @@ class TransactionItemState extends State<TransactionItem> {
   }
 
   Widget moneyValue(title, value, size, weight, color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-            title,
-            style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
-              Text("SGD  ",
-                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
-              Text(value,
-                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color,
-                      decoration: widget.status == 'Cancelled' ? TextDecoration.lineThrough: TextDecoration.none)),
-            ]
+    return SizedBox(
+        width: wScale(263),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+                title,
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:[
+                  Text("SGD  ",
+                      style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
+                  Text(value,
+                      style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color,
+                          decoration: widget.status == 4 ? TextDecoration.lineThrough: TextDecoration.none)),
+                ]
+            )
+          ],
         )
-      ],
     );
   }
 }

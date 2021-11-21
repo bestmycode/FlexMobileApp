@@ -37,14 +37,14 @@ class TransactionAdminState extends State<TransactionAdmin> {
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
   var transactionArr = [
-    // status => 0: Normal, 1: Deposit, 2: Refund, 3: Cancelled
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Deposit', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Refund', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Deposit', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Refund', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
+    // status => 0: Accept, 1: Check, 2:Deposit, 3: Refund, 4: Cancelled
+    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':2, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':3, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':3, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
 
   ];
   handleDepositFunds() {
@@ -72,16 +72,31 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   handleExport() {
-    setState(() {
-      showDateRange = !showDateRange;
-    });
+
   }
 
   setDateType(type) {
-    setState(() {
-      showModal = false;
-      dateType = type;
-    });
+    if(type == 4) {
+      setState(() {
+        showDateRange = !showDateRange;
+        showModal = false;
+        dateType = type;
+      });
+    } else {
+      setState(() {
+        showModal = false;
+        showDateRange = false;
+        dateType = type;
+      });
+    }
+  }
+
+  handleStartDateCalendar() {
+
+  }
+
+  handleEndDateCalendar() {
+
   }
 
   @override
@@ -106,19 +121,19 @@ class TransactionAdminState extends State<TransactionAdmin> {
                             const CustomSpacer(size: 20),
                             welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
                             const CustomSpacer(size: 10),
-                            welcomeHandleField('assets/get_credit_line.png', 21.0, "Increase Credit Line"),
+                            welcomeHandleField('assets/get_credit_line.png', 27.0, "Increase Credit Line"),
                             const CustomSpacer(size: 20),
                             allTransactionField(),
-                            const CustomSpacer(size: 17),
+                            // const CustomSpacer(size: 15),
                             Indexer(
                                 children: [
                                   Indexed(index: 100, child: searchRowField()),
                                   Indexed(index: 50, child: Column(
                                     children: [
-                                      const CustomSpacer(size: 50),
-                                      showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
+                                      const CustomSpacer(size: 35),
+                                      showDateRange ? const CustomSpacer(size: 30): const SizedBox(),
                                       showDateRange ? dateRangeField() : const SizedBox(),
-                                      const CustomSpacer(size: 15),
+                                      const CustomSpacer(size: 20),
                                       getTransactionArrWidgets(transactionArr),
                                       const CustomSpacer(size: 88),
                                     ],
@@ -151,7 +166,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF106549).withOpacity(0.02),
+              color: const Color(0xFF106549).withOpacity(0.1),
               spreadRadius: 6,
               blurRadius: 18,
               offset: const Offset(0, 1), // changes position of shadow
@@ -161,8 +176,8 @@ class TransactionAdminState extends State<TransactionAdmin> {
         child: Column(
             children: [
               moneyValue('Total Balance', '0.00', 20.0, FontWeight.bold, const Color(0xff30E7A9)),
-              const CustomSpacer(size: 8,),
-              moneyValue('Ledger Balance', '0.00', 16.0, FontWeight.w600, const Color(0xffADD2C8)),
+              const CustomSpacer(size: 10),
+              moneyValue('Ledger Balance', '0.00', 18.0, FontWeight.w600, const Color(0xffADD2C8)),
             ]
         )
     );
@@ -180,7 +195,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children:[
               Text("SGD ",
-                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
+                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color, height: 1.4)),
               Text(value,
                   style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
             ]
@@ -208,7 +223,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
                 Row(
                     children:[
                       SizedBox(
-                        width: hScale(22),
+                        height: hScale(22),
                         child: Image.asset(imageURL, fit: BoxFit.contain, width: wScale(imageScale)),
                       ),
                       SizedBox(width: wScale(18)),
@@ -264,7 +279,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
       height: hScale(34),
       padding: EdgeInsets.all(hScale(2)),
       decoration: BoxDecoration(
-        color: const Color(0xfff5f5f6),
+        color: const Color(0xff040415).withOpacity(0.04),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(hScale(17)),
           topRight: Radius.circular(hScale(17)),
@@ -274,15 +289,15 @@ class TransactionAdminState extends State<TransactionAdmin> {
       ),
       child: Row(
           children: [
-            transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
-            transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
-            transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
+            transactionStatusButton('Completed', 1),
+            transactionStatusButton('Pending', 2),
+            transactionStatusButton('Declined', 3)
           ]
       ),
     );
   }
 
-  Widget transactionStatusButton(status, type, textColor) {
+  Widget transactionStatusButton(status, type) {
     return type == transactionStatus ?
     Container(
       width: wScale(107),
@@ -293,7 +308,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
         borderRadius: BorderRadius.circular(260),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: const Color(0XFF040415).withOpacity(0.1),
             spreadRadius: 4,
             blurRadius: 20,
             offset: const Offset(0, 1), // changes position of shadow
@@ -309,8 +324,8 @@ class TransactionAdminState extends State<TransactionAdmin> {
             status,
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: fSize(14),
-                color: textColor),
+                fontSize: fSize(14), fontWeight: FontWeight.w600,
+                color: type != 3 ? const Color(0xFF70828D): const Color(0xFFEB5757)),
           ),
           onPressed: () { handleTransactionStatus(type); }),
     ) : TextButton(
@@ -329,7 +344,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: textColor),
+              color: type != 3 ? const Color(0xFF1A2831): const Color(0xFFEB5757)),
         ),
       ),
     );
@@ -406,32 +421,40 @@ class TransactionAdminState extends State<TransactionAdmin> {
   Widget searchRow() {
     return Container(
         width: wScale(327),
-        height: hScale(200),
+        height: hScale(500),
         alignment: Alignment.topCenter,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             searchField(),
-            SizedBox(
-              width: wScale(24),
-              height: wScale(24),
+            Container(
+              width: wScale(43),
+              height: wScale(36),
+              decoration: BoxDecoration(
+                color: const Color(0xFFA3A3A3).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.all(0),
+                    padding: EdgeInsets.symmetric(horizontal: wScale(12))
                 ),
                 child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
                 onPressed: () { handleCalendar();},
               ),
             ),
-            TextButton(
+            SizedBox(
+              width: wScale(40),
+              child: TextButton(
                 style: TextButton.styleFrom(
-                  primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff30E7A9),decoration: TextDecoration.underline),
+                  primary: const Color(0xff29C490),
+                  padding: const EdgeInsets.all(0),
+                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff29C490),decoration: TextDecoration.underline),
                 ),
                 onPressed: () { handleExport(); },
                 child: const Text('Export'),
-              )
+              ),
+            )
           ],
         )
     );
@@ -444,10 +467,10 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   Widget dateRangeField() {
-    return Container(
+    return  Container(
         width: wScale(327),
         padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
-        margin: EdgeInsets.only(bottom: hScale(16)),
+        // margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -469,12 +492,66 @@ class TransactionAdminState extends State<TransactionAdmin> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+              const CustomSpacer(size: 11),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+                  Positioned(
+                    // bottom: 0,
+                      right: 0,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                        onPressed: () { handleStartDateCalendar();},
+                      )
+                  ),
+                ],
+              ),
               const CustomSpacer(size: 23),
-              CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+                  Positioned(
+                    // bottom: 0,
+                      right: 0,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
+                        onPressed: () { handleEndDateCalendar();},
+                      )
+                  ),
+                ],
+              ),
               const CustomSpacer(size: 17),
-              exportButton()
+              searchButton(),
+              const CustomSpacer(size: 5),
             ]
+        )
+    );
+  }
+
+  Widget searchButton() {
+    return SizedBox(
+        width: wScale(295),
+        height: hScale(56),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)
+            ),
+          ),
+          onPressed: () { handleSearch(); },
+          child: Text(
+              "Search",
+              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
         )
     );
   }
@@ -491,7 +568,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
                 borderRadius: BorderRadius.circular(16)
             ),
           ),
-          onPressed: () { handleSearch(); },
+          onPressed: () {  },
           child: Text(
               "Export",
               style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),

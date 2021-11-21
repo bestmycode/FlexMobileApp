@@ -36,13 +36,13 @@ class CreditScreenState extends State<CreditScreen> {
   int transactionType = 1;
   int billedType = 1;
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services1', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services2', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services3', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services4', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services5', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services6', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Drawdown for FXR Business Services7', 'status':'', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
+    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services1', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services2', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services3', 'status':2, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services4', 'status':3, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services5', 'status':4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services6', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Business Services7', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
   ];
 
   var billingArr = [
@@ -130,6 +130,7 @@ class CreditScreenState extends State<CreditScreen> {
                                     transactionType == 1
                                         ? getTransactionArrWidgets(transactionArr)
                                         : getBillingArrWidgets(billingArr),
+                                    const CustomSpacer(size: 88),
                                   ],
                                 )
                             ),

@@ -1,6 +1,7 @@
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_picker_dialog.dart';
 import 'package:country_pickers/utils/utils.dart';
+import 'package:flexflutter/ui/widgets/custom_mobile_textfield.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
   final companyTypeCtl = TextEditingController();
   final companyIndustryCtl = TextEditingController();
   final companyPhoneNumberCtl = TextEditingController();
+  var companyTypes = ['company type1', 'company type2', 'company type3', 'company type4', 'company type5'];
 
   handleContinue() {
     storage.setItem('companyName', companyNameCtl.text);
@@ -128,17 +130,17 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
           const CustomSpacer(size: 32),
           CustomTextField(ctl: companyNumberCtl, hint: 'Enter Company Registration Number', label: 'Company Registration Number'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: countryCtl, hint: 'Select Country', label: 'Country'),
-          // ListTile(
-          //   // contentPadding: const EdgeInsets.,
-          //     onTap: _openCountryPickerDialog,
-          //     title: _buildDialogItem(_selectedDialogCountry)),
+          // CustomTextField(ctl: countryCtl, hint: 'Select Country', label: 'Country'),
+          countryField(),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyTypeCtl, hint: 'Select Company Type', label: 'Company Type'),
+          // CustomTextField(ctl: companyTypeCtl, hint: 'Select Company Type', label: 'Company Type'),
+          companyTypeField(),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyIndustryCtl, hint: 'Select Company Type', label: 'Industry'),
+          // CustomTextField(ctl: companyIndustryCtl, hint: 'Select Company Type', label: 'Industry'),
+          industryTypeField(),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: companyPhoneNumberCtl, hint: 'Enter Company Phone Number', label: 'Company Phone Number'),
+          // CustomTextField(ctl: companyPhoneNumberCtl, hint: 'Enter Company Phone Number', label: 'Company Phone Number'),
+          CustomMobileTextField(ctl: companyPhoneNumberCtl, hint: 'Enter Company Phone Number', label: 'Company Phone Number'),
         ],
       ),
     );
@@ -245,28 +247,165 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
   );
 
   Widget _buildDialogItem(Country country) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      SizedBox(width: wScale(24),height: hScale(16), child: CountryPickerUtils.getDefaultFlagImage(country),),
-      SizedBox(width: wScale(5)),
-      Text("+${country.phoneCode}", style: TextStyle(fontSize: fSize(14)))
+      Text(country.name, style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color:const Color(0xFF040415))),
+      Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFFBFBFBF), size: wScale(15),)
     ],
   );
 
   Widget _showCountryDialogItem(Country country) =>
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              SizedBox(width: wScale(24),height: hScale(16), child: CountryPickerUtils.getDefaultFlagImage(country),),
-              SizedBox(width: wScale(16)),
-              SizedBox(
-                  width: wScale(140),
-                  child:Text(country.name, style: TextStyle(fontSize: fSize(14))))
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            SizedBox(width: wScale(24),height: hScale(16), child: CountryPickerUtils.getDefaultFlagImage(country),),
+            SizedBox(width: wScale(16)),
+            SizedBox(
+                width: wScale(140),
+                child:Text(country.name, style: TextStyle(fontSize: fSize(14))))
+          ],
+        ),
+      ],
+    );
+
+  Widget countryField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: ListTile(
+            onTap: _openCountryPickerDialog,
+            title: _buildDialogItem(_selectedDialogCountry)),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('Country', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget companyTypeField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                  child: TextField(
+                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                    controller: companyTypeCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                      hintText: 'Select Company Type',
+                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                    ),
+                  )
+              ),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFFBFBFBF), size: wScale(15)),
+                onSelected: (String value) {
+                  companyTypeCtl.text = value;
+                },
+                itemBuilder: (BuildContext context) {
+                  return companyTypes.map<PopupMenuItem<String>>((String value) {
+                    return PopupMenuItem(child: Text(value), value: value, textStyle:  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF040415)),);
+                  }).toList();
+                },
+              ),
             ],
           ),
-          Text("+${country.phoneCode}", style: TextStyle(fontSize: fSize(14)))
-        ],
-      );
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('Company Type', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
+  }
 
+  Widget industryTypeField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                  child: TextField(
+                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                    controller: companyIndustryCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                      hintText: 'Select Company Type',
+                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                    ),
+                  )
+              ),
+              PopupMenuButton<String>(
+                icon: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(15)),
+                onSelected: (String value) {
+                  companyIndustryCtl.text = value;
+                },
+                itemBuilder: (BuildContext context) {
+                  return companyTypes.map<PopupMenuItem<String>>((String value) {
+                    return PopupMenuItem(child: Text(value), value: value, textStyle:  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF040415)),);
+                  }).toList();
+                },
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('Industry', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
+  }
 }

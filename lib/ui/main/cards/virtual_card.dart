@@ -170,6 +170,7 @@ class VirtualCardsState extends State<VirtualCards> {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: fSize(14),
+                fontWeight: FontWeight.w600,
                 color: const Color(0xff1A2831)),
           ),
           onPressed: () { handleCardType(type); }),

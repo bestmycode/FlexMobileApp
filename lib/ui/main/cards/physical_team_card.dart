@@ -99,7 +99,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
               Indexed(index: 100, child: headerField()),
               Indexed(index: 50, child: Column(
                 children: [
-                  const CustomSpacer(size: 55),
+                  const CustomSpacer(size: 60),
                   searchField(),
                   const CustomSpacer(size: 15),
                   getTransactionArrWidgets(transactionArr),
@@ -126,6 +126,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   Widget headerSortField() {
     return Container(
+      margin: EdgeInsets.only(top: hScale(13)),
       height: hScale(200),
       alignment: Alignment.topCenter,
       child: Row(

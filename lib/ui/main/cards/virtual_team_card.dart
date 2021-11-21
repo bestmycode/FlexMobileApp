@@ -31,15 +31,15 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   final searchCtl = TextEditingController();
   bool showModal = false;
   var transactionArr = [
-    {'userName':'G-Suit', 'cardNum':'2314', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2315', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2316', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2317', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2318', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2319', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2320', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2321', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2322', 'available':'1,00.00', 'monthly': '600.00', 'status': 'active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2314', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2315', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2316', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2317', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2318', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2319', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2320', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2321', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {'userName':'G-Suit', 'cardNum':'2322', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
   ];
 
   handleCardType(type) {
@@ -330,17 +330,17 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         ),
         child: Column(
           children: [
-            cardBodyDetail('Available Limit', data['available']),
+            cardBodyDetail('Available Limit', data['available'], 1),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Monthly Spend Limit', data['monthly']),
+            cardBodyDetail('Monthly Spend Limit', data['monthly'], 2),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Status', data['status']),
+            cardBodyDetail('Status', data['status'], 3),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             TextButton(
               style: TextButton.styleFrom(
                 primary: const Color(0xff1da7ff),
                 textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500,
-                    color: const Color(0xff1da7ff), decoration: TextDecoration.underline),
+                    color: const Color(0xff1da7ff)),
               ),
               onPressed: () { handleCardDetail(data); },
               child: const Text('View Card Details'),
@@ -350,7 +350,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
     );
   }
 
-  Widget cardBodyDetail(title, value) {
+  Widget cardBodyDetail(title, value, type) {
     return Container(
       padding: EdgeInsets.only(top:hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
       child: Row(
@@ -361,7 +361,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
           Container(
               padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
               decoration: BoxDecoration(
-                color: const Color(0xFFDEFEE9),
+                color: type!=2 ? const Color(0xFFDEFEE9) : Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(hScale(16)),
                   topRight: Radius.circular(hScale(16)),
@@ -369,8 +369,14 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                   bottomRight: Radius.circular(hScale(16)),
                 ),
               ),
-              child: Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(
-                  0xFF30E7A9)))
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  type!=3 ? Text('SGD ', style:TextStyle(fontSize: fSize(8), fontWeight: FontWeight.w500, height:1.6,
+                      color: type==1 ? const Color(0xFF30E7A9): const Color(0xFF1A2831))): const SizedBox(),
+                  Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: type==2 ? const Color(0xFF1A2831) : const Color(0xFF30E7A9) ))
+                ],
+              )
           )
         ],
       )

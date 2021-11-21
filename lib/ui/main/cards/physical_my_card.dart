@@ -149,7 +149,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               Indexed(index: 50, child: Column(
                 children: [
                   const CustomSpacer(size: 45),
+                  showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
                   showDateRange ? dateRangeField() : const SizedBox(),
+                  const CustomSpacer(size: 15),
                   getTransactionArrWidgets(transactionArr),
                 ],
               )),
@@ -278,7 +280,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Available Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
+        Text('Available Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color:const Color(0xFF1A2831))),
         Container(
           padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
           decoration: BoxDecoration(
@@ -428,7 +430,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(imageUrl, fit: BoxFit.contain, height: hScale(24), width: wScale(28),),
+                Image.asset(imageUrl, fit: BoxFit.contain, height: hScale(28), width: wScale(28),),
                 const CustomSpacer(size: 10,),
                 Text(text, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: const Color(0xFF70828D)), textAlign: TextAlign.center,),
               ],
@@ -460,14 +462,6 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('All Transactions', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
-              // TextButton(
-              //   style: TextButton.styleFrom(
-              //     primary: const Color(0xff30E7A9),
-              //     textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
-              //   ),
-              //   onPressed: () { handleExport(); },
-              //   child: const Text('Export', style:TextStyle(decoration: TextDecoration.underline)),
-              // ),
             ],
           ),
           const CustomSpacer(size: 10),
@@ -493,38 +487,45 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
       ),
       child: Row(
           children: [
-            transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
-            transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
-            transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
+            transactionStatusButton('Completed', 1),
+            transactionStatusButton('Pending', 2),
+            transactionStatusButton('Declined', 3)
           ]
       ),
     );
   }
 
-  Widget transactionStatusButton(status, type, textColor) {
+  Widget transactionStatusButton(status, type) {
     return type == transactionStatus ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+    Container(
+      width: wScale(107),
+      height: hScale(35),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(260),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0XFF040415).withOpacity(0.1),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
           ),
-        ),
-        onPressed: () { handleTransactionStatus(type); },
-        child: Container(
-          width: wScale(107),
-          height: hScale(30),
-          alignment: Alignment.center,
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xFFFFFFFF),
+            padding: const EdgeInsets.all(0),
+          ),
           child: Text(
             status,
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: fSize(14),
-                color: textColor),
+                fontSize: fSize(14), fontWeight: FontWeight.w600,
+                color: type != 3 ? const Color(0xFF70828D): const Color(0xFFEB5757)),
           ),
-        )
+          onPressed: () { handleTransactionStatus(type); }),
     ) : TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
@@ -541,7 +542,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: textColor),
+              color: type != 3 ? const Color(0xFF1A2831): const Color(0xFFEB5757)),
         ),
       ),
     );
@@ -774,19 +775,23 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget searchRow() {
     return Container(
         width: wScale(327),
-        height: hScale(200),
+        height: hScale(500),
         alignment: Alignment.topCenter,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             searchField(),
-            SizedBox(
-              width: wScale(24),
-              height: wScale(24),
+            Container(
+              width: wScale(43),
+              height: wScale(36),
+              decoration: BoxDecoration(
+                  color: const Color(0xFFA3A3A3).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+              ),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.all(0),
+                  padding: EdgeInsets.symmetric(horizontal: wScale(12))
                 ),
                 child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
                 onPressed: () { handleCalendar();},
@@ -796,9 +801,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               width: wScale(40),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  primary: const Color(0xff30E7A9),
+                  primary: const Color(0xff29C490),
                   padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff30E7A9),decoration: TextDecoration.underline),
+                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff29C490),decoration: TextDecoration.underline),
                 ),
                 onPressed: () { handleExport(); },
                 child: const Text('Export'),
@@ -909,8 +914,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Date Range', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
-              const CustomSpacer(size: 23),
+              const CustomSpacer(size: 11),
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -947,7 +951,8 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                 ],
               ),
               const CustomSpacer(size: 17),
-              searchButton()
+              searchButton(),
+              const CustomSpacer(size: 5),
             ]
         )
     );

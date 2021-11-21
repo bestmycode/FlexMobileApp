@@ -1,5 +1,6 @@
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
+import 'package:flexflutter/ui/widgets/custom_mobile_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -85,17 +86,17 @@ class SignUpScreenState extends State<SignUpScreen> {
             children: [
               const SignupProgressHeader(prev: SPLASH_SCREEN),
               const CustomSpacer(size: 38),
-              CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: ' First Name '),
+              CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),
               const CustomSpacer(size: 32),
-              CustomTextField(ctl: lastNameCtl, hint: 'Enter Last Name', label: ' Last Name '),
+              CustomTextField(ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
               const CustomSpacer(size: 32),
-              mobileNumberField(),
+              CustomMobileTextField(ctl: mobileNumberCtl, hint: 'Enter Mobile Number', label: 'Mobile Number'),
               const CustomSpacer(size: 32),
-              CustomTextField(ctl: companyNameCtl, hint: 'Enter Company Name', label: ' Registered Company Name '),
+              CustomTextField(ctl: companyNameCtl, hint: 'Enter Company Name', label: 'Registered Company Name'),
               const CustomSpacer(size: 32),
-              CustomTextField(ctl: companyEmailCtl, hint: 'Enter Company Email Address', label: ' Company Email Address '),
+              CustomTextField(ctl: companyEmailCtl, hint: 'Enter Company Email Address', label: 'Company Email Address'),
               const CustomSpacer(size: 32),
-              CustomTextField(ctl: passwordCtl, hint: 'At Least 8 Characters', label: ' Password ', pwd: true),
+              CustomTextField(ctl: passwordCtl, hint: 'At Least 8 Characters', label: 'Password', pwd: true),
               const CustomSpacer(size: 21),
               termsField(),
               const CustomSpacer(size: 22),
@@ -213,126 +214,4 @@ class SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildDialogItem(Country country) => Row(
-    children: [
-      SizedBox(width: wScale(20),height: hScale(10), child: CountryPickerUtils.getDefaultFlagImage(country),),
-      SizedBox(width: wScale(5)),
-      Text("+${country.phoneCode}", style: TextStyle(fontSize: fSize(14)))
-    ],
-  );
-
-  Widget _showCountryDialogItem(Country country) =>
-      Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Row(
-        children: [
-          SizedBox(width: wScale(20),height: hScale(10), child: CountryPickerUtils.getDefaultFlagImage(country),),
-          SizedBox(width: wScale(16)),
-          SizedBox(
-              width: wScale(140),
-              child:Text(country.name, style: TextStyle(fontSize: fSize(14))))
-        ],
-      ),
-      Text("+${country.phoneCode}", style: TextStyle(fontSize: fSize(14)))
-    ],
-  );
-
-  void _openCountryPickerDialog() => showDialog(
-    context: context,
-    builder: (context) => Theme(
-      data: Theme.of(context).copyWith(primaryColor: Colors.black),
-      child: CountryPickerDialog(
-        contentPadding: const EdgeInsetsDirectional.all(0.0),
-        titlePadding: const EdgeInsetsDirectional.all(0.0),
-        searchCursorColor: Colors.black,
-        searchInputDecoration: InputDecoration(
-          enabledBorder: OutlineInputBorder(borderSide: BorderSide(
-              color: const Color(0xff040415).withOpacity(0.1),
-              width: 1.0)
-          ),
-          hintText: 'Search Country',
-          hintStyle: TextStyle(
-              color: const Color(0xff040415).withOpacity(0.1),
-              fontSize: fSize(14),
-              fontWeight: FontWeight.w500),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: Color(0xff040415),
-                  width: 1.0),
-          ),
-        ),
-        isSearchable: true,
-        title: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Select a country', style:TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600)),
-                SizedBox(
-                    width: wScale(20),
-                    height: wScale(20),
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                          primary: const Color(0xff000000),
-                          padding: const EdgeInsets.all(0),
-                        ),
-                        child: const Icon( Icons.close_rounded, color: Color(0xFFC8C4D9), size: 20,),
-                        onPressed: () { }
-                    )
-                )
-              ],
-            ),
-            const CustomSpacer(size: 20,)
-          ],
-        ),
-        onValuePicked: (Country country) =>
-            setState(() => _selectedDialogCountry = country),
-        itemBuilder: _showCountryDialogItem,
-      ),
-    ),
-  );
-
-  Widget mobileNumberField() {
-    return Container(
-        width: wScale(295),
-        height: hScale(56),
-        alignment: Alignment.center,
-        child: TextField(
-          keyboardType: TextInputType.number,
-          controller: mobileNumberCtl,
-          decoration: InputDecoration(
-            // prefixIcon: Container(
-            //     width: wScale(105),
-            //     alignment: Alignment.center,
-            //     child:
-            //       ListTile(
-            //           // contentPadding: const EdgeInsets.,
-            //           onTap: _openCountryPickerDialog,
-            //           title: _buildDialogItem(_selectedDialogCountry))
-            // ),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(
-                color: const Color(0xff040415).withOpacity(0.1),
-                width: 1.0)
-            ),
-            hintText: 'Enter Mobile Number',
-            hintStyle: TextStyle(
-                color: const Color(0xff040415).withOpacity(0.1),
-                fontSize: fSize(14),
-                fontWeight: FontWeight.w500),
-            labelText: 'Mobile Number',
-            // label: Container(width: 100, height: 10, color: Colors.red, margin: EdgeInsets.only(left: -10),),
-            labelStyle: TextStyle(
-                color: const Color(0xff040415).withOpacity(0.4),
-                fontSize: fSize(14),
-                fontWeight: FontWeight.w500),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
-          ),
-        )
-    );
-  }
 }

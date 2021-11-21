@@ -28,7 +28,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
   }
 
   final LocalStorage storage = LocalStorage('sign_up_info3');
-
+  var cityArr = ['city1', 'city2', 'city3', 'city4', 'city5'];
   final postalCodeCtl = TextEditingController();
   final streetCtl = TextEditingController();
   final cityCtl = TextEditingController();
@@ -132,7 +132,8 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
           const CustomSpacer(size: 32),
           CustomTextField(ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
+          // CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
+          cityTypeField()
         ],
       ),
     );
@@ -266,6 +267,61 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
           CustomTextField(ctl: operatingAddressPostalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
         ],
       ),
+    );
+  }
+
+  Widget cityTypeField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                  child: TextField(
+                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                    controller: cityCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                      hintText: 'Select City',
+                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                    ),
+                  )
+              ),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFFBFBFBF), size: wScale(15)),
+                onSelected: (String value) {
+                  cityCtl.text = value;
+                },
+                itemBuilder: (BuildContext context) {
+                  return cityArr.map<PopupMenuItem<String>>((String value) {
+                    return PopupMenuItem(child: Text(value), value: value, textStyle:  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF040415)),);
+                  }).toList();
+                },
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('City', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
     );
   }
 }

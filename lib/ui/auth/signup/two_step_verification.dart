@@ -1,3 +1,6 @@
+import 'package:country_pickers/country.dart';
+import 'package:country_pickers/country_picker_dialog.dart';
+import 'package:country_pickers/utils/utils.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,7 +32,8 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   }
 
   final LocalStorage storage = LocalStorage('two_step_info1');
-
+  Country _selectedDialogCountry = CountryPickerUtils.getCountryByPhoneCode('65');
+  var cityArr = ['city1', 'city2', 'city3', 'city4', 'city5'];
   final firstNameCtl = TextEditingController();
   final lastNameCtl = TextEditingController();
   final birthdayCtl = TextEditingController();
@@ -148,9 +152,11 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           const CustomSpacer(size: 32),
           CustomTextField(ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: birthdayCtl, hint: 'Select Date of Birth', label: 'Date of Birth (DD/MM/YY)'),
+          // CustomTextField(ctl: birthdayCtl, hint: 'Select Date of Birth', label: 'Date of Birth (DD/MM/YY)'),
+          birthDayField(),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: countryCtl, hint: 'Select Country', label: 'Country'),
+          // CustomTextField(ctl: countryCtl, hint: 'Select Country', label: 'Country'),
+          countryField(),
           const CustomSpacer(size: 32),
           CustomTextField(ctl: postalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
           const CustomSpacer(size: 32),
@@ -160,7 +166,8 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           const CustomSpacer(size: 32),
           CustomTextField(ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
+          // CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
+          cityTypeField(),
           const CustomSpacer(size: 32),
           CustomTextField(ctl: jobTitleCtl, hint: 'Enter Job Title', label: 'Job Title'),
           const CustomSpacer(size: 32),
@@ -226,6 +233,217 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           ),
           style: TextStyle(color: const Color(0xFF040415).withOpacity(0.5), fontSize: fSize(14), fontWeight: FontWeight.w500),
         )
+    );
+  }
+
+  Widget birthDayField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                  child: TextField(
+                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                    controller: birthdayCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                      hintText: 'Select Date of Birth',
+                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                    ),
+                  )
+              ),
+              Container(
+                margin: EdgeInsets.only(right: wScale(20)),
+                child: Image.asset('assets/calendar.png', fit:BoxFit.contain, width: wScale(18))
+              )
+            ],
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('Date of Birth (DD/MM/YY)', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget countryField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: ListTile(
+              onTap: _openCountryPickerDialog,
+              title: _buildDialogItem(_selectedDialogCountry)),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('Country', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
+  }
+
+  void _openCountryPickerDialog() => showDialog(
+    context: context,
+    builder: (context) => Theme(
+      data: Theme.of(context).copyWith(primaryColor: Colors.black),
+      child: CountryPickerDialog(
+        contentPadding: const EdgeInsetsDirectional.all(0.0),
+        titlePadding: const EdgeInsetsDirectional.all(0.0),
+        searchCursorColor: Colors.black,
+        searchInputDecoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: 1.0)
+          ),
+          hintText: 'Search Country',
+          hintStyle: TextStyle(
+              color: const Color(0xff040415).withOpacity(0.1),
+              fontSize: fSize(14),
+              fontWeight: FontWeight.w500),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(
+                color: Color(0xff040415),
+                width: 1.0),
+          ),
+        ),
+        isSearchable: true,
+        title: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Select a country', style:TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600)),
+                SizedBox(
+                    width: wScale(20),
+                    height: wScale(20),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: const Color(0xff000000),
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: const Icon( Icons.close_rounded, color: Color(0xFFC8C4D9), size: 20,),
+                        onPressed: () { }
+                    )
+                )
+              ],
+            ),
+            const CustomSpacer(size: 20,)
+          ],
+        ),
+        onValuePicked: (Country country) =>
+            setState(() => _selectedDialogCountry = country),
+        itemBuilder: _showCountryDialogItem,
+      ),
+    ),
+  );
+
+  Widget _buildDialogItem(Country country) => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Text(country.name, style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color:const Color(0xFF040415))),
+      Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFFBFBFBF), size: wScale(15),)
+    ],
+  );
+
+  Widget _showCountryDialogItem(Country country) =>
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              SizedBox(width: wScale(24),height: hScale(16), child: CountryPickerUtils.getDefaultFlagImage(country),),
+              SizedBox(width: wScale(16)),
+              SizedBox(
+                  width: wScale(140),
+                  child:Text(country.name, style: TextStyle(fontSize: fSize(14))))
+            ],
+          ),
+        ],
+      );
+
+  Widget cityTypeField() {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                  child: TextField(
+                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                    controller: cityCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                      hintText: 'Select City',
+                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                    ),
+                  )
+              ),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFFBFBFBF), size: wScale(15)),
+                onSelected: (String value) {
+                  cityCtl.text = value;
+                },
+                itemBuilder: (BuildContext context) {
+                  return cityArr.map<PopupMenuItem<String>>((String value) {
+                    return PopupMenuItem(child: Text(value), value: value, textStyle:  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF040415)),);
+                  }).toList();
+                },
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('City', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
     );
   }
 }

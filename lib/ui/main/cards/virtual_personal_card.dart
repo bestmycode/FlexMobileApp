@@ -29,14 +29,13 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   int cardType = 1;
   int transactionStatus = 1;
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
-
+    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
   ];
 
   handleBack() {
@@ -347,7 +346,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
       height: hScale(34),
       padding: EdgeInsets.all(hScale(2)),
       decoration: BoxDecoration(
-        color: const Color(0xfff5f5f6),
+        color: const Color(0xff040415).withOpacity(0.04),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(hScale(17)),
           topRight: Radius.circular(hScale(17)),
@@ -357,38 +356,45 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
       ),
       child: Row(
           children: [
-            transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
-            transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
-            transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
+            transactionStatusButton('Completed', 1),
+            transactionStatusButton('Pending', 2),
+            transactionStatusButton('Declined', 3)
           ]
       ),
     );
   }
 
-  Widget transactionStatusButton(status, type, textColor) {
+  Widget transactionStatusButton(status, type) {
     return type == transactionStatus ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
+    Container(
+      width: wScale(107),
+      height: hScale(35),
+      padding: EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(260),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0XFF040415).withOpacity(0.1),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
           ),
-        ),
-        onPressed: () { handleTransactionStatus(type); },
-        child: Container(
-          width: wScale(107),
-          height: hScale(30),
-          alignment: Alignment.center,
+        ],
+      ),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xFFFFFFFF),
+            padding: const EdgeInsets.all(0),
+          ),
           child: Text(
             status,
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: fSize(14),
-                color: textColor),
+                fontSize: fSize(14), fontWeight: FontWeight.w600,
+                color: type != 3 ? const Color(0xFF70828D): const Color(0xFFEB5757)),
           ),
-        )
+          onPressed: () { handleTransactionStatus(type); }),
     ) : TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
@@ -405,43 +411,58 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: textColor),
+              color: type != 3 ? const Color(0xFF1A2831): const Color(0xFFEB5757)),
         ),
       ),
     );
   }
 
-  Widget transactionField(date, transactionName, value) {
+  Widget transactionField(date, transactionName, value, status) {
     return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
-      margin: EdgeInsets.only(bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
+        width: wScale(327),
+        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        margin: EdgeInsets.only(bottom: hScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          transactionTimeField(date),
-          transactionNameField(transactionName),
-          moneyValue('', value, 14.0, FontWeight.w700, const Color(0xffADD2C8)),
-        ],
-      ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF106549).withOpacity(0.1),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                transactionTimeField(date),
+                const CustomSpacer(size: 6),
+                transactionNameField(transactionName),
+                const CustomSpacer(size: 6),
+                moneyValue('', value, 14.0, FontWeight.w700, status==0 ? const Color(0xFF1A2831) : const Color(0xff60C094)),
+              ],
+            ),
+            SizedBox(
+                width: wScale(16),
+                height: hScale(18),
+                child: status == 0
+                    ? Image.asset( 'assets/add_transaction.png', fit: BoxFit.contain, width: wScale(16))
+                    : Image.asset( 'assets/check_transaction.png', fit: BoxFit.contain, width: wScale(16))
+            )
+          ],
+        )
     );
   }
 
@@ -466,29 +487,32 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   }
 
   Widget moneyValue(title, value, size, weight, color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-            title,
-            style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
-              Text("SGD  ",
-                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
-              Text(value,
-                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
-            ]
-        )
-      ],
+    return SizedBox(
+      width: wScale(263),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+              title,
+              style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:[
+                Text("SGD  ",
+                    style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
+                Text(value,
+                    style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
+              ]
+          )
+        ],
+      ),
     );
   }
 
   Widget getTransactionArrWidgets(arr) {
     return Column(children: arr.map<Widget>((item) {
-      return transactionField(item['date'], item['transactionName'], item['value']);
+      return transactionField(item['date'], item['transactionName'], item['value'], item['status']);
     }).toList());
   }
 

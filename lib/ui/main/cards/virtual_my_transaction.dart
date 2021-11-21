@@ -30,13 +30,13 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
+    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
+    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
 
   ];
 
@@ -102,7 +102,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     return Column(
       children: [
         headerStatusField(),
-        const CustomSpacer(size: 17),
+        // const CustomSpacer(size: 17),
         // searchRow(),
         Indexer(
             children: [
@@ -110,16 +110,14 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
               Indexed(index: 50, child: Column(
                 children: [
                   const CustomSpacer(size: 45),
+                  showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
                   showDateRange ? dateRangeField() : const SizedBox(),
+                  const CustomSpacer(size: 15),
                   getTransactionArrWidgets(transactionArr),
                 ],
               )),
             ]
         ),
-        showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
-        showDateRange ? dateRangeField() : const SizedBox(),
-        const CustomSpacer(size: 15),
-        getTransactionArrWidgets(transactionArr),
       ]
     );
   }
@@ -243,19 +241,23 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   Widget searchRow() {
     return Container(
         width: wScale(327),
-        height: hScale(200),
+        height: hScale(500),
         alignment: Alignment.topCenter,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             searchField(),
-            SizedBox(
-              width: wScale(24),
-              height: wScale(24),
+            Container(
+              width: wScale(43),
+              height: wScale(36),
+              decoration: BoxDecoration(
+                color: const Color(0xFFA3A3A3).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.all(0),
+                    padding: EdgeInsets.symmetric(horizontal: wScale(12))
                 ),
                 child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
                 onPressed: () { handleCalendar();},
@@ -265,9 +267,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
               width: wScale(40),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  primary: const Color(0xff30E7A9),
+                  primary: const Color(0xff29C490),
                   padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff30E7A9),decoration: TextDecoration.underline),
+                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff29C490),decoration: TextDecoration.underline),
                 ),
                 onPressed: () { handleExport(); },
                 child: const Text('Export'),
@@ -310,8 +312,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date Range', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
-            const CustomSpacer(size: 23),
+            const CustomSpacer(size: 11),
             Stack(
               alignment: Alignment.center,
               children: [
@@ -348,7 +349,8 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
               ],
             ),
             const CustomSpacer(size: 17),
-            searchButton()
+            searchButton(),
+            const CustomSpacer(size: 5),
           ]
       )
     );
