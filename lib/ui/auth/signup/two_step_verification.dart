@@ -10,6 +10,8 @@ import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:localstorage/localstorage.dart';
 
+import 'package:intl/intl.dart';
+
 class TwoStepVerificationScreen extends StatefulWidget {
   const TwoStepVerificationScreen({Key? key}) : super(key: key);
 
@@ -248,27 +250,36 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
           ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
-                    controller: birthdayCtl,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                      hintText: 'Select Date of Birth',
-                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                    ),
-                  )
-              ),
-              Container(
-                margin: EdgeInsets.only(right: wScale(20)),
-                child: Image.asset('assets/calendar.png', fit:BoxFit.contain, width: wScale(18))
-              )
-            ],
+          child: TextButton(
+            style: TextButton.styleFrom(
+              // primary: const Color(0xffF5F5F5).withOpacity(0.4),
+              padding: const EdgeInsets.all(0),
+            ),
+            onPressed: () { _openDatePicker(); },
+            child:Row(
+              children: <Widget>[
+                Expanded(
+                    child: TextField(
+                      style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                      controller: birthdayCtl,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                        hintText: 'Select Date of Birth',
+                        hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                        focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                      ),
+                      readOnly: true,
+                      onTap: () { _openDatePicker(); },
+                    )
+                ),
+                Container(
+                    margin: EdgeInsets.only(right: wScale(20)),
+                    child: Image.asset('assets/calendar.png', fit:BoxFit.contain, width: wScale(18))
+                )
+              ],
+            )
           ),
         ),
         Positioned(
@@ -367,6 +378,23 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
       ),
     ),
   );
+
+  void _openDatePicker() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context, initialDate: DateTime.now(),
+        firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2101)
+    );
+
+    if(pickedDate != null ){
+      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      setState(() {
+        birthdayCtl.text = formattedDate;
+      });
+    }else{
+      print("Date is not selected");
+    }
+  }
 
   Widget _buildDialogItem(Country country) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,

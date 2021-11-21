@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:indexed/indexed.dart';
+import 'package:intl/intl.dart';
 
 class PhysicalMyCards extends StatefulWidget {
   const PhysicalMyCards({Key? key}) : super(key: key);
@@ -915,47 +916,93 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const CustomSpacer(size: 11),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
-                  Positioned(
-                    // bottom: 0,
-                      right: 0,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(0),
-                        ),
-                        child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
-                        onPressed: () { handleStartDateCalendar();},
-                      )
-                  ),
-                ],
-              ),
+              dateField(1),
               const CustomSpacer(size: 23),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
-                  Positioned(
-                    // bottom: 0,
-                      right: 0,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(0),
-                        ),
-                        child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
-                        onPressed: () { handleEndDateCalendar();},
-                      )
-                  ),
-                ],
-              ),
+              dateField(2),
               const CustomSpacer(size: 17),
               searchButton(),
               const CustomSpacer(size: 5),
             ]
         )
     );
+  }
+
+  Widget dateField(type) {
+    return Stack(
+      children: [
+        Container(
+          width: wScale(295),
+          height: hScale(56),
+          alignment: Alignment.center,
+          margin: EdgeInsets.only(top: hScale(8)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
+          ),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                // primary: const Color(0xffF5F5F5).withOpacity(0.4),
+                padding: const EdgeInsets.all(0),
+              ),
+              onPressed: () { _openDatePicker(type); },
+              child:Row(
+                children: <Widget>[
+                  Expanded(
+                      child: TextField(
+                        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
+                        controller: type ==1 ? startDateCtl: endDateCtl,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                          hintText: 'Select Date of Birth',
+                          hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                          focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
+                        ),
+                        readOnly: true,
+                        onTap: () { _openDatePicker(type); },
+                      )
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(right: wScale(20)),
+                      child: Image.asset('assets/calendar.png', fit:BoxFit.contain, width: wScale(18))
+                  )
+                ],
+              )
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text('Date of Birth (DD/MM/YY)', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
+  }
+
+  void _openDatePicker(type) async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context, initialDate: DateTime.now(),
+        firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2101)
+    );
+
+    if(pickedDate != null ){
+      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      setState(() {
+        if(type == 1) {
+          startDateCtl.text = formattedDate;
+        } else {
+          endDateCtl.text = formattedDate;
+        }
+      });
+    }else{
+      print("Date is not selected");
+    }
   }
 
   Widget searchButton() {
