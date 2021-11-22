@@ -31,8 +31,10 @@ class TransactionAdminState extends State<TransactionAdmin> {
 
   int transactionStatus = 1;
   int dateType = 1;
+  int sortType = 0;
   bool showDateRange = false;
   bool showModal = false;
+  bool showSortModal = false;
   final searchCtl = TextEditingController();
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
@@ -118,22 +120,33 @@ class TransactionAdminState extends State<TransactionAdmin> {
 
   handleSearch() {}
 
-  handleSort() {}
+  handleSort() {
+    setState(() {
+      showSortModal = !showSortModal;
+    });
+  }
 
   handleExport() {}
 
-  setDateType(type) {
-    if (type == 4) {
-      setState(() {
-        showDateRange = !showDateRange;
-        showModal = false;
-        dateType = type;
-      });
+  setDateType(type, style) {
+    if (style == 1) {
+      if (type == 4) {
+        setState(() {
+          showDateRange = !showDateRange;
+          showModal = false;
+          dateType = type;
+        });
+      } else {
+        setState(() {
+          showModal = false;
+          showDateRange = false;
+          dateType = type;
+        });
+      }
     } else {
       setState(() {
-        showModal = false;
-        showDateRange = false;
-        dateType = type;
+        showSortModal = false;
+        sortType = type;
       });
     }
   }
@@ -165,25 +178,37 @@ class TransactionAdminState extends State<TransactionAdmin> {
             welcomeHandleField(
                 'assets/get_credit_line.png', 27.0, "Increase Credit Line"),
             const CustomSpacer(size: 20),
-            allTransactionField(),
+            Indexer(
+              children: [
+                Indexed(index: 100, child: allTransactionField()),
+                Indexed(
+                    index: 50,
+                    child: Column(children: [
+                      const CustomSpacer(size: 100),
+                      Indexer(children: [
+                        Indexed(index: 100, child: searchRowField()),
+                        Indexed(
+                            index: 50,
+                            child: Column(
+                              children: [
+                                const CustomSpacer(size: 40),
+                                showDateRange
+                                    ? const CustomSpacer(size: 30)
+                                    : const SizedBox(),
+                                showDateRange
+                                    ? dateRangeField()
+                                    : const SizedBox(),
+                                const CustomSpacer(size: 20),
+                                getTransactionArrWidgets(transactionArr),
+                                const CustomSpacer(size: 88),
+                              ],
+                            )),
+                      ]),
+                    ]))
+              ],
+            )
+
             // const CustomSpacer(size: 15),
-            Indexer(children: [
-              Indexed(index: 100, child: searchRowField()),
-              Indexed(
-                  index: 50,
-                  child: Column(
-                    children: [
-                      const CustomSpacer(size: 35),
-                      showDateRange
-                          ? const CustomSpacer(size: 30)
-                          : const SizedBox(),
-                      showDateRange ? dateRangeField() : const SizedBox(),
-                      const CustomSpacer(size: 20),
-                      getTransactionArrWidgets(transactionArr),
-                      const CustomSpacer(size: 88),
-                    ],
-                  )),
-            ]),
           ])),
       const Positioned(
         bottom: 0,
@@ -281,37 +306,75 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   Widget allTransactionField() {
-    return SizedBox(
-      width: wScale(327),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('All Transactions',
-                  style: TextStyle(
-                      fontSize: fSize(16), fontWeight: FontWeight.w500)),
-              TextButton(
-                  style: TextButton.styleFrom(
-                    primary: const Color(0xff70828D),
-                    padding: const EdgeInsets.all(0),
-                    textStyle: TextStyle(
-                        fontSize: fSize(14), color: const Color(0xff70828D)),
-                  ),
-                  onPressed: () {
-                    handleSort();
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.swap_vert_rounded,
-                          color: const Color(0xff29C490), size: hScale(18)),
-                      Text('Sort by', style: TextStyle(fontSize: fSize(12)))
-                    ],
-                  )),
-            ],
+    return Stack(overflow: Overflow.visible, children: [
+      SizedBox(
+        width: wScale(327),
+        height: hScale(500),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('All Transactions',
+                    style: TextStyle(
+                        fontSize: fSize(16), fontWeight: FontWeight.w500)),
+                TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff70828D),
+                      padding: const EdgeInsets.all(0),
+                      textStyle: TextStyle(
+                          fontSize: fSize(14), color: const Color(0xff70828D)),
+                    ),
+                    onPressed: () {
+                      handleSort();
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.swap_vert_rounded,
+                            color: const Color(0xff29C490), size: hScale(18)),
+                        Text('Sort by', style: TextStyle(fontSize: fSize(12)))
+                      ],
+                    )),
+              ],
+            ),
+            // const CustomSpacer(size: 10),
+            transactionStatusField()
+          ],
+        ),
+      ),
+      showSortModal
+          ? Positioned(top: hScale(50), right: 0, child: sortModalField())
+          : const SizedBox()
+    ]);
+  }
+
+  Widget sortModalField() {
+    return Container(
+      width: wScale(177),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
           ),
-          const CustomSpacer(size: 10),
-          transactionStatusField()
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          modalButton('Sort by Newest on top', 0, 0),
+          modalButton('Sort by Oldest on top', 1, 0),
+          modalButton('Sort by Card Type', 2, 0)
         ],
       ),
     );
@@ -411,7 +474,8 @@ class TransactionAdminState extends State<TransactionAdmin> {
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
           border: Border.all(
-              color: Color(0xff040415).withOpacity(0.1), width: hScale(1)),
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -736,25 +800,31 @@ class TransactionAdminState extends State<TransactionAdmin> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          modalButton('Last 7 Days', 1),
-          modalButton('Last 30 Days', 2),
-          modalButton('Last 90 Days', 3),
-          modalButton('Date Range', 4),
+          modalButton('Last 7 Days', 1, 1),
+          modalButton('Last 30 Days', 2, 1),
+          modalButton('Last 90 Days', 3, 1),
+          modalButton('Date Range', 4, 1),
         ],
       ),
     );
   }
 
-  Widget modalButton(title, type) {
+  Widget modalButton(title, type, style) {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: dateType == type ? const Color(0xFF29C490) : Colors.black,
+        primary: style == 1
+            ? dateType == type
+                ? const Color(0xFF29C490)
+                : Colors.black
+            : sortType == type
+                ? const Color(0xFF29C490)
+                : Colors.black,
         padding:
             const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
       onPressed: () {
-        setDateType(type);
+        setDateType(type, style);
       },
       child: Container(
         width: wScale(177),

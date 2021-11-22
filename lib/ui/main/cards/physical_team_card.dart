@@ -27,9 +27,11 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   }
 
   int activeType = 1;
-  int sortType = 1;
+  int sortType = -1;
+  int subSortType = 0;
   final searchCtl = TextEditingController();
-  bool showModal = false;
+  bool showSortModal = false;
+  bool showSubSortModal = false;
   var transactionArr = [
     {
       'id': 0,
@@ -89,6 +91,20 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     },
   ];
 
+  var sortArr = [
+    {'sortType': 'card holder', 'subType1': 'A - Z', 'subType2': 'Z - A'},
+    {
+      'sortType': 'available limit',
+      'subType1': 'Highest to lowest',
+      'subType2': 'Lowest to highest'
+    },
+    {
+      'sortType': 'date issued',
+      'subType1': 'Newest to oldest',
+      'subType2': 'Oldest to newest'
+    },
+  ];
+
   handleCardType(type) {
     setState(() {
       activeType = type;
@@ -97,7 +113,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   handleSort() {
     setState(() {
-      showModal = !showModal;
+      showSortModal = !showSortModal;
     });
   }
 
@@ -111,22 +127,34 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   sortCardHolder() {
     setState(() {
-      showModal = false;
+      showSortModal = false;
       sortType = 1;
     });
   }
 
-  sortAvailableLimit() {
+  handleSortModal() {
     setState(() {
-      showModal = false;
-      sortType = 2;
+      showSortModal = !showSortModal;
     });
   }
 
-  sortDateIssued() {
+  handleSubSortModal() {
     setState(() {
-      showModal = false;
-      sortType = 3;
+      showSubSortModal = !showSubSortModal;
+    });
+  }
+
+  handleSortType(type) {
+    setState(() {
+      showSortModal = false;
+      sortType = type;
+    });
+  }
+
+  handleSubSortType(type) {
+    setState(() {
+      showSubSortModal = false;
+      subSortType = type;
     });
   }
 
@@ -147,8 +175,26 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
               children: [
                 const CustomSpacer(size: 60),
                 searchField(),
-                const CustomSpacer(size: 15),
-                getTransactionArrWidgets(transactionArr),
+                Indexer(children: [
+                  Indexed(
+                      index: 200,
+                      child: sortType >= 0 ? subSortField() : const SizedBox()),
+                  Indexed(
+                      index: 40,
+                      child: Column(
+                        children: [
+                          sortType >= 0
+                              ? const CustomSpacer(size: 60)
+                              : const SizedBox(),
+                          sortType < 0
+                              ? const CustomSpacer(size: 10)
+                              : const SizedBox(),
+                          getTransactionArrWidgets(transactionArr)
+                        ],
+                      ))
+                ])
+                // const CustomSpacer(size: 15),
+                // getTransactionArrWidgets(transactionArr),
               ],
             )),
       ]),
@@ -158,7 +204,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   Widget headerField() {
     return Stack(overflow: Overflow.visible, children: [
       headerSortField(),
-      showModal
+      showSortModal
           ? Positioned(top: hScale(50), right: 0, child: modalField())
           : const SizedBox()
     ]);
@@ -487,18 +533,24 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          modalButton('Sort by card holder', 1),
-          modalButton('Sort by available limit', 2),
-          modalButton('Sort by date issued', 3)
+          modalButton('Sort by ${sortArr[0]['sortType']}', 0, 0),
+          modalButton('Sort by ${sortArr[1]['sortType']}', 1, 0),
+          modalButton('Sort by ${sortArr[2]['sortType']}', 2, 0)
         ],
       ),
     );
   }
 
-  Widget modalButton(title, type) {
+  Widget modalButton(title, type, style) {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: sortType == type ? const Color(0xFF29C490) : Colors.black,
+        primary: style == 0
+            ? sortType == type
+                ? const Color(0xFF29C490)
+                : Colors.black
+            : subSortType == type
+                ? const Color(0xFF29C490)
+                : Colors.black,
         padding: EdgeInsets.only(
             top: hScale(10),
             bottom: hScale(10),
@@ -507,13 +559,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
       onPressed: () {
-        if (type == 1) {
-          sortCardHolder();
-        } else if (type == 2) {
-          sortAvailableLimit();
-        } else {
-          sortDateIssued();
-        }
+        style == 0 ? handleSortType(type) : handleSubSortType(type);
       },
       child: Container(
         width: wScale(177),
@@ -526,5 +572,102 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         ),
       ),
     );
+  }
+
+  Widget subSortField() {
+    return Stack(overflow: Overflow.visible, children: [
+      sortField(),
+      showSubSortModal
+          ? Positioned(
+              top: hScale(50), right: 0, child: subSortTypeModalField())
+          : const SizedBox()
+    ]);
+  }
+
+  Widget sortField() {
+    return Container(
+      height: hScale(500),
+      alignment: Alignment.topCenter,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text('Sorted by: ${sortArr[sortType]['sortType']}',
+              style: TextStyle(
+                  fontSize: fSize(12),
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF1B2931))),
+          sortValue()
+        ],
+      ),
+    );
+  }
+
+  Widget subSortTypeModalField() {
+    return Container(
+      width: wScale(177),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          sortType != -1
+              ? modalButton(sortArr[sortType]['subType1'], 0, 1)
+              : const SizedBox(),
+          sortType != -1
+              ? modalButton(sortArr[sortType]['subType2'], 1, 1)
+              : const SizedBox()
+        ],
+      ),
+    );
+  }
+
+  Widget sortValue() {
+    return TextButton(
+        style: TextButton.styleFrom(
+          primary: const Color(0xffffffff),
+          padding: const EdgeInsets.all(0),
+        ),
+        child: Container(
+          padding:
+              EdgeInsets.symmetric(vertical: hScale(3), horizontal: wScale(16)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border:
+                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+          child: Row(children: [
+            Text(
+                subSortType == 0
+                    ? '${sortArr[sortType]['subType1']}'
+                    : '${sortArr[sortType]['subType2']}',
+                style: TextStyle(
+                    fontSize: fSize(12), color: const Color(0xFF1B2931))),
+            SizedBox(width: wScale(12)),
+            SizedBox(
+              width: wScale(12),
+              child: Icon(Icons.keyboard_arrow_down_rounded,
+                  color: const Color(0xFFBFBFBF), size: fSize(24)),
+            )
+          ]),
+        ),
+        onPressed: () {
+          handleSubSortModal();
+        });
   }
 }

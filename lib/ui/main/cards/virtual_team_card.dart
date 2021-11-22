@@ -179,10 +179,10 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                 searchField(),
                 Indexer(children: [
                   Indexed(
-                      index: 10,
+                      index: 200,
                       child: sortType >= 0 ? subSortField() : const SizedBox()),
                   Indexed(
-                      index: 5,
+                      index: 40,
                       child: Column(
                         children: [
                           sortType >= 0
@@ -624,7 +624,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
 
   Widget sortField() {
     return Container(
-      // height: hScale(500),
+      height: hScale(500),
       alignment: Alignment.topCenter,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -655,7 +655,10 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
               border:
                   Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
           child: Row(children: [
-            Text('Fixed',
+            Text(
+                subSortType == 0
+                    ? '${sortArr[sortType]['subType1']}'
+                    : '${sortArr[sortType]['subType2']}',
                 style: TextStyle(
                     fontSize: fSize(12), color: const Color(0xFF1B2931))),
             SizedBox(width: wScale(12)),
