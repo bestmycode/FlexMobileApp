@@ -14,10 +14,10 @@ class VirtualTeamCards extends StatefulWidget {
 }
 
 class VirtualTeamCardsState extends State<VirtualTeamCards> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -27,19 +27,97 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   }
 
   int activeType = 1;
-  int sortType = 1;
+  int sortType = -1;
+  int subSortType = 0;
   final searchCtl = TextEditingController();
-  bool showModal = false;
+  bool showSortModal = false;
+  bool showSubSortModal = false;
   var transactionArr = [
-    {'userName':'G-Suit', 'cardNum':'2314', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2315', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2316', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2317', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2318', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2319', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2320', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2321', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
-    {'userName':'G-Suit', 'cardNum':'2322', 'available':'1,00.00', 'monthly': '600.00', 'status': 'Active', 'type': 'Fixed'},
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2314',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2315',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2316',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2317',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2318',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2319',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2320',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2321',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+    {
+      'userName': 'G-Suit',
+      'cardNum': '2322',
+      'available': '1,00.00',
+      'monthly': '600.00',
+      'status': 'Active',
+      'type': 'Fixed'
+    },
+  ];
+  var sortArr = [
+    {'sortType': 'card holder', 'subType1': 'Fixed', 'subType2': 'Recurring'},
+    {
+      'sortType': 'available limit',
+      'subType1': 'Highest to lowest',
+      'subType2': 'Lowest to highest'
+    },
+    {
+      'sortType': 'date issued',
+      'subType1': 'Newest to oldest',
+      'subType2': 'Oldest to newest'
+    },
   ];
 
   handleCardType(type) {
@@ -48,46 +126,41 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
     });
   }
 
-  handleSort() {
+  handleSortModal() {
     setState(() {
-      showModal = !showModal;
+      showSortModal = !showSortModal;
     });
   }
 
-  handleSearch() {
-
+  handleSubSortModal() {
+    setState(() {
+      showSubSortModal = !showSubSortModal;
+    });
   }
+
+  handleSearch() {}
 
   handleCardDetail(data) {
     Navigator.of(context).push(
-      CupertinoPageRoute (
-          builder: (context) => const VirtualPersonalCard()
-      ),
+      CupertinoPageRoute(builder: (context) => const VirtualPersonalCard()),
     );
   }
 
-  sortCardHolder() {
+  handleSortType(type) {
     setState(() {
-      showModal = false;
-      sortType = 1;
+      showSortModal = false;
+      sortType = type;
     });
   }
 
-  sortAvailableLimit() {
+  handleSubSortType(type) {
     setState(() {
-      showModal = false;
-      sortType = 2;
+      showSubSortModal = false;
+      subSortType = type;
     });
   }
 
-  sortDateIssued() {
-    setState(() {
-      showModal = false;
-      sortType = 3;
-    });
-  }
-
-    @override
+  @override
   void initState() {
     super.initState();
   }
@@ -95,66 +168,85 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(left:wScale(24), right: wScale(24)),
-        child: Indexer(
-            children: [
-              Indexed(index: 100, child: headerField()),
-              Indexed(index: 50, child: Column(
-                children: [
-                  const CustomSpacer(size: 50),
-                  searchField(),
-                  const CustomSpacer(size: 15),
-                  getTransactionArrWidgets(transactionArr),
-                ],
-              )),
-            ]
-        ),
+      padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+      child: Indexer(children: [
+        Indexed(index: 100, child: headerField()),
+        Indexed(
+            index: 50,
+            child: Column(
+              children: [
+                const CustomSpacer(size: 60),
+                searchField(),
+                Indexer(children: [
+                  Indexed(
+                      index: 10,
+                      child: sortType >= 0 ? subSortField() : const SizedBox()),
+                  Indexed(
+                      index: 5,
+                      child: Column(
+                        children: [
+                          sortType >= 0
+                              ? const CustomSpacer(size: 60)
+                              : const SizedBox(),
+                          sortType < 0
+                              ? const CustomSpacer(size: 10)
+                              : const SizedBox(),
+                          getTransactionArrWidgets(transactionArr)
+                        ],
+                      ))
+                ])
+              ],
+            )),
+      ]),
     );
   }
 
   Widget headerField() {
-    return Stack(
-        overflow: Overflow.visible,
-        children: [
-          headerSortField(),
-          showModal ? Positioned(
-              top: hScale(50),
-              right:0,
-              child: modalField()
-          ): const SizedBox()
-        ]
-    );
+    return Stack(overflow: Overflow.visible, children: [
+      headerSortField(),
+      showSortModal
+          ? Positioned(top: hScale(50), right: 0, child: sortTypeModalField())
+          : const SizedBox()
+    ]);
+  }
+
+  Widget subSortField() {
+    return Stack(overflow: Overflow.visible, children: [
+      sortField(),
+      showSubSortModal
+          ? Positioned(
+              top: hScale(50), right: 0, child: subSortTypeModalField())
+          : const SizedBox()
+    ]);
   }
 
   Widget headerSortField() {
     return Container(
-      height: hScale(200),
+      height: hScale(500),
       alignment: Alignment.topCenter,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-                children: [
-                  activeButton('Active Cards', 1),
-                  activeButton('Inactive Cards', 2),
-                ]
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Row(children: [
+          activeButton('Active Cards', 1),
+          activeButton('Inactive Cards', 2),
+        ]),
+        TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
             ),
-            TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff70828D),
-                  padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-                ),
-                onPressed: () { handleSort(); },
-                child:Row(
-                  children: [
-                    Icon(Icons.swap_vert_rounded, color: const Color(0xff29C490),size: hScale(18)),
-                    Text('Sort by', style: TextStyle(fontSize: fSize(12)))
-                  ],
-                )
-            ),
-          ]
-      ),
+            onPressed: () {
+              handleSortModal();
+            },
+            child: Row(
+              children: [
+                Icon(Icons.swap_vert_rounded,
+                    color: const Color(0xff29C490), size: hScale(18)),
+                Text('Sort by', style: TextStyle(fontSize: fSize(12)))
+              ],
+            )),
+      ]),
     );
   }
 
@@ -163,24 +255,33 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
         padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+        textStyle:
+            TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
       ),
-      onPressed: () { handleCardType(type); },
+      onPressed: () {
+        handleCardType(type);
+      },
       child: Container(
         height: hScale(35),
-        padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
+        padding: EdgeInsets.only(left: wScale(6), right: wScale(6)),
         decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(
-                color: type == activeType ? Color(0xFF29C490): Color(0xFFEEEEEE),
-                width: type == activeType ? hScale(2): hScale(1)))
-        ),
+            border: Border(
+                bottom: BorderSide(
+                    color: type == activeType
+                        ? const Color(0xFF29C490)
+                        : const Color(0xFFEEEEEE),
+                    width: type == activeType ? hScale(2) : hScale(1)))),
         alignment: Alignment.center,
         child: Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: const Color(0xff70828D)),
+              fontWeight:
+                  type == activeType ? FontWeight.w600 : FontWeight.w500,
+              color: type == activeType
+                  ? const Color(0xff1A2831)
+                  : const Color(0xff70828D)),
         ),
       ),
     );
@@ -188,11 +289,13 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
 
   Widget searchField() {
     return Container(
-      height: hScale(36),
-      padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
+        height: hScale(36),
+        padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: const Color(0xff040415), width: hScale(1)),
+          border: Border.all(
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -200,42 +303,52 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
             bottomRight: Radius.circular(hScale(10)),
           ),
         ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: wScale(260),
-            // height: hScale(24),
-            child: TextField(
-              textAlignVertical: TextAlignVertical.center,
-              controller: searchCtl,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.zero,
-                enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
-                hintText: 'Card Holders , Cards…',
-                hintStyle: TextStyle( color: const Color(0xff040415).withOpacity(0.5), fontSize: fSize(12), fontWeight: FontWeight.w500),
-                focusedBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
-              ),
-              style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500),
-              scrollPadding: EdgeInsets.zero,
-            )
-          ),
-          SizedBox(
-            width: wScale(20),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                primary: const Color(0xff70828D),
-                padding: const EdgeInsets.all(0),
-                textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-              ),
-              onPressed: () { handleSearch(); },
-              // child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
-              child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+                width: wScale(260),
+                // height: hScale(24),
+                child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  controller: searchCtl,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
+                    hintText: 'Card Holders , Cards…',
+                    hintStyle: TextStyle(
+                        color: const Color(0xff040415).withOpacity(0.5),
+                        fontSize: fSize(12),
+                        fontWeight: FontWeight.w500),
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
+                  ),
+                  style: TextStyle(
+                      fontSize: fSize(14), fontWeight: FontWeight.w500),
+                  scrollPadding: EdgeInsets.zero,
+                )),
+            SizedBox(
+              width: wScale(20),
+              child: TextButton(
+                  style: TextButton.styleFrom(
+                    primary: const Color(0xff70828D),
+                    padding: const EdgeInsets.all(0),
+                    textStyle: TextStyle(
+                        fontSize: fSize(14), color: const Color(0xff70828D)),
+                  ),
+                  onPressed: () {
+                    handleSearch();
+                  },
+                  // child: const Icon( Icons.search_rounded, color: Colors.black, size: 20 ),
+                  child: Image.asset(
+                    'assets/search_icon.png',
+                    fit: BoxFit.contain,
+                    width: wScale(13),
+                  )),
             ),
-          ),
-        ],
-      )
-    );
+          ],
+        ));
   }
 
   Widget collapseField(data) {
@@ -264,14 +377,9 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
             ScrollOnExpand(
               child: ExpandablePanel(
                 theme: const ExpandableThemeData(
-                    tapBodyToCollapse: true,
-                    tapBodyToExpand: true
-                ),
+                    tapBodyToCollapse: true, tapBodyToExpand: true),
                 expanded: Column(
-                  children: [
-                    cardHeader(data),
-                    cardBody(data)
-                  ],
+                  children: [cardHeader(data), cardBody(data)],
                 ),
                 collapsed: cardHeader(data),
                 builder: (_, collapsed, expanded) {
@@ -292,31 +400,37 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
+    return Column(
+        children: arr.map<Widget>((item) {
       return collapseField(item);
     }).toList());
   }
 
   Widget cardHeader(data) {
     return Container(
-      width: wScale(327),
-      // height: hScale(50),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16),top: hScale(8), bottom: hScale(8)),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1B2931),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
+        width: wScale(327),
+        // height: hScale(50),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(8),
+            bottom: hScale(8)),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1B2931),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(data['userName'], style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-          Text('**** **** **** ${data["cardNum"]} | ${data['type']}', style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        ],
-      )
-    );
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(data['userName'],
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+            Text('**** **** **** ${data["cardNum"]} | ${data['type']}',
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+          ],
+        ));
   }
 
   Widget cardBody(data) {
@@ -339,51 +453,76 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
             TextButton(
               style: TextButton.styleFrom(
                 primary: const Color(0xff1da7ff),
-                textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500,
+                textStyle: TextStyle(
+                    fontSize: fSize(14),
+                    fontWeight: FontWeight.w500,
                     color: const Color(0xff1da7ff)),
               ),
-              onPressed: () { handleCardDetail(data); },
+              onPressed: () {
+                handleCardDetail(data);
+              },
               child: const Text('View Card Details'),
             ),
           ],
-        )
-    );
+        ));
   }
 
   Widget cardBodyDetail(title, value, type) {
     return Container(
-      padding: EdgeInsets.only(top:hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(title, style: TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
-          Container(
-              padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
-              decoration: BoxDecoration(
-                color: type!=2 ? const Color(0xFFDEFEE9) : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(hScale(16)),
-                  topRight: Radius.circular(hScale(16)),
-                  bottomLeft: Radius.circular(hScale(16)),
-                  bottomRight: Radius.circular(hScale(16)),
+        padding: EdgeInsets.only(
+            top: hScale(10),
+            bottom: hScale(10),
+            left: wScale(16),
+            right: wScale(16)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(title,
+                style: TextStyle(
+                    fontSize: fSize(12), color: const Color(0xFF70828D))),
+            Container(
+                padding: EdgeInsets.only(
+                    left: wScale(16),
+                    right: wScale(16),
+                    top: hScale(5),
+                    bottom: hScale(5)),
+                decoration: BoxDecoration(
+                  color: type != 2 ? const Color(0xFFDEFEE9) : Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(hScale(16)),
+                    topRight: Radius.circular(hScale(16)),
+                    bottomLeft: Radius.circular(hScale(16)),
+                    bottomRight: Radius.circular(hScale(16)),
+                  ),
                 ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  type!=3 ? Text('SGD ', style:TextStyle(fontSize: fSize(8), fontWeight: FontWeight.w500, height:1.6,
-                      color: type==1 ? const Color(0xFF30E7A9): const Color(0xFF1A2831))): const SizedBox(),
-                  Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: type==2 ? const Color(0xFF1A2831) : const Color(0xFF30E7A9) ))
-                ],
-              )
-          )
-        ],
-      )
-    );
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    type != 3
+                        ? Text('SGD ',
+                            style: TextStyle(
+                                fontSize: fSize(8),
+                                fontWeight: FontWeight.w500,
+                                height: 1.6,
+                                color: type == 1
+                                    ? const Color(0xFF30E7A9)
+                                    : const Color(0xFF1A2831)))
+                        : const SizedBox(),
+                    Text(value,
+                        style: TextStyle(
+                            fontSize: fSize(14),
+                            fontWeight: FontWeight.w500,
+                            color: type == 2
+                                ? const Color(0xFF1A2831)
+                                : const Color(0xFF30E7A9)))
+                  ],
+                ))
+          ],
+        ));
   }
 
-  Widget modalField() {
+  Widget sortTypeModalField() {
     return Container(
       width: wScale(177),
       decoration: BoxDecoration(
@@ -407,33 +546,72 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          modalButton('Sort by card holder', 1),
-          modalButton('Sort by available limit', 2),
-          modalButton('Sort by date issued', 3)
+          modalButton('Sort by ${sortArr[0]['sortType']}', 0, 0),
+          modalButton('Sort by ${sortArr[1]['sortType']}', 1, 0),
+          modalButton('Sort by ${sortArr[2]['sortType']}', 2, 0)
         ],
       ),
     );
   }
 
-  Widget modalButton(title, type) {
+  Widget subSortTypeModalField() {
+    return Container(
+      width: wScale(177),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(10)),
+          topRight: Radius.circular(hScale(10)),
+          bottomLeft: Radius.circular(hScale(10)),
+          bottomRight: Radius.circular(hScale(10)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          sortType != -1
+              ? modalButton(sortArr[sortType]['subType1'], 0, 1)
+              : const SizedBox(),
+          sortType != -1
+              ? modalButton(sortArr[sortType]['subType2'], 1, 1)
+              : const SizedBox()
+        ],
+      ),
+    );
+  }
+
+  Widget modalButton(title, type, style) {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: sortType == type ? const Color(0xFF29C490) : Colors.black,
-        padding: EdgeInsets.only(top: hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
+        primary: style == 0
+            ? sortType == type
+                ? const Color(0xFF29C490)
+                : Colors.black
+            : subSortType == type
+                ? const Color(0xFF29C490)
+                : Colors.black,
+        padding: EdgeInsets.only(
+            top: hScale(10),
+            bottom: hScale(10),
+            left: wScale(16),
+            right: wScale(16)),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
       onPressed: () {
-        if(type == 1) {
-          sortCardHolder();
-        } else if(type==2) {
-          sortAvailableLimit();
-        } else {
-          sortDateIssued();
-        }
+        style == 0 ? handleSortType(type) : handleSubSortType(type);
       },
       child: Container(
         width: wScale(177),
-        padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
+        padding: EdgeInsets.only(top: hScale(6), bottom: hScale(6)),
         alignment: Alignment.centerLeft,
         child: Text(
           title,
@@ -442,5 +620,54 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         ),
       ),
     );
+  }
+
+  Widget sortField() {
+    return Container(
+      // height: hScale(500),
+      alignment: Alignment.topCenter,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text('Sorted by: ${sortArr[sortType]['sortType']}',
+              style: TextStyle(
+                  fontSize: fSize(12),
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF1B2931))),
+          sortValue()
+        ],
+      ),
+    );
+  }
+
+  Widget sortValue() {
+    return TextButton(
+        style: TextButton.styleFrom(
+          primary: const Color(0xffffffff),
+          padding: const EdgeInsets.all(0),
+        ),
+        child: Container(
+          padding:
+              EdgeInsets.symmetric(vertical: hScale(3), horizontal: wScale(16)),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border:
+                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+          child: Row(children: [
+            Text('Fixed',
+                style: TextStyle(
+                    fontSize: fSize(12), color: const Color(0xFF1B2931))),
+            SizedBox(width: wScale(12)),
+            SizedBox(
+              width: wScale(12),
+              child: Icon(Icons.keyboard_arrow_down_rounded,
+                  color: const Color(0xFFBFBFBF), size: fSize(24)),
+            )
+          ]),
+        ),
+        onPressed: () {
+          handleSubSortModal();
+        });
   }
 }

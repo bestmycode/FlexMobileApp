@@ -126,7 +126,6 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   Widget headerSortField() {
     return Container(
-      margin: EdgeInsets.only(top: hScale(13)),
       height: hScale(200),
       alignment: Alignment.topCenter,
       child: Row(

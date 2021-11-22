@@ -62,7 +62,7 @@ class VirtualCardsState extends State<VirtualCards> {
                             const CustomMainHeader(title: 'Virtual Cards'),
                             const CustomSpacer(size: 38),
                             cardGroupField(),
-                            const CustomSpacer(size: 10),
+                            // const CustomSpacer(size: 10),
                             cardType == 1 ? const VirtualMyTransactions() : cardType == 2 ? const VirtualTeamCards(): const PhysicalTeamCards(),
                             const CustomSpacer(size: 88),
                           ]
