@@ -1,26 +1,19 @@
-import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
-import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
-import 'package:flexflutter/ui/main/more/user_profile_edit.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
 class CompanyProfile extends StatefulWidget {
-
   const CompanyProfile({Key? key}) : super(key: key);
   @override
   CompanyProfileState createState() => CompanyProfileState();
 }
 
 class CompanyProfileState extends State<CompanyProfile> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -51,48 +44,46 @@ class CompanyProfileState extends State<CompanyProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        children: [
-          const CustomSpacer(size: 15),
-          userProfileField(),
-          flagEditable ? const CustomSpacer(size: 30): const SizedBox(),
-          flagEditable ? confirmChangeButton(): const SizedBox(),
-          const CustomSpacer(size: 46)
-        ]
-    );
+    return Column(children: [
+      const CustomSpacer(size: 15),
+      userProfileField(),
+      flagEditable ? const CustomSpacer(size: 30) : const SizedBox(),
+      flagEditable ? confirmChangeButton() : const SizedBox(),
+      const CustomSpacer(size: 46)
+    ]);
   }
 
   Widget userProfileField() {
     return Container(
-      width: wScale(327),
-      // height: hScale(40),
-      padding: EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
+        width: wScale(327),
+        // height: hScale(40),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          titleField(),
-          flagEditable ? editableField() : nonEditableField()
-        ],
-      )
-    );
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            titleField(),
+            flagEditable ? editableField() : nonEditableField()
+          ],
+        ));
   }
 
   Widget titleField() {
@@ -100,34 +91,46 @@ class CompanyProfileState extends State<CompanyProfile> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text('Company Profile', style:TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600)),
-        flagEditable ? const SizedBox() : SizedBox(
-          width: wScale(16),
-          height: wScale(16),
-          child: TextButton(
-              style: TextButton.styleFrom(
-                primary: const Color(0xffF5F5F5).withOpacity(0.4),
-                padding: const EdgeInsets.all(0),
-              ),
-              child: Image.asset('assets/green_edit.png', fit: BoxFit.contain, width: wScale(16)),
-              onPressed: () { handleEditProfile(); }
-          ),
-        )
+        Text('Company Profile',
+            style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600)),
+        flagEditable
+            ? const SizedBox()
+            : SizedBox(
+                width: wScale(16),
+                height: wScale(16),
+                child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xffF5F5F5).withOpacity(0.4),
+                      padding: const EdgeInsets.all(0),
+                    ),
+                    child: Image.asset('assets/green_edit.png',
+                        fit: BoxFit.contain, width: wScale(16)),
+                    onPressed: () {
+                      handleEditProfile();
+                    }),
+              )
       ],
     );
   }
 
   Widget customDataField(label, value) {
     return SizedBox(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFF040415).withOpacity(0.4))),
-          const CustomSpacer(size: 8),
-          Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: const Color(0xFF040415)))
-        ],
-      )
-    );
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: TextStyle(
+                fontSize: fSize(12),
+                fontWeight: FontWeight.w400,
+                color: const Color(0xFF040415).withOpacity(0.4))),
+        const CustomSpacer(size: 8),
+        Text(value,
+            style: TextStyle(
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF040415)))
+      ],
+    ));
   }
 
   Widget customEditField(hint, label) {
@@ -140,10 +143,10 @@ class CompanyProfileState extends State<CompanyProfile> {
           decoration: InputDecoration(
             filled: true,
             fillColor: const Color(0xFFBDBDBD).withOpacity(0.1),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(
-                color: const Color(0xff040415).withOpacity(0.1),
-                width: 1.0)
-            ),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: const Color(0xff040415).withOpacity(0.1),
+                    width: 1.0)),
             hintText: hint,
             hintStyle: TextStyle(
                 color: const Color(0xff040415).withOpacity(0.1),
@@ -155,13 +158,9 @@ class CompanyProfileState extends State<CompanyProfile> {
                 fontSize: fSize(14),
                 fontWeight: FontWeight.w500),
             focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
+                borderSide: BorderSide(color: Color(0xff040415), width: 1.0)),
           ),
-        )
-    );
+        ));
   }
 
   Widget customMultiEditField(label) {
@@ -176,18 +175,14 @@ class CompanyProfileState extends State<CompanyProfile> {
           decoration: InputDecoration(
             filled: true,
             fillColor: const Color(0xFFBDBDBD).withOpacity(0.1),
-            enabledBorder: OutlineInputBorder(borderSide: BorderSide(
-                color: const Color(0xff040415).withOpacity(0.1),
-                width: 1.0)
-            ),
-            focusedBorder: const OutlineInputBorder(
+            enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                    color: Color(0xff040415),
-                    width: 1.0)
-            ),
+                    color: const Color(0xff040415).withOpacity(0.1),
+                    width: 1.0)),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xff040415), width: 1.0)),
           ),
-        )
-    );
+        ));
   }
 
   Widget confirmChangeButton() {
@@ -198,16 +193,18 @@ class CompanyProfileState extends State<CompanyProfile> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleConfirmChange(); },
-          child: Text(
-              "Confirm Changes",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.bold )),
-        )
-    );
+          onPressed: () {
+            handleConfirmChange();
+          },
+          child: Text("Confirm Changes",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.bold)),
+        ));
   }
 
   Widget nonEditableField() {
@@ -236,7 +233,8 @@ class CompanyProfileState extends State<CompanyProfile> {
         customDataField('Industry', '122-abchd'),
         const CustomSpacer(size: 16),
 
-        customDataField('', '340 - Manufacture of derivatives and intermediates produced from basic building blocks (eg acetyls, acrylics, oxochemicals.'),
+        customDataField('',
+            '340 - Manufacture of derivatives and intermediates produced from basic building blocks (eg acetyls, acrylics, oxochemicals.'),
 
         const CustomSpacer(size: 16),
         customDataField('Company Address', '123 Tagore Lane'),
@@ -281,7 +279,8 @@ class CompanyProfileState extends State<CompanyProfile> {
         customEditField('Industry', '122-abchd'),
         const CustomSpacer(size: 16),
 
-        customMultiEditField('340 - Manufacture of derivatives and \nintermediates produced from basic \nbuilding blocks (eg acetyls, acrylics, \noxochemicals.'),
+        customMultiEditField(
+            '340 - Manufacture of derivatives and \nintermediates produced from basic \nbuilding blocks (eg acetyls, acrylics, \noxochemicals.'),
 
         const CustomSpacer(size: 16),
         customEditField('Company Address', '123 Tagore Lane'),

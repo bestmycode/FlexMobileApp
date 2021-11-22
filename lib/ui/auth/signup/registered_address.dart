@@ -45,7 +45,8 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
     storage.setItem('street', streetCtl.text);
     storage.setItem('city', cityCtl.text);
     storage.setItem('operatingAddress', operatingAddressCtl.text);
-    storage.setItem('operatingAddressPostalCode', operatingAddressPostalCodeCtl.text);
+    storage.setItem(
+        'operatingAddressPostalCode', operatingAddressPostalCodeCtl.text);
     storage.setItem('flagAddress', flagAddress);
 
     Navigator.of(context).pushReplacementNamed(MAIN_CONTACT_PERSON);
@@ -58,55 +59,59 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
     streetCtl.text = storage.getItem('street');
     cityCtl.text = storage.getItem('city');
     operatingAddressCtl.text = storage.getItem('operatingAddress');
-    operatingAddressPostalCodeCtl.text =  storage.getItem('operatingAddressPostalCode');
+    operatingAddressPostalCodeCtl.text =
+        storage.getItem('operatingAddressPostalCode');
     flagAddress = storage.getItem('flagAddress') ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SignupProgressHeader(title: 'Company Detail', progress: 2,),
-              const CustomSpacer(size: 20),
-              groupIcon(),
-              const CustomSpacer(size: 15),
-              groupTitle(),
-              const CustomSpacer(size: 36),
-              registeredAddressField(),
-              const CustomSpacer(size: 22),
-              differentAddressField(),
-              flagAddress == true ? const CustomSpacer(size: 22) : const CustomSpacer(size: 0),
-              flagAddress == true ? mainOperatingAddressField() :  const CustomSpacer(size: 0),
-              const CustomSpacer(size: 37),
-              buttonField(),
-              const CustomSpacer(size: 48),
-            ]
-          )
-        )
-      )
-    );
+        child: Scaffold(
+            body: SingleChildScrollView(
+                child: Column(children: [
+      const SignupProgressHeader(
+        title: 'Company Detail',
+        progress: 2,
+      ),
+      const CustomSpacer(size: 20),
+      groupIcon(),
+      const CustomSpacer(size: 15),
+      groupTitle(),
+      const CustomSpacer(size: 36),
+      registeredAddressField(),
+      const CustomSpacer(size: 22),
+      differentAddressField(),
+      flagAddress == true
+          ? const CustomSpacer(size: 22)
+          : const CustomSpacer(size: 0),
+      flagAddress == true
+          ? mainOperatingAddressField()
+          : const CustomSpacer(size: 0),
+      const CustomSpacer(size: 37),
+      buttonField(),
+      const CustomSpacer(size: 48),
+    ]))));
   }
 
   Widget groupIcon() {
-    return Image.asset(
-      'assets/group.png',
-      fit: BoxFit.contain,
-      width: wScale(60));
+    return Image.asset('assets/group.png',
+        fit: BoxFit.contain, width: wScale(60));
   }
 
   Widget groupTitle() {
-    return Text(
-        "John, please verify that the information\n below is accurate",
+    return Text("John, please verify that the information\n below is accurate",
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600 ));
+        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600));
   }
 
   Widget registeredAddressField() {
     return Container(
-      padding: EdgeInsets.only(left: wScale(16), top: hScale(14), right: wScale(16), bottom: hScale(20)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          top: hScale(14),
+          right: wScale(16),
+          bottom: hScale(20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -128,9 +133,13 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         children: [
           addressTitle('Registered Address'),
           const CustomSpacer(size: 22),
-          CustomTextField(ctl: postalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
+          CustomTextField(
+              ctl: postalCodeCtl,
+              hint: 'Enter Postal Code',
+              label: 'Postal Code'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
+          CustomTextField(
+              ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
           // CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
           cityTypeField()
@@ -142,10 +151,12 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
   Widget addressTitle(title) {
     return SizedBox(
       width: wScale(295),
-      child: Text(
-          title,
+      child: Text(title,
           textAlign: TextAlign.start,
-          style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, )),
+          style: TextStyle(
+            fontSize: fSize(16),
+            fontWeight: FontWeight.w600,
+          )),
     );
   }
 
@@ -158,12 +169,10 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             differentAddressCheckBox(),
-            Text(
-                "My business operates at a different address",
+            Text("My business operates at a different address",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: fSize(14) )),
-          ]
-      ),
+                style: TextStyle(fontSize: fSize(14))),
+          ]),
     );
   }
 
@@ -174,7 +183,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         margin: EdgeInsets.only(right: wScale(17)),
         child: Transform.scale(
           scale: 0.7,
-          child:Checkbox(
+          child: Checkbox(
             value: flagAddress,
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
@@ -183,17 +192,13 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
               });
             },
           ),
-        )
-    );
+        ));
   }
 
   Widget buttonField() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        backButton(),
-        continueButton()
-      ],
+      children: [backButton(), continueButton()],
     );
   }
 
@@ -205,16 +210,18 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: const Color(0xffc9c9c9).withOpacity(0.1),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleBack(); },
-          child: Text(
-              "Back",
-              style: TextStyle(color: Colors.black, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleBack();
+          },
+          child: Text("Back",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget continueButton() {
@@ -226,21 +233,27 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleContinue(); },
-          child: Text(
-              "Continue",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleContinue();
+          },
+          child: Text("Continue",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget mainOperatingAddressField() {
     return Container(
-      padding: EdgeInsets.only(left: wScale(16), top: hScale(14), right: wScale(16), bottom: hScale(20)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          top: hScale(14),
+          right: wScale(16),
+          bottom: hScale(20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -262,9 +275,15 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         children: [
           addressTitle('Main Operating Address'),
           const CustomSpacer(size: 22),
-          CustomTextField(ctl: operatingAddressCtl, hint: 'Enter Operating Address', label: 'Operating Address'),
+          CustomTextField(
+              ctl: operatingAddressCtl,
+              hint: 'Enter Operating Address',
+              label: 'Operating Address'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: operatingAddressPostalCodeCtl, hint: 'Enter Postal Code', label: 'Postal Code'),
+          CustomTextField(
+              ctl: operatingAddressPostalCodeCtl,
+              hint: 'Enter Postal Code',
+              label: 'Postal Code'),
         ],
       ),
     );
@@ -280,32 +299,45 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
           margin: EdgeInsets.only(top: hScale(8)),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
-          ),
+              border:
+                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
           child: Row(
             children: <Widget>[
               Expanded(
                   child: TextField(
-                    style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
-                    controller: cityCtl,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                      hintText: 'Select City',
-                      hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                      focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                    ),
-                  )
-              ),
+                style: TextStyle(
+                    fontSize: fSize(16),
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF040415)),
+                controller: cityCtl,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
+                  hintText: 'Select City',
+                  hintStyle: TextStyle(
+                      color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
+                ),
+              )),
               PopupMenuButton<String>(
-                icon: Icon(Icons.keyboard_arrow_down_rounded, color: const Color(0xFFBFBFBF), size: wScale(15)),
+                icon: Icon(Icons.keyboard_arrow_down_rounded,
+                    color: const Color(0xFFBFBFBF), size: wScale(15)),
                 onSelected: (String value) {
                   cityCtl.text = value;
                 },
                 itemBuilder: (BuildContext context) {
                   return cityArr.map<PopupMenuItem<String>>((String value) {
-                    return PopupMenuItem(child: Text(value), value: value, textStyle:  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF040415)),);
+                    return PopupMenuItem(
+                      child: Text(value),
+                      value: value,
+                      textStyle: TextStyle(
+                          fontSize: fSize(16),
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF040415)),
+                    );
                   }).toList();
                 },
               ),
@@ -318,7 +350,11 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: wScale(8)),
             color: Colors.white,
-            child: Text('City', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+            child: Text('City',
+                style: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFBFBFBF))),
           ),
         )
       ],

@@ -21,7 +21,6 @@ import 'package:flexflutter/ui/auth/signup/main_contact_person.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_verification.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_final.dart';
 import 'package:flexflutter/ui/auth/signup/two_step_failed.dart';
-import 'package:flexflutter/ui/main/main.dart';
 
 void main() => runApp(MyApp());
 
@@ -38,16 +37,19 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
         LOADING_SCREEN: (BuildContext context) => const LoadingScreen(),
-        SPLASH_SCREEN: (BuildContext context) =>  const SplashScreen(),
-        SIGN_IN: (BuildContext context) =>  const SignInScreen(),
-        SIGN_IN_AUTH: (BuildContext context) =>  const SignInAuthScreen(),
-        FORGOT_PWD: (BuildContext context) =>  const ForgotPwdScreen(),
-        SIGN_UP: (BuildContext context) =>  const SignUpScreen(),
+        SPLASH_SCREEN: (BuildContext context) => const SplashScreen(),
+        SIGN_IN: (BuildContext context) => const SignInScreen(),
+        SIGN_IN_AUTH: (BuildContext context) => const SignInAuthScreen(),
+        FORGOT_PWD: (BuildContext context) => const ForgotPwdScreen(),
+        SIGN_UP: (BuildContext context) => const SignUpScreen(),
         MAIL_VERIFY: (BuildContext context) => const MailVerifyScreen(),
         COMPANY_DETAIL: (BuildContext context) => const CompanyDetailScreen(),
-        REGISTERED_ADDRESS: (BuildContext context) => const RegisteredAddressScreen(),
-        MAIN_CONTACT_PERSON: (BuildContext context) => const MainContactPersonScreen(),
-        TWO_STEP_VERIFICATION: (BuildContext context) => const TwoStepVerificationScreen(),
+        REGISTERED_ADDRESS: (BuildContext context) =>
+            const RegisteredAddressScreen(),
+        MAIN_CONTACT_PERSON: (BuildContext context) =>
+            const MainContactPersonScreen(),
+        TWO_STEP_VERIFICATION: (BuildContext context) =>
+            const TwoStepVerificationScreen(),
         TWO_STEP_FINAL: (BuildContext context) => const TwoStepFinalScreen(),
         TWO_STEP_FAILED: (BuildContext context) => const TwoStepFailedScreen(),
         ALMOST_DONE: (BuildContext context) => const AlmostDoneScreen(),
@@ -63,6 +65,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-

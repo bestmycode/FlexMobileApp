@@ -14,10 +14,10 @@ class PhysicalTeamCards extends StatefulWidget {
 }
 
 class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -31,13 +31,62 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   final searchCtl = TextEditingController();
   bool showModal = false;
   var transactionArr = [
-    {'id': 0, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 1, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 2, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 3, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 5, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
-    {'id': 6, 'userName':'Erin Rosser', 'cardNum':'2314', 'available':'1,200.00', 'monthly': '600.00', 'status': 'Active'},
+    {
+      'id': 0,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
+    {
+      'id': 1,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
+    {
+      'id': 2,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
+    {
+      'id': 3,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
+    {
+      'id': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
+    {
+      'id': 5,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
+    {
+      'id': 6,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'available': '1,200.00',
+      'monthly': '600.00',
+      'status': 'Active'
+    },
   ];
 
   handleCardType(type) {
@@ -52,15 +101,11 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     });
   }
 
-  handleSearch() {
-
-  }
+  handleSearch() {}
 
   handleCardDetail(data) {
     Navigator.of(context).push(
-      CupertinoPageRoute (
-          builder: (context) => const PhysicalPersonalCard()
-      ),
+      CupertinoPageRoute(builder: (context) => const PhysicalPersonalCard()),
     );
   }
 
@@ -85,7 +130,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     });
   }
 
-    @override
+  @override
   void initState() {
     super.initState();
   }
@@ -93,66 +138,59 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: EdgeInsets.only(left:wScale(24), right: wScale(24)),
-        child: Indexer(
-            children: [
-              Indexed(index: 100, child: headerField()),
-              Indexed(index: 50, child: Column(
-                children: [
-                  const CustomSpacer(size: 60),
-                  searchField(),
-                  const CustomSpacer(size: 15),
-                  getTransactionArrWidgets(transactionArr),
-                ],
-              )),
-            ]
-        ),
+      padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+      child: Indexer(children: [
+        Indexed(index: 100, child: headerField()),
+        Indexed(
+            index: 50,
+            child: Column(
+              children: [
+                const CustomSpacer(size: 60),
+                searchField(),
+                const CustomSpacer(size: 15),
+                getTransactionArrWidgets(transactionArr),
+              ],
+            )),
+      ]),
     );
   }
 
   Widget headerField() {
-    return Stack(
-        overflow: Overflow.visible,
-        children: [
-          headerSortField(),
-          showModal ? Positioned(
-              top: hScale(50),
-              right:0,
-              child: modalField()
-          ): const SizedBox()
-        ]
-    );
+    return Stack(overflow: Overflow.visible, children: [
+      headerSortField(),
+      showModal
+          ? Positioned(top: hScale(50), right: 0, child: modalField())
+          : const SizedBox()
+    ]);
   }
 
   Widget headerSortField() {
     return Container(
       height: hScale(200),
       alignment: Alignment.topCenter,
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-                children: [
-                  activeButton('Active Cards', 1),
-                  activeButton('Inactive Cards', 2),
-                ]
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Row(children: [
+          activeButton('Active Cards', 1),
+          activeButton('Inactive Cards', 2),
+        ]),
+        TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
             ),
-            TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff70828D),
-                  padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-                ),
-                onPressed: () { handleSort(); },
-                child:Row(
-                  children: [
-                    Icon(Icons.swap_vert_rounded, color: const Color(0xff29C490),size: hScale(18)),
-                    Text('Sort by', style: TextStyle(fontSize: fSize(12)))
-                  ],
-                )
-            ),
-          ]
-      ),
+            onPressed: () {
+              handleSort();
+            },
+            child: Row(
+              children: [
+                Icon(Icons.swap_vert_rounded,
+                    color: const Color(0xff29C490), size: hScale(18)),
+                Text('Sort by', style: TextStyle(fontSize: fSize(12)))
+              ],
+            )),
+      ]),
     );
   }
 
@@ -163,22 +201,28 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         padding: EdgeInsets.symmetric(vertical: 0, horizontal: wScale(5)),
         // textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
       ),
-      onPressed: () { handleCardType(type); },
+      onPressed: () {
+        handleCardType(type);
+      },
       child: Container(
         height: hScale(35),
-        padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
+        padding: EdgeInsets.only(left: wScale(6), right: wScale(6)),
         decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(
-                color: type == activeType ? const Color(0xFF29C490): const Color(0xFFEEEEEE),
-                width: type == activeType ? hScale(2): hScale(1)))
-        ),
+            border: Border(
+                bottom: BorderSide(
+                    color: type == activeType
+                        ? const Color(0xFF29C490)
+                        : const Color(0xFFEEEEEE),
+                    width: type == activeType ? hScale(2) : hScale(1)))),
         alignment: Alignment.center,
         child: Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: type == activeType ? const Color(0xff1A2831) : const Color(0xff70828D)),
+              color: type == activeType
+                  ? const Color(0xff1A2831)
+                  : const Color(0xff70828D)),
         ),
       ),
     );
@@ -186,11 +230,13 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   Widget searchField() {
     return Container(
-      height: hScale(36),
-      padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
+        height: hScale(36),
+        padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: const Color(0xff040415).withOpacity(0.1), width: hScale(1)),
+          border: Border.all(
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -198,42 +244,52 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
             bottomRight: Radius.circular(hScale(10)),
           ),
         ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            width: wScale(260),
-            // height: hScale(24),
-            child: TextField(
-              textAlignVertical: TextAlignVertical.center,
-              controller: searchCtl,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.zero,
-                enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
-                hintText: 'Card Holders , Cards…',
-                hintStyle: TextStyle( color: const Color(0xff040415).withOpacity(0.5), fontSize: fSize(12), fontWeight: FontWeight.w500),
-                focusedBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
-              ),
-              style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500),
-              scrollPadding: EdgeInsets.zero,
-            )
-          ),
-          SizedBox(
-            width: wScale(20),
-            child: TextButton(
-              style: TextButton.styleFrom(
-                primary: const Color(0xff70828D),
-                padding: const EdgeInsets.all(0),
-                textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-              ),
-              onPressed: () { handleSearch(); },
-              // child: _rounded, color: Color(0xFF7B7E80), size: 20 ),
-              child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+                width: wScale(260),
+                // height: hScale(24),
+                child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  controller: searchCtl,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.zero,
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
+                    hintText: 'Card Holders , Cards…',
+                    hintStyle: TextStyle(
+                        color: const Color(0xff040415).withOpacity(0.5),
+                        fontSize: fSize(12),
+                        fontWeight: FontWeight.w500),
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
+                  ),
+                  style: TextStyle(
+                      fontSize: fSize(14), fontWeight: FontWeight.w500),
+                  scrollPadding: EdgeInsets.zero,
+                )),
+            SizedBox(
+              width: wScale(20),
+              child: TextButton(
+                  style: TextButton.styleFrom(
+                    primary: const Color(0xff70828D),
+                    padding: const EdgeInsets.all(0),
+                    textStyle: TextStyle(
+                        fontSize: fSize(14), color: const Color(0xff70828D)),
+                  ),
+                  onPressed: () {
+                    handleSearch();
+                  },
+                  // child: _rounded, color: Color(0xFF7B7E80), size: 20 ),
+                  child: Image.asset(
+                    'assets/search_icon.png',
+                    fit: BoxFit.contain,
+                    width: wScale(13),
+                  )),
             ),
-          ),
-        ],
-      )
-    );
+          ],
+        ));
   }
 
   Widget collapseField(data) {
@@ -263,14 +319,9 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
             ScrollOnExpand(
               child: ExpandablePanel(
                 theme: const ExpandableThemeData(
-                    tapBodyToCollapse: true,
-                    tapBodyToExpand: true
-                ),
+                    tapBodyToCollapse: true, tapBodyToExpand: true),
                 expanded: Column(
-                  children: [
-                    cardHeader(data),
-                    cardBody(data)
-                  ],
+                  children: [cardHeader(data), cardBody(data)],
                 ),
                 collapsed: cardHeader(data),
                 builder: (_, collapsed, expanded) {
@@ -291,31 +342,37 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
+    return Column(
+        children: arr.map<Widget>((item) {
       return collapseField(item);
     }).toList());
   }
 
   Widget cardHeader(data) {
     return Container(
-      width: wScale(327),
-      // height: hScale(50),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16),top: hScale(8), bottom: hScale(8)),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1B2931),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
+        width: wScale(327),
+        // height: hScale(50),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(8),
+            bottom: hScale(8)),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1B2931),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(data['userName'], style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-          Text('**** **** **** ${data["cardNum"]}', style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        ],
-      )
-    );
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(data['userName'],
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+            Text('**** **** **** ${data["cardNum"]}',
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+          ],
+        ));
   }
 
   Widget cardBody(data) {
@@ -338,50 +395,72 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
             TextButton(
               style: TextButton.styleFrom(
                 primary: const Color(0xff1da7ff),
-                textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500,
+                textStyle: TextStyle(
+                    fontSize: fSize(14),
+                    fontWeight: FontWeight.w500,
                     color: const Color(0xff1da7ff)),
               ),
-              onPressed: () { handleCardDetail(data); },
+              onPressed: () {
+                handleCardDetail(data);
+              },
               child: const Text('View Card Details'),
             ),
           ],
-        )
-    );
+        ));
   }
 
   Widget cardBodyDetail(title, value, type) {
     return Container(
-      padding: EdgeInsets.only(top:hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(title, style: TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
-          Container(
-              padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
-              decoration: BoxDecoration(
-                color: type!=1 ? const Color(0xFFDEFEE9) : Colors.transparent,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(hScale(16)),
-                  topRight: Radius.circular(hScale(16)),
-                  bottomLeft: Radius.circular(hScale(16)),
-                  bottomRight: Radius.circular(hScale(16)),
+        padding: EdgeInsets.only(
+            top: hScale(10),
+            bottom: hScale(10),
+            left: wScale(16),
+            right: wScale(16)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(title,
+                style: TextStyle(
+                    fontSize: fSize(12), color: const Color(0xFF70828D))),
+            Container(
+                padding: EdgeInsets.only(
+                    left: wScale(16),
+                    right: wScale(16),
+                    top: hScale(5),
+                    bottom: hScale(5)),
+                decoration: BoxDecoration(
+                  color:
+                      type != 1 ? const Color(0xFFDEFEE9) : Colors.transparent,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(hScale(16)),
+                    topRight: Radius.circular(hScale(16)),
+                    bottomLeft: Radius.circular(hScale(16)),
+                    bottomRight: Radius.circular(hScale(16)),
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  type != 2 ? Text('SGD ', style: TextStyle(fontSize: fSize(8),
-                      color: type != 1 ? const Color(0xFF30E7A9): const Color(0xFF1A2831))) : SizedBox(),
-                  Text(value, style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600,
-                      color: type != 1 ? const Color(0xFF30E7A9): const Color(0xFF1A2831)))
-                ]
-              )
-          )
-        ],
-      )
-    );
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      type != 2
+                          ? Text('SGD ',
+                              style: TextStyle(
+                                  fontSize: fSize(8),
+                                  color: type != 1
+                                      ? const Color(0xFF30E7A9)
+                                      : const Color(0xFF1A2831)))
+                          : SizedBox(),
+                      Text(value,
+                          style: TextStyle(
+                              fontSize: fSize(14),
+                              fontWeight: FontWeight.w600,
+                              color: type != 1
+                                  ? const Color(0xFF30E7A9)
+                                  : const Color(0xFF1A2831)))
+                    ]))
+          ],
+        ));
   }
 
   Widget modalField() {
@@ -420,13 +499,17 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: sortType == type ? const Color(0xFF29C490) : Colors.black,
-        padding: EdgeInsets.only(top: hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
+        padding: EdgeInsets.only(
+            top: hScale(10),
+            bottom: hScale(10),
+            left: wScale(16),
+            right: wScale(16)),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
       onPressed: () {
-        if(type == 1) {
+        if (type == 1) {
           sortCardHolder();
-        } else if(type==2) {
+        } else if (type == 2) {
           sortAvailableLimit();
         } else {
           sortDateIssued();
@@ -434,7 +517,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
       },
       child: Container(
         width: wScale(177),
-        padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
+        padding: EdgeInsets.only(top: hScale(6), bottom: hScale(6)),
         alignment: Alignment.centerLeft,
         child: Text(
           title,

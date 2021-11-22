@@ -12,7 +12,6 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class NotificationScreenState extends State<NotificationScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -26,16 +25,66 @@ class NotificationScreenState extends State<NotificationScreen> {
   }
 
   var notificationArr = [
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
-    {'title':'Physical Card Issued.', 'detail':'Your physical card approved by Justin Curtis.', 'date': 'Today', 'time': '05:05PM'},
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
+    {
+      'title': 'Physical Card Issued.',
+      'detail': 'Your physical card approved by Justin Curtis.',
+      'date': 'Today',
+      'time': '05:05PM'
+    },
   ];
 
   handleBack() {
@@ -51,50 +100,50 @@ class NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: Stack(
-                children:[
-                  SizedBox(
-                    height: hScale(812),
-                    child: SingleChildScrollView(
-                        child: Column(
-                            children: [
-                              const CustomSpacer(size: 44),
-                              headerNotification(),
-                              const CustomSpacer(size: 39),
-                              showNotificationWidgets(notificationArr),
-                              const CustomSpacer(size: 88),
-                            ]
-                        )
-                    ),
-                  ),
-                  const Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: CustomBottomBar(active: 0),
-                  )
-                ]
-            )
-        )
-    );
+            body: Stack(children: [
+      SizedBox(
+        height: hScale(812),
+        child: SingleChildScrollView(
+            child: Column(children: [
+          const CustomSpacer(size: 44),
+          headerNotification(),
+          const CustomSpacer(size: 39),
+          showNotificationWidgets(notificationArr),
+          const CustomSpacer(size: 88),
+        ])),
+      ),
+      const Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 0),
+      )
+    ])));
   }
 
   Widget headerNotification() {
-    return Row(
-      children: [
-        SizedBox(width: wScale(20)),
-        IconButton(
-          icon: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 20.0 ),
-          onPressed: () { handleBack();},),
-        SizedBox(width: wScale(30)),
-        Text('Notifications', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-      ]
-    );
+    return Row(children: [
+      SizedBox(width: wScale(20)),
+      IconButton(
+        icon: const Icon(Icons.arrow_back_ios_rounded,
+            color: Colors.black, size: 20.0),
+        onPressed: () {
+          handleBack();
+        },
+      ),
+      SizedBox(width: wScale(30)),
+      Text('Notifications',
+          style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+    ]);
   }
 
   Widget notificationField(title, detail, date, time) {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       margin: EdgeInsets.only(bottom: hScale(10)),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -117,24 +166,32 @@ class NotificationScreenState extends State<NotificationScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
+          Text(title,
+              style:
+                  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
           const CustomSpacer(size: 4),
-          Text(detail, style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500)),
+          Text(detail,
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500)),
           const CustomSpacer(size: 8),
-          Row(
-            children: [
-              Text('${date},', style: TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w500)),
-              Text(time, style: TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w500)),
-            ]
-          )
+          Row(children: [
+            Text('${date},',
+                style: TextStyle(
+                    fontSize: fSize(10), fontWeight: FontWeight.w500)),
+            Text(time,
+                style: TextStyle(
+                    fontSize: fSize(10), fontWeight: FontWeight.w500)),
+          ])
         ],
       ),
     );
   }
 
   Widget showNotificationWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
-      return notificationField(item['title'], item['detail'], item['date'], item['time']);
+    return Column(
+        children: arr.map<Widget>((item) {
+      return notificationField(
+          item['title'], item['detail'], item['date'], item['time']);
     }).toList());
   }
 }

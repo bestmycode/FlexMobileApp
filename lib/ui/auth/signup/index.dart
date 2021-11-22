@@ -18,7 +18,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class SignUpScreenState extends State<SignUpScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -40,7 +39,8 @@ class SignUpScreenState extends State<SignUpScreen> {
   final companyEmailCtl = TextEditingController();
   final passwordCtl = TextEditingController();
 
-  Country _selectedDialogCountry = CountryPickerUtils.getCountryByPhoneCode('65');
+  Country _selectedDialogCountry =
+      CountryPickerUtils.getCountryByPhoneCode('65');
 
   bool flagTerm = false;
   int signUpProgress = 1;
@@ -80,35 +80,45 @@ class SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SignupProgressHeader(prev: SPLASH_SCREEN),
-              const CustomSpacer(size: 38),
-              CustomTextField(ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),
-              const CustomSpacer(size: 32),
-              CustomTextField(ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
-              const CustomSpacer(size: 32),
-              CustomMobileTextField(ctl: mobileNumberCtl, hint: 'Enter Mobile Number', label: 'Mobile Number'),
-              const CustomSpacer(size: 32),
-              CustomTextField(ctl: companyNameCtl, hint: 'Enter Company Name', label: 'Registered Company Name'),
-              const CustomSpacer(size: 32),
-              CustomTextField(ctl: companyEmailCtl, hint: 'Enter Company Email Address', label: 'Company Email Address'),
-              const CustomSpacer(size: 32),
-              CustomTextField(ctl: passwordCtl, hint: 'At Least 8 Characters', label: 'Password', pwd: true),
-              const CustomSpacer(size: 21),
-              termsField(),
-              const CustomSpacer(size: 22),
-              continueButton(),
-              const CustomSpacer(size: 45),
-              loginField(),
-              const CustomSpacer(size: 52),
-            ]
-          )
-        )
-      )
-    );
+        child: Scaffold(
+            body: SingleChildScrollView(
+                child: Column(children: [
+      const SignupProgressHeader(prev: SPLASH_SCREEN),
+      const CustomSpacer(size: 38),
+      CustomTextField(
+          ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
+      const CustomSpacer(size: 32),
+      CustomMobileTextField(
+          ctl: mobileNumberCtl,
+          hint: 'Enter Mobile Number',
+          label: 'Mobile Number'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: companyNameCtl,
+          hint: 'Enter Company Name',
+          label: 'Registered Company Name'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: companyEmailCtl,
+          hint: 'Enter Company Email Address',
+          label: 'Company Email Address'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: passwordCtl,
+          hint: 'At Least 8 Characters',
+          label: 'Password',
+          pwd: true),
+      const CustomSpacer(size: 21),
+      termsField(),
+      const CustomSpacer(size: 22),
+      continueButton(),
+      const CustomSpacer(size: 45),
+      loginField(),
+      const CustomSpacer(size: 52),
+    ]))));
   }
 
   Widget termsField() {
@@ -117,54 +127,60 @@ class SignUpScreenState extends State<SignUpScreen> {
       height: hScale(48),
       alignment: Alignment.topLeft,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          termsCheckBox(),
-          termsTitle(),
-          ]
-        ),
-      );
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            termsCheckBox(),
+            termsTitle(),
+          ]),
+    );
   }
 
   Widget termsCheckBox() {
     return SizedBox(
-      width: hScale(14),
-      height: hScale(24),
-      child: Transform.scale(
-        scale: 0.7,
-        child:Checkbox(
-          value: flagTerm,
-          activeColor: const Color(0xff30E7A9),
-          onChanged: (value) {
-            setState(() {
-              flagTerm = value!;
-            });
-          },
-        ),
-      )
-    );
+        width: hScale(14),
+        height: hScale(24),
+        child: Transform.scale(
+          scale: 0.7,
+          child: Checkbox(
+            value: flagTerm,
+            activeColor: const Color(0xff30E7A9),
+            onChanged: (value) {
+              setState(() {
+                flagTerm = value!;
+              });
+            },
+          ),
+        ));
   }
 
   Widget termsTitle() {
     return SizedBox(
-      width: wScale(264),
-      height: hScale(48),
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(
-            fontSize: fSize(14),
-            color: Colors.black,
+        width: wScale(264),
+        height: hScale(48),
+        child: RichText(
+          text: TextSpan(
+            style: TextStyle(
+              fontSize: fSize(14),
+              color: Colors.black,
+            ),
+            children: const [
+              TextSpan(
+                  text: 'I agree to the ',
+                  style: TextStyle(color: Color(0xFF515151))),
+              TextSpan(
+                  text: 'terms of use ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF515151))),
+              TextSpan(
+                  text: 'and ', style: TextStyle(color: Color(0xFF515151))),
+              TextSpan(
+                  text: 'privacy policy',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF515151))),
+            ],
           ),
-          children: const [
-            TextSpan(text: 'I agree to the ', style: TextStyle(color: Color(0xFF515151))),
-            TextSpan(text: 'terms of use ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF515151))),
-            TextSpan(text: 'and ', style:TextStyle(color: Color(0xFF515151))),
-            TextSpan(text: 'privacy policy', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF515151))),
-          ],
-        ),
-      )
-    );
+        ));
   }
 
   Widget continueButton() {
@@ -175,25 +191,27 @@ class SignUpScreenState extends State<SignUpScreen> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleContinue(); },
-          child: Text(
-              "Continue",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleContinue();
+          },
+          child: Text("Continue",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget loginField() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-            "Already have an account?",
-            style: TextStyle(color: const Color(0xFF666666), fontSize: fSize(14) )),
+        Text("Already have an account?",
+            style:
+                TextStyle(color: const Color(0xFF666666), fontSize: fSize(14))),
         loginButton()
       ],
     );
@@ -201,17 +219,18 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   Widget loginButton() {
     return SizedBox(
-      width: wScale(40),
-      child: TextButton(
-        style: TextButton.styleFrom(
-          padding: EdgeInsets.zero,
-          primary: const Color(0xff29c490),
-          textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff29c490)),
-        ),
-        onPressed: () { handleLogin(); },
-        child: const Text('Login'),
-      )
-    );
+        width: wScale(40),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            primary: const Color(0xff29c490),
+            textStyle:
+                TextStyle(fontSize: fSize(14), color: const Color(0xff29c490)),
+          ),
+          onPressed: () {
+            handleLogin();
+          },
+          child: const Text('Login'),
+        ));
   }
-
 }

@@ -18,10 +18,10 @@ class TransactionUser extends StatefulWidget {
 }
 
 class TransactionUserState extends State<TransactionUser> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -38,18 +38,71 @@ class TransactionUserState extends State<TransactionUser> {
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
-
+    {
+      'date': '21 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage1',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '22 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage2',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '23 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage3',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '24 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage4',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '25 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage5',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '26 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage6',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '27 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage7',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    }
   ];
-  handleDepositFunds() {
-
-  }
+  handleDepositFunds() {}
 
   handleTransactionStatus(type) {
     setState(() {
@@ -63,9 +116,7 @@ class TransactionUserState extends State<TransactionUser> {
     });
   }
 
-  handleSearch() {
-
-  }
+  handleSearch() {}
 
   handleExport() {
     setState(() {
@@ -87,53 +138,48 @@ class TransactionUserState extends State<TransactionUser> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      Material(
+    return Material(
         child: Scaffold(
-            body: Stack(
-                children:[
-                  SingleChildScrollView(
-                      padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-                      child: Align(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const CustomSpacer(size: 57),
-                                cardValanceField(),
-                                const CustomSpacer(size: 20),
-                                welcomeHandleField('assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                                const CustomSpacer(size: 10),
-                                welcomeHandleField('assets/get_credit_line.png', 21.0, "Increase Credit Line"),
-                                const CustomSpacer(size: 20),
-                                Indexer(
-                                    children: [
-                                      Indexed(index: 100, child: searchRowField()),
-                                      Indexed(index: 50, child: Column(
-                                        children: [
-                                          const CustomSpacer(size: 50),
-                                          transactionStatusField(),
-                                          showDateRange ? const CustomSpacer(size: 15): const SizedBox(),
-                                          showDateRange ? dateRangeField() : const SizedBox(),
-                                          const CustomSpacer(size: 15),
-                                          getTransactionArrWidgets(transactionArr)
-                                        ],
-                                      )),
-
-                                    ]
-                                )
-                              ]
-                          )
-                      )
-                  ),
-                  const Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: CustomBottomBar(active: 2),
-                  )
-                ]
-            )
-    )
-    );
+            body: Stack(children: [
+      SingleChildScrollView(
+          padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+          child: Align(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                const CustomSpacer(size: 57),
+                cardValanceField(),
+                const CustomSpacer(size: 20),
+                welcomeHandleField(
+                    'assets/deposit_funds.png', 27.0, "Deposit Funds"),
+                const CustomSpacer(size: 10),
+                welcomeHandleField(
+                    'assets/get_credit_line.png', 21.0, "Increase Credit Line"),
+                const CustomSpacer(size: 20),
+                Indexer(children: [
+                  Indexed(index: 100, child: searchRowField()),
+                  Indexed(
+                      index: 50,
+                      child: Column(
+                        children: [
+                          const CustomSpacer(size: 50),
+                          transactionStatusField(),
+                          showDateRange
+                              ? const CustomSpacer(size: 15)
+                              : const SizedBox(),
+                          showDateRange ? dateRangeField() : const SizedBox(),
+                          const CustomSpacer(size: 15),
+                          getTransactionArrWidgets(transactionArr)
+                        ],
+                      )),
+                ])
+              ]))),
+      const Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 2),
+      )
+    ])));
   }
 
   Widget cardValanceField() {
@@ -147,14 +193,15 @@ class TransactionUserState extends State<TransactionUser> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-            children: [
-              moneyValue('Total Balance', '0.00', 20.0, FontWeight.bold, const Color(0xff30E7A9)),
-              const CustomSpacer(size: 8,),
-              moneyValue('Ledger Balance', '0.00', 16.0, FontWeight.w600, const Color(0xffADD2C8)),
-            ]
-        )
-    );
+        child: Column(children: [
+          moneyValue('Total Balance', '0.00', 20.0, FontWeight.bold,
+              const Color(0xff30E7A9)),
+          const CustomSpacer(
+            size: 8,
+          ),
+          moneyValue('Ledger Balance', '0.00', 16.0, FontWeight.w600,
+              const Color(0xffADD2C8)),
+        ]));
   }
 
   Widget moneyValue(title, value, size, weight, color) {
@@ -162,18 +209,15 @@ class TransactionUserState extends State<TransactionUser> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-            title,
-            style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
-              Text("SGD  ",
-                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
-              Text(value,
-                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
-            ]
-        )
+        Text(title, style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text("SGD  ",
+              style: TextStyle(
+                  fontSize: fSize(12), fontWeight: weight, color: color)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: fSize(size), fontWeight: weight, color: color)),
+        ])
       ],
     );
   }
@@ -186,33 +230,30 @@ class TransactionUserState extends State<TransactionUser> {
               primary: const Color(0xffffffff),
               side: const BorderSide(width: 0, color: Color(0xffffffff)),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)
-              ),
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            onPressed: () { handleDepositFunds(); },
+            onPressed: () {
+              handleDepositFunds();
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                    children:[
-                      SizedBox(
-                        width: hScale(22),
-                        child: Image.asset(imageURL, fit: BoxFit.contain, width: wScale(imageScale)),
-                      ),
-                      SizedBox(width: wScale(18)),
-                      Text(title, style: TextStyle(fontSize: fSize(12), color: const Color(0xff465158))),
-                    ]
-                ),
-                const Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Color(0xff70828D),
-                    size: 24.0
-                ),
+                Row(children: [
+                  SizedBox(
+                    width: hScale(22),
+                    child: Image.asset(imageURL,
+                        fit: BoxFit.contain, width: wScale(imageScale)),
+                  ),
+                  SizedBox(width: wScale(18)),
+                  Text(title,
+                      style: TextStyle(
+                          fontSize: fSize(12), color: const Color(0xff465158))),
+                ]),
+                const Icon(Icons.arrow_forward_rounded,
+                    color: Color(0xff70828D), size: 24.0),
               ],
-            )
-        )
-    );
+            )));
   }
 
   Widget transactionStatusField() {
@@ -229,74 +270,67 @@ class TransactionUserState extends State<TransactionUser> {
           bottomRight: Radius.circular(hScale(17)),
         ),
       ),
-      child: Row(
-          children: [
-            transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
-            transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
-            transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
-          ]
-      ),
+      child: Row(children: [
+        transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
+        transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
+        transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
+      ]),
     );
   }
 
   Widget transactionStatusButton(status, type, textColor) {
-    return type == transactionStatus ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
-          ),
-        ),
-        onPressed: () { handleTransactionStatus(type); },
-        child: Container(
-          width: wScale(107),
-          height: hScale(30),
-          alignment: Alignment.center,
-          child: Text(
-            status,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: fSize(14),
-                color: textColor),
-          ),
-        )
-    ) : TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff70828D),
-        padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-      ),
-      onPressed: () { handleTransactionStatus(type); },
-      child: Container(
-        width: wScale(107),
-        height: hScale(30),
-        alignment: Alignment.center,
-        child: Text(
-          status,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              color: textColor),
-        ),
-      ),
-    );
+    return type == transactionStatus
+        ? ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(0),
+              primary: const Color(0xffffffff),
+              side: const BorderSide(width: 0, color: Color(0xffffffff)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              handleTransactionStatus(type);
+            },
+            child: Container(
+              width: wScale(107),
+              height: hScale(30),
+              alignment: Alignment.center,
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: fSize(14), color: textColor),
+              ),
+            ))
+        : TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
+            ),
+            onPressed: () {
+              handleTransactionStatus(type);
+            },
+            child: Container(
+              width: wScale(107),
+              height: hScale(30),
+              alignment: Alignment.center,
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: fSize(14), color: textColor),
+              ),
+            ),
+          );
   }
 
   Widget searchRowField() {
-    return Stack(
-        overflow: Overflow.visible,
-        children: [
-          searchRow(),
-          showModal ? Positioned(
-              top: hScale(50),
-              right:0,
-              child: modalField()
-          ): const SizedBox()
-        ]
-    );
+    return Stack(overflow: Overflow.visible, children: [
+      searchRow(),
+      showModal
+          ? Positioned(top: hScale(50), right: 0, child: modalField())
+          : const SizedBox()
+    ]);
   }
 
   Widget searchRow() {
@@ -308,48 +342,70 @@ class TransactionUserState extends State<TransactionUser> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('All Transactions', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
+            Text('All Transactions',
+                style: TextStyle(
+                    fontSize: fSize(16), fontWeight: FontWeight.w500)),
             Row(
               children: [
                 TextButton(
                   style: TextButton.styleFrom(
                     primary: const Color(0xff30E7A9),
-                    textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff30E7A9),decoration: TextDecoration.underline),
+                    textStyle: TextStyle(
+                        fontSize: fSize(12),
+                        color: const Color(0xff30E7A9),
+                        decoration: TextDecoration.underline),
                   ),
-                  onPressed: () { handleExport(); },
+                  onPressed: () {
+                    handleExport();
+                  },
                   child: const Text('Export'),
                 ),
                 TextButton(
                     style: TextButton.styleFrom(
                       primary: const Color(0xff70828D),
                       padding: const EdgeInsets.all(0),
-                      textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+                      textStyle: TextStyle(
+                          fontSize: fSize(14), color: const Color(0xff70828D)),
                     ),
-                    onPressed: () { handleSort(); },
-                    child:Row(
+                    onPressed: () {
+                      handleSort();
+                    },
+                    child: Row(
                       children: [
-                        Icon(Icons.swap_vert_rounded, color: const Color(0xff29C490),size: hScale(18)),
+                        Icon(Icons.swap_vert_rounded,
+                            color: const Color(0xff29C490), size: hScale(18)),
                         Text('Sort by', style: TextStyle(fontSize: fSize(12)))
                       ],
-                    )
-                ),
+                    )),
               ],
             )
           ],
-        )
-    );
+        ));
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
-      return TransactionItem(date: item['date'], time: item['time'], transactionName: item['transactionName'], userName: item['userName'], cardNum: item['cardNum'], value:item['value'], status: item['status'],);
+    return Column(
+        children: arr.map<Widget>((item) {
+      return TransactionItem(
+        date: item['date'],
+        time: item['time'],
+        transactionName: item['transactionName'],
+        userName: item['userName'],
+        cardNum: item['cardNum'],
+        value: item['value'],
+        status: item['status'],
+      );
     }).toList());
   }
 
   Widget dateRangeField() {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(16),
+            bottom: hScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -372,14 +428,14 @@ class TransactionUserState extends State<TransactionUser> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextField(ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
+              CustomTextField(
+                  ctl: startDateCtl, hint: 'DD/MM/YYYY', label: 'Start Date'),
               const CustomSpacer(size: 23),
-              CustomTextField(ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
+              CustomTextField(
+                  ctl: endDateCtl, hint: 'DD/MM/YYYY', label: 'End Date'),
               const CustomSpacer(size: 17),
               exportButton()
-            ]
-        )
-    );
+            ]));
   }
 
   Widget exportButton() {
@@ -390,16 +446,18 @@ class TransactionUserState extends State<TransactionUser> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleSearch(); },
-          child: Text(
-              "Export",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleSearch();
+          },
+          child: Text("Export",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget modalField() {
@@ -438,13 +496,19 @@ class TransactionUserState extends State<TransactionUser> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: dateType == type ? const Color(0xFF29C490) : Colors.black,
-        padding: EdgeInsets.only(top: hScale(10), bottom: hScale(10), left: wScale(16), right: wScale(16)),
+        padding: EdgeInsets.only(
+            top: hScale(10),
+            bottom: hScale(10),
+            left: wScale(16),
+            right: wScale(16)),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
-      onPressed: () { setDateType(type); },
+      onPressed: () {
+        setDateType(type);
+      },
       child: Container(
         width: wScale(177),
-        padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
+        padding: EdgeInsets.only(top: hScale(6), bottom: hScale(6)),
         alignment: Alignment.centerLeft,
         child: Text(
           title,
@@ -454,5 +518,4 @@ class TransactionUserState extends State<TransactionUser> {
       ),
     );
   }
-
 }

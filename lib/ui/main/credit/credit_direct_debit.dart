@@ -1,12 +1,8 @@
-import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 
 class CreditDirectDebitScreen extends StatefulWidget {
@@ -17,7 +13,6 @@ class CreditDirectDebitScreen extends StatefulWidget {
 }
 
 class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -30,9 +25,7 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
     return Scale().fSize(context, size);
   }
 
-  handleUpload() {
-
-  }
+  handleUpload() {}
 
   @override
   void initState() {
@@ -43,47 +36,47 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: Stack(
-              children:[
-                  SizedBox(
-                    height: hScale(812),
-                    child: SingleChildScrollView(
-                        child: Column(
-                            children: [
-                              const CustomSpacer(size: 44),
-                              const CustomMainHeader(title: 'Flex PLUS Credit'),
-                              const CustomSpacer(size: 21),
-                              titleField(),
-                              const CustomSpacer(size: 29),
-                              depositFundsField(),
-                              const CustomSpacer(size: 88),
-                            ]
-                        )
-                    )
-                  ),
-                  const Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: CustomBottomBar(active: 3),
-                  )
-                ]
-            )
-        )
-    );
+            body: Stack(children: [
+      SizedBox(
+          height: hScale(812),
+          child: SingleChildScrollView(
+              child: Column(children: [
+            const CustomSpacer(size: 44),
+            const CustomMainHeader(title: 'Flex PLUS Credit'),
+            const CustomSpacer(size: 21),
+            titleField(),
+            const CustomSpacer(size: 29),
+            depositFundsField(),
+            const CustomSpacer(size: 88),
+          ]))),
+      const Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 3),
+      )
+    ])));
   }
 
   Widget titleField() {
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+      child: Text('Flex PLUS Account 123456',
+          style: TextStyle(
+              fontSize: fSize(16),
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF1A2831))),
     );
   }
 
   Widget depositFundsField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       margin: EdgeInsets.only(bottom: hScale(10)),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -106,49 +99,63 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('To help you make timely payments, download the DDA form', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF1A2831))),
+          Text('To help you make timely payments, download the DDA form',
+              style: TextStyle(
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF1A2831))),
           const CustomSpacer(size: 42),
-          Row(
-            children: [
-              Text('Download as:', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: const Color(0xFF1A2831))),
-              SizedBox(width: wScale(24)),
-              downloadType('assets/excel.png'),
-              SizedBox(width: wScale(15)),
-              downloadType('assets/pdf.png'),
-            ]
-          ),
+          Row(children: [
+            Text('Download as:',
+                style: TextStyle(
+                    fontSize: fSize(14),
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF1A2831))),
+            SizedBox(width: wScale(24)),
+            downloadType('assets/excel.png'),
+            SizedBox(width: wScale(15)),
+            downloadType('assets/pdf.png'),
+          ]),
           const CustomSpacer(size: 36),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: const Color(0xff1A2831),
                 side: const BorderSide(width: 0, color: Color(0xff1A2831)),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)
-                ),
+                    borderRadius: BorderRadius.circular(16)),
               ),
-              onPressed: () { handleUpload(); },
+              onPressed: () {
+                handleUpload();
+              },
               child: SizedBox(
                   width: wScale(295),
                   height: hScale(56),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Upload DDA', style:TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w700, color: Colors.white))
+                      Text('Upload DDA',
+                          style: TextStyle(
+                              fontSize: fSize(16),
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white))
                     ],
-                  )
-              )
-          )
+                  )))
         ],
       ),
     );
   }
 
   Widget title(text) {
-    return Text(text, style:TextStyle(color: const Color(0xff70828D), fontSize: fSize(12)));
+    return Text(text,
+        style: TextStyle(color: const Color(0xff70828D), fontSize: fSize(12)));
   }
 
   Widget detail(text) {
-    return Text(text, style:TextStyle(color: const Color(0xff040415), fontSize: fSize(14), fontWeight: FontWeight.w500));
+    return Text(text,
+        style: TextStyle(
+            color: const Color(0xff040415),
+            fontSize: fSize(14),
+            fontWeight: FontWeight.w500));
   }
 
   Widget downloadType(imageURL) {
@@ -168,5 +175,4 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
       child: Image.asset(imageURL, fit: BoxFit.contain, width: hScale(18)),
     );
   }
-
 }

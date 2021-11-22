@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +11,12 @@ class SplashScreen extends StatefulWidget {
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-
+class SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -50,52 +49,46 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
           fit: BoxFit.cover,
         ),
         Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Align(
-            child: Column(
-                children: <Widget>[
-                  const CustomSpacer(size: 120),
-                  logo(),
-                  const CustomSpacer(size: 130),
-                  existingUserButton(),
-                  const CustomSpacer(size: 26),
-                  newCustomerButton()
-                ]
-            )
-          )
-        ),
+            backgroundColor: Colors.transparent,
+            body: Align(
+                child: Column(children: <Widget>[
+              const CustomSpacer(size: 120),
+              logo(),
+              const CustomSpacer(size: 130),
+              existingUserButton(),
+              const CustomSpacer(size: 26),
+              newCustomerButton()
+            ]))),
       ],
     );
   }
 
   Widget logo() {
-   return Image.asset(
-    'assets/logo.png',
-    fit: BoxFit.contain,
-    width: wScale(187));
+    return Image.asset('assets/logo.png',
+        fit: BoxFit.contain, width: wScale(187));
   }
 
   Widget existingUserButton() {
     return Container(
-      width: wScale(295),
-      height: hScale(54),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all()
-      ),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)
+        width: wScale(295),
+        height: hScale(54),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16), border: Border.all()),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-        ),
-        onPressed: () { handleExistingUser(); },
-        child: const Text(
-            "Existing User",
-            style: TextStyle(color: Color(0xff1A2831), fontSize: 16, fontWeight: FontWeight.w700 )),
-      )
-    );
+          onPressed: () {
+            handleExistingUser();
+          },
+          child: const Text("Existing User",
+              style: TextStyle(
+                  color: Color(0xff1A2831),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget newCustomerButton() {
@@ -103,18 +96,20 @@ class SplashScreenState extends State<SplashScreen> with SingleTickerProviderSta
         width: wScale(295),
         height: hScale(54),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white, width: 2)
-        ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white, width: 2)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: Colors.transparent,
           ),
-          onPressed: () { handleNewCustomer(); },
-          child: const Text(
-              "New Customer",
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleNewCustomer();
+          },
+          child: const Text("New Customer",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 }

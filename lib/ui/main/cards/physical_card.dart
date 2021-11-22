@@ -1,7 +1,6 @@
 import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
 import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
 class PhysicalCards extends StatefulWidget {
-
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
 
@@ -21,10 +19,10 @@ class PhysicalCards extends StatefulWidget {
 }
 
 class PhysicalCardsState extends State<PhysicalCards> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -50,43 +48,37 @@ class PhysicalCardsState extends State<PhysicalCards> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: Stack(
-                children:[
-                  Container(
-                    color: Colors.white,
-                    child: SizedBox(
-                      height: hScale(812),
-                      child: SingleChildScrollView(
-                          child: Column(
-                              children: [
-                                const CustomSpacer(size: 44),
-                                // Row(
-                                //     children: [
-                                //       SizedBox(width: wScale(20)),
-                                //       backButton(),
-                                //       SizedBox(width: wScale(20)),
-                                //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-                                //     ]
-                                // ),
-                                const CustomMainHeader(title: 'Physical Card'),
-                                const CustomSpacer(size: 38),
-                                cardGroupField(),
-                                cardType == 1 ? const PhysicalMyCards() : const PhysicalTeamCards(),
-                                const CustomSpacer(size: 88),
-                              ]
-                          )
-                      )
-                    ),
-                  ),
-                  const Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: CustomBottomBar(active: 1),
-                  )
-                ]
-            )
-        )
-    );
+            body: Stack(children: [
+      Container(
+        color: Colors.white,
+        child: SizedBox(
+            height: hScale(812),
+            child: SingleChildScrollView(
+                child: Column(children: [
+              const CustomSpacer(size: 44),
+              // Row(
+              //     children: [
+              //       SizedBox(width: wScale(20)),
+              //       backButton(),
+              //       SizedBox(width: wScale(20)),
+              //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
+              //     ]
+              // ),
+              const CustomMainHeader(title: 'Physical Card'),
+              const CustomSpacer(size: 38),
+              cardGroupField(),
+              cardType == 1
+                  ? const PhysicalMyCards()
+                  : const PhysicalTeamCards(),
+              const CustomSpacer(size: 88),
+            ]))),
+      ),
+      const Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 1),
+      )
+    ])));
   }
 
   Widget backButton() {
@@ -116,7 +108,11 @@ class PhysicalCardsState extends State<PhysicalCards> {
             primary: const Color(0xff70828D),
             padding: const EdgeInsets.all(0),
           ),
-          child: const Icon( Icons.arrow_back_ios_rounded, color: Colors.black, size: 12,),
+          child: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
+            size: 12,
+          ),
           onPressed: () async {
             // widget.controller.index = 0;
             // // Future.delayed(const Duration(seconds: 1), () {});
@@ -139,66 +135,67 @@ class PhysicalCardsState extends State<PhysicalCards> {
           bottomRight: Radius.circular(hScale(20)),
         ),
       ),
-      child: Row(
-          children: [
-            cardGroupButton('My Card', 1),
-            cardGroupButton('Team Cards', 2),
-          ]
-      ),
+      child: Row(children: [
+        cardGroupButton('My Card', 1),
+        cardGroupButton('Team Cards', 2),
+      ]),
     );
   }
 
   Widget cardGroupButton(cardName, type) {
-    return type == cardType ?
-    Container(
-      width: wScale(160),
-      height: hScale(35),
-      padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(260),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF040415).withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 1,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: TextButton(
-          style: TextButton.styleFrom(
-            primary: const Color(0xFFFFFFFF),
-            padding: const EdgeInsets.all(0),
-          ),
-          child: Text(
-            cardName,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: fSize(14),
-                color: const Color(0xff1A2831)),
-          ),
-          onPressed: () { handleCardType(type); }),
-    ): TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff70828D),
-        padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-      ),
-      onPressed: () { handleCardType(type); },
-      child: Container(
-        width: wScale(160),
-        height: hScale(35),
-        alignment: Alignment.center,
-        child: Text(
-          cardName,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              color: const Color(0xff70828D)),
-        ),
-      ),
-    );
+    return type == cardType
+        ? Container(
+            width: wScale(160),
+            height: hScale(35),
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(260),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF040415).withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 1,
+                  offset: const Offset(0, 1), // changes position of shadow
+                ),
+              ],
+            ),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xFFFFFFFF),
+                  padding: const EdgeInsets.all(0),
+                ),
+                child: Text(
+                  cardName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: fSize(14), color: const Color(0xff1A2831)),
+                ),
+                onPressed: () {
+                  handleCardType(type);
+                }),
+          )
+        : TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
+            ),
+            onPressed: () {
+              handleCardType(type);
+            },
+            child: Container(
+              width: wScale(160),
+              height: hScale(35),
+              alignment: Alignment.center,
+              child: Text(
+                cardName,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(14), color: const Color(0xff70828D)),
+              ),
+            ),
+          );
   }
-
 }

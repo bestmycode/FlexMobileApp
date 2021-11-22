@@ -1,23 +1,20 @@
-import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 
 class CreditManuallyTransferScreen extends StatefulWidget {
   const CreditManuallyTransferScreen({Key? key}) : super(key: key);
 
   @override
-  CreditManuallyTransferScreenState createState() => CreditManuallyTransferScreenState();
+  CreditManuallyTransferScreenState createState() =>
+      CreditManuallyTransferScreenState();
 }
 
-class CreditManuallyTransferScreenState extends State<CreditManuallyTransferScreen> {
-
+class CreditManuallyTransferScreenState
+    extends State<CreditManuallyTransferScreen> {
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -51,49 +48,49 @@ class CreditManuallyTransferScreenState extends State<CreditManuallyTransferScre
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: Stack(
-                children:[
-                  SizedBox(
-                    height: hScale(812),
-                    child: SingleChildScrollView(
-                        child: Column(
-                            children: [
-                              const CustomSpacer(size: 44),
-                              const CustomMainHeader(title: 'Flex PLUS Credit'),
-                              const CustomSpacer(size: 21),
-                              titleField(),
-                              const CustomSpacer(size: 29),
-                              depositFundsField(),
-                              const CustomSpacer(size: 19),
-                              businessField(),
-                              const CustomSpacer(size: 88),
-                            ]
-                        )
-                    )
-                  ),
-                  const Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: CustomBottomBar(active: 3),
-                  )
-                ]
-            )
-        )
-    );
+            body: Stack(children: [
+      SizedBox(
+          height: hScale(812),
+          child: SingleChildScrollView(
+              child: Column(children: [
+            const CustomSpacer(size: 44),
+            const CustomMainHeader(title: 'Flex PLUS Credit'),
+            const CustomSpacer(size: 21),
+            titleField(),
+            const CustomSpacer(size: 29),
+            depositFundsField(),
+            const CustomSpacer(size: 19),
+            businessField(),
+            const CustomSpacer(size: 88),
+          ]))),
+      const Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 3),
+      )
+    ])));
   }
 
   Widget titleField() {
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+      child: Text('Flex PLUS Account 123456',
+          style: TextStyle(
+              fontSize: fSize(16),
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF1A2831))),
     );
   }
 
   Widget depositFundsField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       margin: EdgeInsets.only(bottom: hScale(10)),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -116,21 +113,34 @@ class CreditManuallyTransferScreenState extends State<CreditManuallyTransferScre
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Deposit funds to your Flex Business Account', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: Color(0xFF1A2831))),
+          Text('Deposit funds to your Flex Business Account',
+              style: TextStyle(
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF1A2831))),
           const CustomSpacer(size: 18),
-          Text('Bank Account Details', style:TextStyle(color: const Color(0xff465158), fontSize: fSize(16), fontWeight: FontWeight.w600)),
+          Text('Bank Account Details',
+              style: TextStyle(
+                  color: const Color(0xff465158),
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w600)),
           const CustomSpacer(size: 18),
-          Text('Bank Name', style:TextStyle(color: const Color(0xff70828D), fontSize: fSize(12))),
+          Text('Bank Name',
+              style: TextStyle(
+                  color: const Color(0xff70828D), fontSize: fSize(12))),
           const CustomSpacer(size: 10),
           Row(
             children: [
-              Image.asset('assets/bank_icon.png', fit: BoxFit.contain, width: wScale(20)),
+              Image.asset('assets/bank_icon.png',
+                  fit: BoxFit.contain, width: wScale(20)),
               SizedBox(width: wScale(10)),
               detail('DBS Bank, Singapore')
             ],
           ),
           const CustomSpacer(size: 38),
-          Text('Virtual Account Number', style:TextStyle(color: const Color(0xff70828D), fontSize: fSize(12))),
+          Text('Virtual Account Number',
+              style: TextStyle(
+                  color: const Color(0xff70828D), fontSize: fSize(12))),
           const CustomSpacer(size: 8),
           Row(
             children: [
@@ -138,15 +148,29 @@ class CreditManuallyTransferScreenState extends State<CreditManuallyTransferScre
                 style: TextButton.styleFrom(
                   primary: const Color(0xff515151),
                   padding: EdgeInsets.zero,
-                  textStyle: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: const Color(0xff040415)),
+                  textStyle: TextStyle(
+                      fontSize: fSize(14),
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xff040415)),
                 ),
-                onPressed: () { handleCopied(); },
+                onPressed: () {
+                  handleCopied();
+                },
                 child: const Text('885123000180'),
               ),
               SizedBox(width: wScale(10)),
-              flagCopied ? const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 ): const SizedBox(),
+              flagCopied
+                  ? const Icon(Icons.content_copy,
+                      color: Color(0xff30E7A9), size: 14.0)
+                  : const SizedBox(),
               SizedBox(width: wScale(4)),
-              flagCopied ? Text('Copied', style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w500, color: const Color(0xff30E7A9))): const SizedBox(),
+              flagCopied
+                  ? Text('Copied',
+                      style: TextStyle(
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff30E7A9)))
+                  : const SizedBox(),
             ],
           ),
           const CustomSpacer(size: 24),
@@ -159,19 +183,26 @@ class CreditManuallyTransferScreenState extends State<CreditManuallyTransferScre
   }
 
   Widget title(text) {
-    return Text(text, style:TextStyle(color: const Color(0xff70828D), fontSize: fSize(12)));
+    return Text(text,
+        style: TextStyle(color: const Color(0xff70828D), fontSize: fSize(12)));
   }
 
   Widget detail(text) {
-    return Text(text, style:TextStyle(color: const Color(0xff040415), fontSize: fSize(14), fontWeight: FontWeight.w500));
+    return Text(text,
+        style: TextStyle(
+            color: const Color(0xff040415),
+            fontSize: fSize(14),
+            fontWeight: FontWeight.w500));
   }
 
   Widget businessField() {
     return SizedBox(
-        width: wScale(327),
-        child: Text('*Funds will be credited within 1 business day',
-            style: TextStyle(color: const Color(0xff1DA7FF), fontWeight: FontWeight.w600, fontSize: fSize(12))),
+      width: wScale(327),
+      child: Text('*Funds will be credited within 1 business day',
+          style: TextStyle(
+              color: const Color(0xff1DA7FF),
+              fontWeight: FontWeight.w600,
+              fontSize: fSize(12))),
     );
   }
-
 }

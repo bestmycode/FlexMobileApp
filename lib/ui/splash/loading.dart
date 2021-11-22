@@ -11,7 +11,8 @@ class LoadingScreen extends StatefulWidget {
   LoadingScreenState createState() => LoadingScreenState();
 }
 
-class LoadingScreenState extends State<LoadingScreen> with SingleTickerProviderStateMixin {
+class LoadingScreenState extends State<LoadingScreen>
+    with SingleTickerProviderStateMixin {
   var _visible = true;
 
   late AnimationController animationController;
@@ -29,8 +30,8 @@ class LoadingScreenState extends State<LoadingScreen> with SingleTickerProviderS
   @override
   void initState() {
     super.initState();
-    animationController = AnimationController(
-        vsync: this, duration: const Duration(seconds: 3));
+    animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3));
     animation =
         CurvedAnimation(parent: animationController, curve: Curves.easeOut);
 
@@ -45,7 +46,7 @@ class LoadingScreenState extends State<LoadingScreen> with SingleTickerProviderS
 
   @override
   Widget build(BuildContext context) {
-    double widthRatio = MediaQuery.of(context).size.width/375;
+    double widthRatio = MediaQuery.of(context).size.width / 375;
     return Stack(
       children: <Widget>[
         Image.asset(
@@ -58,10 +59,10 @@ class LoadingScreenState extends State<LoadingScreen> with SingleTickerProviderS
           backgroundColor: Colors.transparent,
           body: Center(
               child: Image.asset(
-              'assets/logo.png',
-              fit: BoxFit.contain,
-              width: 161 * widthRatio,)
-          ),
+            'assets/logo.png',
+            fit: BoxFit.contain,
+            width: 161 * widthRatio,
+          )),
         )
       ],
     );

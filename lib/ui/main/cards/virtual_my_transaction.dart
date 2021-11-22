@@ -1,7 +1,4 @@
-import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
-import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +7,6 @@ import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 
 class VirtualMyTransactions extends StatefulWidget {
-
   const VirtualMyTransactions({Key? key}) : super(key: key);
 
   @override
@@ -18,10 +14,10 @@ class VirtualMyTransactions extends StatefulWidget {
 }
 
 class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -31,14 +27,69 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status': 4, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
-
+    {
+      'date': '21 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage1',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '22 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage2',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '23 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage3',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '24 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage4',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '25 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage5',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '26 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage6',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '27 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage7',
+      'status': 4,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    }
   ];
 
   int activeType = 1;
@@ -56,7 +107,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
   setDateType(type) {
-    if(type == 4) {
+    if (type == 4) {
       setState(() {
         showDateRange = !showDateRange;
         showCalendarModal = false;
@@ -71,13 +122,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     }
   }
 
-  handleExport() {
+  handleExport() {}
 
-  }
-
-  handleSearch() {
-
-  }
+  handleSearch() {}
 
   handleCalendar() {
     setState(() {
@@ -85,13 +132,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     });
   }
 
-  handleStartDateCalendar() {
+  handleStartDateCalendar() {}
 
-  }
-
-  handleEndDateCalendar() {
-
-  }
+  handleEndDateCalendar() {}
 
   @override
   void initState() {
@@ -100,45 +143,38 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        headerStatusField(),
-        // const CustomSpacer(size: 17),
-        // searchRow(),
-        Indexer(
-            children: [
-              Indexed(index: 100, child: searchRowField()),
-              Indexed(index: 50, child: Column(
-                children: [
-                  const CustomSpacer(size: 45),
-                  showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
-                  showDateRange ? dateRangeField() : const SizedBox(),
-                  const CustomSpacer(size: 15),
-                  getTransactionArrWidgets(transactionArr),
-                ],
-              )),
-            ]
-        ),
-      ]
-    );
+    return Column(children: [
+      headerStatusField(),
+      // const CustomSpacer(size: 17),
+      // searchRow(),
+      Indexer(children: [
+        Indexed(index: 100, child: searchRowField()),
+        Indexed(
+            index: 50,
+            child: Column(
+              children: [
+                const CustomSpacer(size: 45),
+                showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
+                showDateRange ? dateRangeField() : const SizedBox(),
+                const CustomSpacer(size: 15),
+                getTransactionArrWidgets(transactionArr),
+              ],
+            )),
+      ]),
+    ]);
   }
 
   Widget headerStatusField() {
     return Container(
       width: wScale(327),
       alignment: Alignment.topCenter,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              statusButton('Completed', 1),
-              statusButton('Pending', 2),
-              statusButton('Declined', 3),
-            ]
-          ),
-        ]
-      ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Row(children: [
+          statusButton('Completed', 1),
+          statusButton('Pending', 2),
+          statusButton('Declined', 3),
+        ]),
+      ]),
     );
   }
 
@@ -147,25 +183,36 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
       style: TextButton.styleFrom(
         primary: const Color(0xff70828D),
         padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+        textStyle:
+            TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
       ),
-      onPressed: () { handleCardType(type); },
+      onPressed: () {
+        handleCardType(type);
+      },
       child: Container(
         width: wScale(109),
         height: hScale(35),
-        padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
+        padding: EdgeInsets.only(left: wScale(6), right: wScale(6)),
         decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(
-                color: type == 3 && activeType == 3 ? const Color(0xFFEB5757) : type == activeType ? const Color(0xFF29C490): const Color(0xFFEEEEEE),
-                width: type == activeType ? hScale(2): hScale(1)))
-        ),
+            border: Border(
+                bottom: BorderSide(
+                    color: type == 3 && activeType == 3
+                        ? const Color(0xFFEB5757)
+                        : type == activeType
+                            ? const Color(0xFF29C490)
+                            : const Color(0xFFEEEEEE),
+                    width: type == activeType ? hScale(2) : hScale(1)))),
         alignment: Alignment.center,
         child: Text(
           title,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
-              color: type == 3 ? Color(0xFFEB5757) : type == activeType ? Colors.black : const Color(0xff70828D)),
+              color: type == 3
+                  ? Color(0xFFEB5757)
+                  : type == activeType
+                      ? Colors.black
+                      : const Color(0xff70828D)),
         ),
       ),
     );
@@ -178,7 +225,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: const Color(0xff040415).withOpacity(0.1), width: hScale(1)),
+          border: Border.all(
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -196,47 +245,49 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
                   controller: searchCtl,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(0),
-                    enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
                     hintText: 'Type your search here',
                     hintStyle: TextStyle(
                         color: const Color(0xff040415).withOpacity(0.5),
                         fontSize: fSize(12),
                         fontWeight: FontWeight.w500),
-                    focusedBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
                   ),
-                  style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500),
-                )
-            ),
+                  style: TextStyle(
+                      fontSize: fSize(12), fontWeight: FontWeight.w500),
+                )),
             SizedBox(
               width: wScale(20),
               child: TextButton(
                   style: TextButton.styleFrom(
                     primary: const Color(0xff70828D),
                     padding: const EdgeInsets.all(0),
-                    textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
+                    textStyle: TextStyle(
+                        fontSize: fSize(14), color: const Color(0xff70828D)),
                   ),
-                  onPressed: () { handleSearch(); },
+                  onPressed: () {
+                    handleSearch();
+                  },
                   // child: const Icon( Icons.search_rounded, color: Color(0xFFBFBFBF), size: 20 ),
-                  child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
-              ),
+                  child: Image.asset(
+                    'assets/search_icon.png',
+                    fit: BoxFit.contain,
+                    width: wScale(13),
+                  )),
             ),
           ],
-        )
-    );
+        ));
   }
 
   Widget searchRowField() {
-    return Stack(
-        overflow: Overflow.visible,
-        children: [
-          searchRow(),
-          showCalendarModal ? Positioned(
-              top: hScale(50),
-              right:0,
-              child: calendarModalField()
-          ): const SizedBox()
-        ]
-    );
+    return Stack(overflow: Overflow.visible, children: [
+      searchRow(),
+      showCalendarModal
+          ? Positioned(top: hScale(50), right: 0, child: calendarModalField())
+          : const SizedBox()
+    ]);
   }
 
   Widget searchRow() {
@@ -258,10 +309,12 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
               ),
               child: TextButton(
                 style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: wScale(12))
-                ),
-                child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
-                onPressed: () { handleCalendar();},
+                    padding: EdgeInsets.symmetric(horizontal: wScale(12))),
+                child: Image.asset('assets/calendar.png',
+                    fit: BoxFit.contain, width: wScale(24)),
+                onPressed: () {
+                  handleCalendar();
+                },
               ),
             ),
             SizedBox(
@@ -270,59 +323,74 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
                 style: TextButton.styleFrom(
                   primary: const Color(0xff29C490),
                   padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff29C490),decoration: TextDecoration.underline),
+                  textStyle: TextStyle(
+                      fontSize: fSize(12),
+                      color: const Color(0xff29C490),
+                      decoration: TextDecoration.underline),
                 ),
-                onPressed: () { handleExport(); },
+                onPressed: () {
+                  handleExport();
+                },
                 child: const Text('Export'),
               ),
             )
           ],
-        )
-    );
+        ));
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
-      return TransactionItem(date: item['date'], time: item['time'], transactionName: item['transactionName'], userName: item['userName'], cardNum: item['cardNum'], value:item['value'], status: item['status'],);
+    return Column(
+        children: arr.map<Widget>((item) {
+      return TransactionItem(
+        date: item['date'],
+        time: item['time'],
+        transactionName: item['transactionName'],
+        userName: item['userName'],
+        cardNum: item['cardNum'],
+        value: item['value'],
+        status: item['status'],
+      );
     }).toList());
   }
 
   Widget dateRangeField() {
-    return  Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
-      margin: EdgeInsets.only(bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
+    return Container(
+        width: wScale(327),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(16),
+            bottom: hScale(16)),
+        margin: EdgeInsets.only(bottom: hScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
           ),
-        ],
-      ),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const CustomSpacer(size: 11),
-            dateField(1),
-            const CustomSpacer(size: 23),
-            dateField(2),
-            const CustomSpacer(size: 17),
-            searchButton(),
-            const CustomSpacer(size: 5),
-          ]
-      )
-    );
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CustomSpacer(size: 11),
+              dateField(1),
+              const CustomSpacer(size: 23),
+              dateField(2),
+              const CustomSpacer(size: 17),
+              searchButton(),
+              const CustomSpacer(size: 5),
+            ]));
   }
 
   Widget dateField(type) {
@@ -335,39 +403,49 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           margin: EdgeInsets.only(top: hScale(8)),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
-          ),
+              border:
+                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
           child: TextButton(
               style: TextButton.styleFrom(
                 // primary: const Color(0xffF5F5F5).withOpacity(0.4),
                 padding: const EdgeInsets.all(0),
               ),
-              onPressed: () { _openDatePicker(type); },
-              child:Row(
+              onPressed: () {
+                _openDatePicker(type);
+              },
+              child: Row(
                 children: <Widget>[
                   Expanded(
                       child: TextField(
-                        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
-                        controller: type ==1 ? startDateCtl: endDateCtl,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                          hintText: 'Select Date of Birth',
-                          hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                          focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                        ),
-                        readOnly: true,
-                        onTap: () { _openDatePicker(type); },
-                      )
-                  ),
+                    style: TextStyle(
+                        fontSize: fSize(16),
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF040415)),
+                    controller: type == 1 ? startDateCtl : endDateCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: const OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 1.0)),
+                      hintText: 'Select Date of Birth',
+                      hintStyle: TextStyle(
+                          color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 1.0)),
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      _openDatePicker(type);
+                    },
+                  )),
                   Container(
                       margin: EdgeInsets.only(right: wScale(20)),
-                      child: Image.asset('assets/calendar.png', fit:BoxFit.contain, width: wScale(18))
-                  )
+                      child: Image.asset('assets/calendar.png',
+                          fit: BoxFit.contain, width: wScale(18)))
                 ],
-              )
-          ),
+              )),
         ),
         Positioned(
           top: 0,
@@ -375,7 +453,11 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: wScale(8)),
             color: Colors.white,
-            child: Text('Date of Birth (DD/MM/YY)', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+            child: Text('Date of Birth (DD/MM/YY)',
+                style: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFBFBFBF))),
           ),
         )
       ],
@@ -384,25 +466,25 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
 
   void _openDatePicker(type) async {
     DateTime? pickedDate = await showDatePicker(
-        context: context, initialDate: DateTime.now(),
-        firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2101)
-    );
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(
+            2000), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2101));
 
-    if(pickedDate != null ){
+    if (pickedDate != null) {
       String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
       setState(() {
-        if(type == 1) {
+        if (type == 1) {
           startDateCtl.text = formattedDate;
         } else {
           endDateCtl.text = formattedDate;
         }
       });
-    }else{
+    } else {
       print("Date is not selected");
     }
   }
-
 
   Widget searchButton() {
     return SizedBox(
@@ -412,18 +494,19 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleSearch(); },
-          child: Text(
-              "Search",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleSearch();
+          },
+          child: Text("Search",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
-
 
   Widget calendarModalField() {
     return Container(
@@ -465,7 +548,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         // padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
-      onPressed: () { setDateType(type); },
+      onPressed: () {
+        setDateType(type);
+      },
       child: Container(
         width: wScale(177),
         // padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),

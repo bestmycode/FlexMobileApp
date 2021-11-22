@@ -1,30 +1,22 @@
 import 'dart:ui';
-
 import 'package:expandable/expandable.dart';
-import 'package:flexflutter/ui/main/cards/physical_my_card.dart';
-import 'package:flexflutter/ui/main/cards/physical_team_card.dart';
 import 'package:flexflutter/ui/main/more/new_subsidiary.dart';
-import 'package:flexflutter/ui/main/more/user_profile.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
 class MySubsibiaries extends StatefulWidget {
-
   const MySubsibiaries({Key? key}) : super(key: key);
   @override
   MySubsibiariesState createState() => MySubsibiariesState();
 }
 
 class MySubsibiariesState extends State<MySubsibiaries> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -35,40 +27,82 @@ class MySubsibiariesState extends State<MySubsibiaries> {
 
   var subsidiariesArr = [
     // type=> 0: Admin, 1: User
-    {'id': 0, 'userName':'Sushi Tei Paragon', 'type': 0,},
-    {'id': 1, 'userName':'Green Grocer Pte Ltd', 'type': 1,},
-    {'id': 2, 'userName':'Sushi Tei Paragon', 'type': 1,},
-    {'id': 3, 'userName':'Green Grocer Pte Ltd', 'type': 0,},
-    {'id': 4, 'userName':'Natural Packaging Pte Ltd', 'type': 0,},
-    {'id': 5, 'userName':'Sushi Tei Toa Payoh', 'type': 1,},
-    {'id': 6, 'userName':'Green Grocer Pte Ltd', 'type': 0,},
-    {'id': 7, 'userName':'Natural Packaging Pte Ltd', 'type': 0,},
-    {'id': 8, 'userName':'Sushi Tei Toa Payoh', 'type': 1,},
+    {
+      'id': 0,
+      'userName': 'Sushi Tei Paragon',
+      'type': 0,
+    },
+    {
+      'id': 1,
+      'userName': 'Green Grocer Pte Ltd',
+      'type': 1,
+    },
+    {
+      'id': 2,
+      'userName': 'Sushi Tei Paragon',
+      'type': 1,
+    },
+    {
+      'id': 3,
+      'userName': 'Green Grocer Pte Ltd',
+      'type': 0,
+    },
+    {
+      'id': 4,
+      'userName': 'Natural Packaging Pte Ltd',
+      'type': 0,
+    },
+    {
+      'id': 5,
+      'userName': 'Sushi Tei Toa Payoh',
+      'type': 1,
+    },
+    {
+      'id': 6,
+      'userName': 'Green Grocer Pte Ltd',
+      'type': 0,
+    },
+    {
+      'id': 7,
+      'userName': 'Natural Packaging Pte Ltd',
+      'type': 0,
+    },
+    {
+      'id': 8,
+      'userName': 'Sushi Tei Toa Payoh',
+      'type': 1,
+    },
   ];
   var invitationArr = [
     // type=> 0: Admin, 1: User
-    {'id': 0, 'name':'Arthur Simon1'},
-    {'id': 1, 'name':'Arthur Simon2', },
-    {'id': 2, 'name':'Arthur Simon3', },
-    {'id': 3, 'name':'Arthur Simon4',},
-    {'id': 4, 'name':'Arthur Simon5',},
+    {'id': 0, 'name': 'Arthur Simon1'},
+    {
+      'id': 1,
+      'name': 'Arthur Simon2',
+    },
+    {
+      'id': 2,
+      'name': 'Arthur Simon3',
+    },
+    {
+      'id': 3,
+      'name': 'Arthur Simon4',
+    },
+    {
+      'id': 4,
+      'name': 'Arthur Simon5',
+    },
   ];
 
   handleNewSubsidiay() {
     Navigator.of(context).push(
-      CupertinoPageRoute (
-          builder: (context) => const NewSubsidiary()
-      ),
+      CupertinoPageRoute(builder: (context) => const NewSubsidiary()),
     );
   }
 
-  handleSwitchSubsidiary(data) {
+  handleSwitchSubsidiary(data) {}
 
-  }
-
-  handleAccept() {
-
-  }
+  handleAccept() {}
 
   @override
   void initState() {
@@ -78,26 +112,24 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: wScale(24)),
-      child:Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CustomSpacer(size: 15),
-          companyNameField(),
-          const CustomSpacer(size: 20),
-          informationField(),
-          const CustomSpacer(size: 33),
-          titleSubsidiariesField(),
-          const CustomSpacer(size: 15),
-          getSubsidiariesArrWidgets(subsidiariesArr),
-          const CustomSpacer(size: 24),
-          titleInvitationField(),
-          const CustomSpacer(size: 18),
-          getInvitationArrWidgets(invitationArr),
-        ]
-      )
-    );
+        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const CustomSpacer(size: 15),
+              companyNameField(),
+              const CustomSpacer(size: 20),
+              informationField(),
+              const CustomSpacer(size: 33),
+              titleSubsidiariesField(),
+              const CustomSpacer(size: 15),
+              getSubsidiariesArrWidgets(subsidiariesArr),
+              const CustomSpacer(size: 24),
+              titleInvitationField(),
+              const CustomSpacer(size: 18),
+              getInvitationArrWidgets(invitationArr),
+            ]));
   }
 
   Widget companyNameField() {
@@ -111,19 +143,21 @@ class MySubsibiariesState extends State<MySubsibiaries> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-            children: [
-              Text('Green Grocer Pte Ltd', style: TextStyle(fontSize: fSize(22), fontWeight: FontWeight.w700, color: Colors.white))
-            ]
-        )
-    );
+        child: Column(children: [
+          Text('Green Grocer Pte Ltd',
+              style: TextStyle(
+                  fontSize: fSize(22),
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white))
+        ]));
   }
 
   Widget informationField() {
     return Container(
         width: wScale(327),
         height: hScale(173),
-        padding: EdgeInsets.symmetric(vertical: hScale(13), horizontal: wScale(20)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(13), horizontal: wScale(20)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -144,25 +178,33 @@ class MySubsibiariesState extends State<MySubsibiaries> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Information", style:TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+            Text("Information",
+                style: TextStyle(
+                    fontSize: fSize(16),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1A2831))),
             const CustomSpacer(size: 13),
             RichText(
               text: TextSpan(
                 style: TextStyle(
-                  fontSize: fSize(14),
-                  color: const Color(0xFF70828D),
-                  height: 1.25
-                ),
+                    fontSize: fSize(14),
+                    color: const Color(0xFF70828D),
+                    height: 1.25),
                 children: const [
-                  TextSpan(text: 'This page allows you to create separate \nsubsidiares to be managed under the same \ne-mail address. If you are looking to create \na separate Flex Business Account under a \nseparate e-mail address,'),
-                  TextSpan(text: 'click here', style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline, color: Color(0xFF0450e0))),
+                  TextSpan(
+                      text:
+                          'This page allows you to create separate \nsubsidiares to be managed under the same \ne-mail address. If you are looking to create \na separate Flex Business Account under a \nseparate e-mail address,'),
+                  TextSpan(
+                      text: 'click here',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline,
+                          color: Color(0xFF0450e0))),
                 ],
               ),
             )
           ],
-        )
-
-    );
+        ));
   }
 
   Widget titleSubsidiariesField() {
@@ -170,22 +212,31 @@ class MySubsibiariesState extends State<MySubsibiaries> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text('List of Subsidiaries', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+        Text('List of Subsidiaries',
+            style: TextStyle(
+                fontSize: fSize(16),
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1A2831))),
         TextButton(
             style: TextButton.styleFrom(
-              primary: const Color(0xff29C490).withOpacity(0.4),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w600, color: const Color(0xFF29C490), decoration: TextDecoration.underline)
-            ),
+                primary: const Color(0xff29C490).withOpacity(0.4),
+                padding: const EdgeInsets.all(0),
+                textStyle: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF29C490),
+                    decoration: TextDecoration.underline)),
             child: const Text('Create New Subsidiary'),
-            onPressed: () { handleNewSubsidiay(); }
-        ),
+            onPressed: () {
+              handleNewSubsidiay();
+            }),
       ],
     );
   }
 
   Widget getSubsidiariesArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
+    return Column(
+        children: arr.map<Widget>((item) {
       return collapseField(item);
     }).toList());
   }
@@ -217,14 +268,9 @@ class MySubsibiariesState extends State<MySubsibiaries> {
             ScrollOnExpand(
               child: ExpandablePanel(
                 theme: const ExpandableThemeData(
-                    tapBodyToCollapse: true,
-                    tapBodyToExpand: true
-                ),
+                    tapBodyToCollapse: true, tapBodyToExpand: true),
                 expanded: Column(
-                  children: [
-                    cardHeader(data),
-                    cardBody(data)
-                  ],
+                  children: [cardHeader(data), cardBody(data)],
                 ),
                 collapsed: cardHeader(data),
                 builder: (_, collapsed, expanded) {
@@ -248,7 +294,11 @@ class MySubsibiariesState extends State<MySubsibiaries> {
     return Container(
         width: wScale(327),
         height: hScale(35),
-        padding: EdgeInsets.only(left: wScale(16), right: wScale(16),top: hScale(8), bottom: hScale(8)),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(8),
+            bottom: hScale(8)),
         decoration: BoxDecoration(
           color: const Color(0xFF1B2931),
           borderRadius: BorderRadius.only(
@@ -260,11 +310,12 @@ class MySubsibiariesState extends State<MySubsibiaries> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(data['userName'], style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text(data["type"] == 0 ? 'Admin':'User', style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+            Text(data['userName'],
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+            Text(data["type"] == 0 ? 'Admin' : 'User',
+                style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
-        )
-    );
+        ));
   }
 
   Widget cardBody(data) {
@@ -281,26 +332,31 @@ class MySubsibiariesState extends State<MySubsibiaries> {
             TextButton(
               style: TextButton.styleFrom(
                 primary: const Color(0xff1da7ff),
-                textStyle: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500,
+                textStyle: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w500,
                     color: const Color(0xff1da7ff)),
               ),
-              onPressed: () { handleSwitchSubsidiary(data); },
+              onPressed: () {
+                handleSwitchSubsidiary(data);
+              },
               child: const Text('Switch to this Subsidiary'),
             ),
           ],
-        )
-    );
+        ));
   }
 
   Widget titleInvitationField() {
-    return Text(
-      'Invitation sent to you',
-      style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, color: Color(0xFF1A2831))
-    );
+    return Text('Invitation sent to you',
+        style: TextStyle(
+            fontSize: fSize(16),
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1A2831)));
   }
 
   Widget getInvitationArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
+    return Column(
+        children: arr.map<Widget>((item) {
       return Column(
         children: [
           invitationField(item),
@@ -314,7 +370,8 @@ class MySubsibiariesState extends State<MySubsibiaries> {
     return Container(
         width: wScale(327),
         height: hScale(157),
-        padding: EdgeInsets.symmetric(vertical: hScale(13), horizontal: wScale(20)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(13), horizontal: wScale(20)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -341,13 +398,16 @@ class MySubsibiariesState extends State<MySubsibiaries> {
                     fontSize: fSize(14),
                     color: const Color(0xFF465158),
                     fontWeight: FontWeight.w600,
-                    height: 1.25
-                ),
+                    height: 1.25),
                 children: const [
                   TextSpan(text: 'Arthur Simon '),
-                  TextSpan(text: 'has invited you to ', style: TextStyle(fontWeight: FontWeight.w400)),
+                  TextSpan(
+                      text: 'has invited you to ',
+                      style: TextStyle(fontWeight: FontWeight.w400)),
                   TextSpan(text: 'join Red Batton pte ltd '),
-                  TextSpan(text: 'as ', style: TextStyle(fontWeight: FontWeight.w400)),
+                  TextSpan(
+                      text: 'as ',
+                      style: TextStyle(fontWeight: FontWeight.w400)),
                   TextSpan(text: 'User.'),
                 ],
               ),
@@ -361,18 +421,18 @@ class MySubsibiariesState extends State<MySubsibiaries> {
                     primary: const Color(0xff1A2831),
                     side: const BorderSide(width: 0, color: Color(0xff1A2831)),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)
-                    ),
+                        borderRadius: BorderRadius.circular(16)),
                   ),
-                  onPressed: () { handleAccept(); },
-                  child: Text(
-                      "Accept",
-                      style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.bold )),
-                )
-            )
+                  onPressed: () {
+                    handleAccept();
+                  },
+                  child: Text("Accept",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: fSize(16),
+                          fontWeight: FontWeight.bold)),
+                ))
           ],
-        )
-
-    );
+        ));
   }
 }

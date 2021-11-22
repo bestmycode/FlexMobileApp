@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +14,6 @@ class MailVerifyScreen extends StatefulWidget {
 }
 
 class MailVerifyScreenState extends State<MailVerifyScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -37,16 +35,19 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   bool flagValid = true;
 
   handleVerify() {
-    bool flag = numCtl1.text == "1" && numCtl2.text == "1" && numCtl3.text == "1" && numCtl4.text == "1" && numCtl5.text == "1" && numCtl6.text == "1";
+    bool flag = numCtl1.text == "1" &&
+        numCtl2.text == "1" &&
+        numCtl3.text == "1" &&
+        numCtl4.text == "1" &&
+        numCtl5.text == "1" &&
+        numCtl6.text == "1";
     setState(() {
       flagValid = flag;
-      if(flag) Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
+      if (flag) Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
     });
   }
 
-  resendEmail() {
-
-  }
+  resendEmail() {}
 
   @override
   void initState() {
@@ -56,41 +57,34 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SignupProgressHeader(),
-              const CustomSpacer(size: 40),
-              mailIcon(),
-              const CustomSpacer(size: 28),
-              mailTitle(),
-              const CustomSpacer(size: 26),
-              mailSection(),
-              const CustomSpacer(size: 36),
-              verifyNumberSection(),
-              flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
-              subSection(),
-              verifyButton(),
-            ]
-          )
-        )
-      )
-    );
+        child: Scaffold(
+            body: SingleChildScrollView(
+                child: Column(children: [
+      const SignupProgressHeader(),
+      const CustomSpacer(size: 40),
+      mailIcon(),
+      const CustomSpacer(size: 28),
+      mailTitle(),
+      const CustomSpacer(size: 26),
+      mailSection(),
+      const CustomSpacer(size: 36),
+      verifyNumberSection(),
+      flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
+      subSection(),
+      verifyButton(),
+    ]))));
   }
 
   Widget mailIcon() {
-    return Image.asset(
-      'assets/mail_check.png',
-      fit: BoxFit.contain,
-      width: wScale(74));
+    return Image.asset('assets/mail_check.png',
+        fit: BoxFit.contain, width: wScale(74));
   }
 
   Widget mailTitle() {
     return Text(
         "Please verify your email address to start\nyour account creation process",
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600 ));
+        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600));
   }
 
   Widget mailSection() {
@@ -102,7 +96,10 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
         ),
         children: const [
           TextSpan(text: 'We have sent an OTP to '),
-          TextSpan(text: 'jasmine@gmail.com', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          TextSpan(
+              text: 'jasmine@gmail.com',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
         ],
       ),
     );
@@ -116,42 +113,64 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleVerify(); },
-          child: Text(
-              "Verify",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleVerify();
+          },
+          child: Text("Verify",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget verifyNumber(num) {
     return Container(
-        width: wScale(50),
-        height: wScale(50),
-        margin: EdgeInsets.only(right: wScale(4), left: wScale(4)),
-        child: TextField(
-          textAlign: TextAlign.center,
-          controller: num == 1 ? numCtl1 : num == 2 ? numCtl2 : num == 3 ? numCtl3 : num == 4 ? numCtl4 : num == 5 ? numCtl5 : numCtl6,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: fSize(24),
-          ),
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            LengthLimitingTextInputFormatter(1),
-            FilteringTextInputFormatter.digitsOnly
-          ], // Only numbers can be entered
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.all(0),
-            enabledBorder: OutlineInputBorder( borderSide: BorderSide( color: flagValid == false? Color(0xffEB5757): Color(0xffE2E2E2), width: 1.0)),
-            focusedBorder: OutlineInputBorder( borderSide: BorderSide( color: flagValid == false? Color(0xffEB5757): Color(0xffE2E2E2), width: 1.0)),
-          ),
+      width: wScale(50),
+      height: wScale(50),
+      margin: EdgeInsets.only(right: wScale(4), left: wScale(4)),
+      child: TextField(
+        textAlign: TextAlign.center,
+        controller: num == 1
+            ? numCtl1
+            : num == 2
+                ? numCtl2
+                : num == 3
+                    ? numCtl3
+                    : num == 4
+                        ? numCtl4
+                        : num == 5
+                            ? numCtl5
+                            : numCtl6,
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: fSize(24),
         ),
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(1),
+          FilteringTextInputFormatter.digitsOnly
+        ], // Only numbers can be entered
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.all(0),
+          enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: flagValid == false
+                      ? Color(0xffEB5757)
+                      : Color(0xffE2E2E2),
+                  width: 1.0)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                  color: flagValid == false
+                      ? Color(0xffEB5757)
+                      : Color(0xffE2E2E2),
+                  width: 1.0)),
+        ),
+      ),
     );
   }
 
@@ -172,16 +191,15 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   Widget validError(errorFlag) {
     return SizedBox(
       height: errorFlag ? 0 : hScale(18),
-      child: Text(
-          "Verification code is invalid",
-          style: TextStyle(fontSize: fSize(14), color: const Color(0xffEB5757) )),
+      child: Text("Verification code is invalid",
+          style:
+              TextStyle(fontSize: fSize(14), color: const Color(0xffEB5757))),
     );
   }
 
   Widget expireTitle() {
-    return Text(
-        "This OTP expires in 30 minutes",
-        style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.bold ));
+    return Text("This OTP expires in 30 minutes",
+        style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.bold));
   }
 
   Widget subSection() {
@@ -189,11 +207,7 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
       height: hScale(137),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          validError(flagValid),
-          expireTitle(),
-          resendButton()
-        ],
+        children: [validError(flagValid), expireTitle(), resendButton()],
       ),
     );
   }
@@ -202,10 +216,15 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
     return TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff21C990),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff21C990),
-            fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
+        textStyle: TextStyle(
+            fontSize: fSize(14),
+            color: const Color(0xff21C990),
+            fontWeight: FontWeight.bold,
+            decoration: TextDecoration.underline),
       ),
-      onPressed: () { resendEmail(); },
+      onPressed: () {
+        resendEmail();
+      },
       child: const Text('Resend OTP to jasmine@gmail.com'),
     );
   }

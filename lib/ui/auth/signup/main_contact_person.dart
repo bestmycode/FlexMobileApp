@@ -5,18 +5,16 @@ import 'package:flexflutter/constants/constants.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flutter/services.dart';
 import 'package:localstorage/localstorage.dart';
 
 class MainContactPersonScreen extends StatefulWidget {
   const MainContactPersonScreen({Key? key}) : super(key: key);
 
   @override
-  MainContactPersonScreenState createState() => MainContactPersonScreenState ();
+  MainContactPersonScreenState createState() => MainContactPersonScreenState();
 }
 
 class MainContactPersonScreenState extends State<MainContactPersonScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -50,50 +48,50 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
   void initState() {
     super.initState();
     fullNameCtl.text = storage.getItem('fullName');
-    mobileNumCtl.text =  storage.getItem('mobileNum');
+    mobileNumCtl.text = storage.getItem('mobileNum');
     flagMainContact = storage.getItem('flagMainContact') ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SignupProgressHeader(title: 'Company Detail', progress: 2, prev: REGISTERED_ADDRESS,),
-              const CustomSpacer(size: 20),
-              groupIcon(),
-              const CustomSpacer(size: 15),
-              groupTitle(),
-              const CustomSpacer(size: 36),
-              mainContactPersonField(),
-              const CustomSpacer(size: 30),
-              buttonField(),
-            ]
-          )
-        )
-      )
-    );
+        child: Scaffold(
+            body: SingleChildScrollView(
+                child: Column(children: [
+      const SignupProgressHeader(
+        title: 'Company Detail',
+        progress: 2,
+        prev: REGISTERED_ADDRESS,
+      ),
+      const CustomSpacer(size: 20),
+      groupIcon(),
+      const CustomSpacer(size: 15),
+      groupTitle(),
+      const CustomSpacer(size: 36),
+      mainContactPersonField(),
+      const CustomSpacer(size: 30),
+      buttonField(),
+    ]))));
   }
 
   Widget groupIcon() {
-    return Image.asset(
-      'assets/group.png',
-      fit: BoxFit.contain,
-      width: wScale(60));
+    return Image.asset('assets/group.png',
+        fit: BoxFit.contain, width: wScale(60));
   }
 
   Widget groupTitle() {
-    return Text(
-        "John, please verify that the information\n below is accurate",
+    return Text("John, please verify that the information\n below is accurate",
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600 ));
+        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600));
   }
 
   Widget mainContactPersonField() {
     return Container(
-      padding: EdgeInsets.only(left: wScale(16), top: hScale(14), right: wScale(16), bottom: hScale(20)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          top: hScale(14),
+          right: wScale(16),
+          bottom: hScale(20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -118,9 +116,13 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
           const CustomSpacer(size: 12),
           termsField(),
           const CustomSpacer(size: 24),
-          CustomTextField(ctl: fullNameCtl, hint: 'Enter Full Name', label: 'Full Name'),
+          CustomTextField(
+              ctl: fullNameCtl, hint: 'Enter Full Name', label: 'Full Name'),
           const CustomSpacer(size: 32),
-          CustomTextField(ctl: mobileNumCtl, hint: 'Enter Mobile Number', label: 'Mobile Number'),
+          CustomTextField(
+              ctl: mobileNumCtl,
+              hint: 'Enter Mobile Number',
+              label: 'Mobile Number'),
         ],
       ),
     );
@@ -129,30 +131,31 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
   Widget personTitle(title) {
     return SizedBox(
       width: wScale(295),
-      child: Text(
-          title,
+      child: Text(title,
           textAlign: TextAlign.start,
-          style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, )),
+          style: TextStyle(
+            fontSize: fSize(16),
+            fontWeight: FontWeight.w600,
+          )),
     );
   }
 
   Widget personSubTitle() {
     return SizedBox(
       width: wScale(295),
-      child: Text(
-          '*For courier and mailing purposes',
+      child: Text('*For courier and mailing purposes',
           textAlign: TextAlign.start,
-          style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, )),
+          style: TextStyle(
+            fontSize: fSize(12),
+            fontWeight: FontWeight.w400,
+          )),
     );
   }
 
   Widget buttonField() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        backButton(),
-        continueButton()
-      ],
+      children: [backButton(), continueButton()],
     );
   }
 
@@ -165,16 +168,18 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xffc9c9c9),
             side: const BorderSide(width: 0, color: Color(0xffc9c9c9)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleBack(); },
-          child: Text(
-              "Back",
-              style: TextStyle(color: Colors.black, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleBack();
+          },
+          child: Text("Back",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget continueButton() {
@@ -186,16 +191,18 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleContinue(); },
-          child: Text(
-              "Continue",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleContinue();
+          },
+          child: Text("Continue",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget termsField() {
@@ -209,8 +216,7 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
           children: [
             termsCheckBox(),
             termsTitle(),
-          ]
-      ),
+          ]),
     );
   }
 
@@ -220,7 +226,7 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
         height: hScale(24),
         child: Transform.scale(
           scale: 0.7,
-          child:Checkbox(
+          child: Checkbox(
             value: flagMainContact,
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
@@ -229,17 +235,17 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
               });
             },
           ),
-        )
-    );
+        ));
   }
 
   Widget termsTitle() {
     return SizedBox(
-      width: wScale(264),
-      child: Text(
-        'I am the main contact person for\n(Company Name)',
-        textAlign: TextAlign.start,
-        style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w400, ))
-    );
+        width: wScale(264),
+        child: Text('I am the main contact person for\n(Company Name)',
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontSize: fSize(14),
+              fontWeight: FontWeight.w400,
+            )));
   }
 }

@@ -13,7 +13,6 @@ class TwoStepFailedScreen extends StatefulWidget {
 }
 
 class TwoStepFailedScreenState extends State<TwoStepFailedScreen> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -38,45 +37,50 @@ class TwoStepFailedScreenState extends State<TwoStepFailedScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SignupProgressHeader(title: '2-step verification process', progress: 3, prev: TWO_STEP_VERIFICATION,),
-              const CustomSpacer(size: 149),
-              finalStepErrorIcon(),
-              const CustomSpacer(size: 22),
-              finalStepBoldTitle('You need to complete the verification', 0xff1A2831),
-              const CustomSpacer(size: 19),
-              finalStepSubTitle('It seems like you have not completed\nyour mobile verification.', 0xff515151, 'normal'),
-              const CustomSpacer(size: 217),
-              tryAgainButton()
-            ]
-          )
-        )
-      )
-    );
+        child: Scaffold(
+            body: SingleChildScrollView(
+                child: Column(children: [
+      const SignupProgressHeader(
+        title: '2-step verification process',
+        progress: 3,
+        prev: TWO_STEP_VERIFICATION,
+      ),
+      const CustomSpacer(size: 149),
+      finalStepErrorIcon(),
+      const CustomSpacer(size: 22),
+      finalStepBoldTitle('You need to complete the verification', 0xff1A2831),
+      const CustomSpacer(size: 19),
+      finalStepSubTitle(
+          'It seems like you have not completed\nyour mobile verification.',
+          0xff515151,
+          'normal'),
+      const CustomSpacer(size: 217),
+      tryAgainButton()
+    ]))));
   }
 
   Widget finalStepErrorIcon() {
-    return Image.asset(
-      'assets/error.png',
-      fit: BoxFit.contain,
-      width: wScale(50));
+    return Image.asset('assets/error.png',
+        fit: BoxFit.contain, width: wScale(50));
   }
 
   Widget finalStepBoldTitle(title, color) {
-    return Text(
-        title,
+    return Text(title,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600, color: Color(color) ));
+        style: TextStyle(
+            fontSize: fSize(16),
+            fontWeight: FontWeight.w600,
+            color: Color(color)));
   }
 
   Widget finalStepSubTitle(title, color, bold) {
-    return Text(
-        title,
+    return Text(title,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(14), fontWeight: bold =='bold' ? FontWeight.bold: FontWeight.normal, color: Color(color),height: 1.7 ));
+        style: TextStyle(
+            fontSize: fSize(14),
+            fontWeight: bold == 'bold' ? FontWeight.bold : FontWeight.normal,
+            color: Color(color),
+            height: 1.7));
   }
 
   Widget tryAgainButton() {
@@ -87,16 +91,17 @@ class TwoStepFailedScreenState extends State<TwoStepFailedScreen> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleTryAgain(); },
-          child: Text(
-              "Try Again",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleTryAgain();
+          },
+          child: Text("Try Again",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
-
 }

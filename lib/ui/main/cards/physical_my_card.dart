@@ -1,7 +1,5 @@
 import 'package:flexflutter/ui/main/cards/manage_limits.dart';
-import 'package:flexflutter/ui/widgets/custom_header.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
@@ -16,10 +14,10 @@ class PhysicalMyCards extends StatefulWidget {
 }
 
 class PhysicalMyCardsState extends State<PhysicalMyCards> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -31,13 +29,69 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   int cardType = 1;
   int transactionStatus = 1;
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':0, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':1, 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
+    {
+      'date': '21 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage1',
+      'status': 0,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '22 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage2',
+      'status': 1,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '23 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage3',
+      'status': 1,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '24 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage4',
+      'status': 0,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '25 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage5',
+      'status': 0,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '26 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage6',
+      'status': 1,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '27 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage7',
+      'status': 1,
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    }
   ];
   bool showDateRange = false;
   bool showCalendarModal = false;
@@ -47,9 +101,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
 
-  handleBack() {
-
-  }
+  handleBack() {}
 
   handleCardType(type) {
     setState(() {
@@ -63,17 +115,11 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     });
   }
 
-  handleExport() {
+  handleExport() {}
 
-  }
+  handleCloneSetting() {}
 
-  handleCloneSetting() {
-
-  }
-
-  handleSearch() {
-
-  }
+  handleSearch() {}
 
   handleCalendar() {
     setState(() {
@@ -82,7 +128,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   setDateType(type) {
-    if(type == 4) {
+    if (type == 4) {
       setState(() {
         showDateRange = !showDateRange;
         showCalendarModal = false;
@@ -97,17 +143,13 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     }
   }
 
-  handleMonthlySpendLimit() {
-
-  }
+  handleMonthlySpendLimit() {}
 
   handleAction(index) {
-    if(index == 0 ) _showSimpleModalDialog(context);
-    if(index == 1) {
+    if (index == 0) _showSimpleModalDialog(context);
+    if (index == 1) {
       Navigator.of(context).push(
-        CupertinoPageRoute (
-            builder: (context) => const ManageLimits()
-        ),
+        CupertinoPageRoute(builder: (context) => const ManageLimits()),
       );
     }
   }
@@ -118,13 +160,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     });
   }
 
-  handleStartDateCalendar() {
+  handleStartDateCalendar() {}
 
-  }
-
-  handleEndDateCalendar() {
-
-  }
+  handleEndDateCalendar() {}
 
   @override
   void initState() {
@@ -133,39 +171,38 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const CustomSpacer(size: 31),
-        cardDetailField(),
-        const CustomSpacer(size: 10),
-        spendLimitField(),
-        const CustomSpacer(size: 20),
-        actionButtonField(),
-        const CustomSpacer(size: 20),
-        allTransactionField(),
-        const CustomSpacer(size: 15),
-        Indexer(
-            children: [
-              Indexed(index: 100, child: searchRowField()),
-              Indexed(index: 50, child: Column(
-                children: [
-                  const CustomSpacer(size: 45),
-                  showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
-                  showDateRange ? dateRangeField() : const SizedBox(),
-                  const CustomSpacer(size: 15),
-                  getTransactionArrWidgets(transactionArr),
-                ],
-              )),
-            ]
-        ),
-      ]
-    );
+    return Column(children: [
+      const CustomSpacer(size: 31),
+      cardDetailField(),
+      const CustomSpacer(size: 10),
+      spendLimitField(),
+      const CustomSpacer(size: 20),
+      actionButtonField(),
+      const CustomSpacer(size: 20),
+      allTransactionField(),
+      const CustomSpacer(size: 15),
+      Indexer(children: [
+        Indexed(index: 100, child: searchRowField()),
+        Indexed(
+            index: 50,
+            child: Column(
+              children: [
+                const CustomSpacer(size: 45),
+                showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
+                showDateRange ? dateRangeField() : const SizedBox(),
+                const CustomSpacer(size: 15),
+                getTransactionArrWidgets(transactionArr),
+              ],
+            )),
+      ]),
+    ]);
   }
 
   Widget cardDetailField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16), right: wScale(16), bottom: hScale(16)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -201,15 +238,26 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('My Card', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
+        Text('My Card',
+            style: TextStyle(
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1A2831))),
         TextButton(
           style: TextButton.styleFrom(
             primary: const Color(0xff60C094),
             padding: EdgeInsets.zero,
-            textStyle: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w600, color: const Color(0xff60C094), decoration: TextDecoration.underline),
+            textStyle: TextStyle(
+                fontSize: fSize(12),
+                fontWeight: FontWeight.w600,
+                color: const Color(0xff60C094),
+                decoration: TextDecoration.underline),
           ),
-          onPressed: () { handleCloneSetting(); },
-          child: const Text('Clone Settings', style:TextStyle(decoration: TextDecoration.underline)),
+          onPressed: () {
+            handleCloneSetting();
+          },
+          child: const Text('Clone Settings',
+              style: TextStyle(decoration: TextDecoration.underline)),
         ),
       ],
     );
@@ -232,77 +280,106 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(),
-                  eyeIconField()
-                ],
+                children: [const SizedBox(), eyeIconField()],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Angel Matthews', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w100, fontSize: fSize(14))),
+                  Text('Angel Matthews',
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w100,
+                          fontSize: fSize(14))),
                   const CustomSpacer(size: 6),
-                  Row(
-                      children:[
-                        Text(showCardDetail ? '2145 4587 4875 1211': '* * * *  * * * *  * * * *  * * * *' , style: TextStyle(color: Colors.white, fontSize: fSize(16))),
-                        SizedBox(width: wScale(7)),
-                        const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
-                      ]
-                  ),
+                  Row(children: [
+                    Text(
+                        showCardDetail
+                            ? '2145 4587 4875 1211'
+                            : '* * * *  * * * *  * * * *  * * * *',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(16))),
+                    SizedBox(width: wScale(7)),
+                    const Icon(Icons.content_copy,
+                        color: Color(0xff30E7A9), size: 14.0)
+                  ]),
                 ],
               ),
-              Row(
-                  children:[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Valid Thru', style: TextStyle(color: Colors.white, fontSize: fSize(10))),
-                        Text(showCardDetail ? '12/20' : 'MM / DD', style: TextStyle(color: Colors.white, fontSize: fSize(11), fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                    SizedBox(width: wScale(10)),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('CVV', style: TextStyle(color: Colors.white, fontSize: fSize(10))),
-                        Text(showCardDetail ? '214' : '* * *', style: TextStyle(color: Colors.white, fontSize: fSize(11), fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                    SizedBox(width: wScale(6)),
-                    const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
-                  ]
-              )
-            ]
-        )
-    );
+              Row(children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Valid Thru',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(10))),
+                    Text(showCardDetail ? '12/20' : 'MM / DD',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fSize(11),
+                            fontWeight: FontWeight.bold))
+                  ],
+                ),
+                SizedBox(width: wScale(10)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('CVV',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(10))),
+                    Text(showCardDetail ? '214' : '* * *',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fSize(11),
+                            fontWeight: FontWeight.bold))
+                  ],
+                ),
+                SizedBox(width: wScale(6)),
+                const Icon(Icons.content_copy,
+                    color: Color(0xff30E7A9), size: 14.0)
+              ])
+            ]));
   }
 
   Widget cardValueField() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Available Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color:const Color(0xFF1A2831))),
+        Text('Available Limit',
+            style: TextStyle(
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1A2831))),
         Container(
-          padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
-          decoration: BoxDecoration(
-            color: const Color(0xFFDEFEE9),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(hScale(16)),
-              topRight: Radius.circular(hScale(16)),
-              bottomLeft: Radius.circular(hScale(16)),
-              bottomRight: Radius.circular(hScale(16)),
+            padding: EdgeInsets.only(
+                left: wScale(16),
+                right: wScale(16),
+                top: hScale(5),
+                bottom: hScale(5)),
+            decoration: BoxDecoration(
+              color: const Color(0xFFDEFEE9),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(hScale(16)),
+                topRight: Radius.circular(hScale(16)),
+                bottomLeft: Radius.circular(hScale(16)),
+                bottomRight: Radius.circular(hScale(16)),
+              ),
             ),
-          ),
-          child: Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('SGD', style:TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w600, color: const Color(0xFF30E7A9))),
+                Text('SGD',
+                    style: TextStyle(
+                        fontSize: fSize(10),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF30E7A9))),
                 SizedBox(width: wScale(3)),
-                Text('3,000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF30E7A9)))
+                Text('3,000.00',
+                    style: TextStyle(
+                        fontSize: fSize(14),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF30E7A9)))
               ],
-            )
-        )
+            ))
       ],
     );
   }
@@ -319,22 +396,29 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               topRight: Radius.circular(hScale(17)),
               bottomLeft: Radius.circular(hScale(17)),
               bottomRight: Radius.circular(hScale(17)),
-            )
-        ),
+            )),
         child: IconButton(
           padding: const EdgeInsets.all(0),
           // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
-          icon: Image.asset(showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png', fit: BoxFit.contain, height: hScale(16)),
+          icon: Image.asset(
+              showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png',
+              fit: BoxFit.contain,
+              height: hScale(16)),
           iconSize: hScale(17),
-          onPressed: () { handleShowCardDetail(); },
-        )
-    );
+          onPressed: () {
+            handleShowCardDetail();
+          },
+        ));
   }
 
   Widget spendLimitField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -353,48 +437,66 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ],
       ),
       child: TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xFFFFFFFF),
-          padding: EdgeInsets.zero,
-        ),
-        onPressed: () { handleMonthlySpendLimit(); },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Monthly Spend Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('SGD', style:TextStyle(fontSize: fSize(10), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
-                    SizedBox(width: wScale(3)),
-                    Text('5000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF1A2831))),
-                  ]
-                )
-
-              ],
-            ),
-            const CustomSpacer(size: 12),
-            ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              child: LinearProgressIndicator( value: 0.8, backgroundColor: const Color(0xFFF4F4F4), color: const Color(0xFF30E7A9), minHeight: hScale(10),),
-            ),
-            const CustomSpacer(size: 12),
-            Row(
-              children: [
-                Image.asset('assets/happy_emoji.png', fit: BoxFit.contain, width: wScale(18)),
-                SizedBox(width: wScale(10)),
-                Text('Great job, you are within your allocated limit!', style:TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
-              ],
-            )
-
-          ],
-        )
-      ),
+          style: TextButton.styleFrom(
+            primary: const Color(0xFFFFFFFF),
+            padding: EdgeInsets.zero,
+          ),
+          onPressed: () {
+            handleMonthlySpendLimit();
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Monthly Spend Limit',
+                      style: TextStyle(
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1A2831))),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('SGD',
+                            style: TextStyle(
+                                fontSize: fSize(10),
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF1A2831))),
+                        SizedBox(width: wScale(3)),
+                        Text('5000.00',
+                            style: TextStyle(
+                                fontSize: fSize(14),
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF1A2831))),
+                      ])
+                ],
+              ),
+              const CustomSpacer(size: 12),
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                child: LinearProgressIndicator(
+                  value: 0.8,
+                  backgroundColor: const Color(0xFFF4F4F4),
+                  color: const Color(0xFF30E7A9),
+                  minHeight: hScale(10),
+                ),
+              ),
+              const CustomSpacer(size: 12),
+              Row(
+                children: [
+                  Image.asset('assets/happy_emoji.png',
+                      fit: BoxFit.contain, width: wScale(18)),
+                  SizedBox(width: wScale(10)),
+                  Text('Great job, you are within your allocated limit!',
+                      style: TextStyle(
+                          fontSize: fSize(12), color: const Color(0xFF70828D))),
+                ],
+              )
+            ],
+          )),
     );
   }
 
@@ -402,7 +504,11 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     return Container(
         width: wScale(102),
         // height: hScale(82),
-        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(16),
+            bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
@@ -420,37 +526,45 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             ),
           ],
         ),
-
         child: TextButton(
             style: TextButton.styleFrom(
-                primary: const Color(0xFFFFFFFF),
-                padding: EdgeInsets.zero
-            ),
-            onPressed: () { handleAction(index); },
+                primary: const Color(0xFFFFFFFF), padding: EdgeInsets.zero),
+            onPressed: () {
+              handleAction(index);
+            },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(imageUrl, fit: BoxFit.contain, height: hScale(28), width: wScale(28),),
-                const CustomSpacer(size: 10,),
-                Text(text, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: const Color(0xFF70828D)), textAlign: TextAlign.center,),
+                Image.asset(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  height: hScale(28),
+                  width: wScale(28),
+                ),
+                const CustomSpacer(
+                  size: 10,
+                ),
+                Text(
+                  text,
+                  style: TextStyle(
+                      fontSize: fSize(12),
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF70828D)),
+                  textAlign: TextAlign.center,
+                ),
               ],
-            )
-        )
-    );
+            )));
   }
 
   Widget actionButtonField() {
     return SizedBox(
       width: wScale(327),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            actionButton('assets/free.png', 'Freeze Card', 0),
-            actionButton('assets/limit.png', 'Edit Limit', 1),
-            actionButton('assets/cancel.png', 'Cancel Card', 2),
-          ]
-      ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        actionButton('assets/free.png', 'Freeze Card', 0),
+        actionButton('assets/limit.png', 'Edit Limit', 1),
+        actionButton('assets/cancel.png', 'Cancel Card', 2),
+      ]),
     );
   }
 
@@ -462,7 +576,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('All Transactions', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
+              Text('All Transactions',
+                  style: TextStyle(
+                      fontSize: fSize(16), fontWeight: FontWeight.w500)),
             ],
           ),
           const CustomSpacer(size: 10),
@@ -486,121 +602,144 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           bottomRight: Radius.circular(hScale(17)),
         ),
       ),
-      child: Row(
-          children: [
-            transactionStatusButton('Completed', 1),
-            transactionStatusButton('Pending', 2),
-            transactionStatusButton('Declined', 3)
-          ]
-      ),
+      child: Row(children: [
+        transactionStatusButton('Completed', 1),
+        transactionStatusButton('Pending', 2),
+        transactionStatusButton('Declined', 3)
+      ]),
     );
   }
 
   Widget transactionStatusButton(status, type) {
-    return type == transactionStatus ?
-    Container(
-      width: wScale(107),
-      height: hScale(35),
-      padding: EdgeInsets.zero,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(260),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0XFF040415).withOpacity(0.1),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: TextButton(
-          style: TextButton.styleFrom(
-            primary: const Color(0xFFFFFFFF),
-            padding: const EdgeInsets.all(0),
-          ),
-          child: Text(
-            status,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: fSize(14), fontWeight: FontWeight.w600,
-                color: type != 3 ? const Color(0xFF70828D): const Color(0xFFEB5757)),
-          ),
-          onPressed: () { handleTransactionStatus(type); }),
-    ) : TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff70828D),
-        padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-      ),
-      onPressed: () { handleTransactionStatus(type); },
-      child: Container(
-        width: wScale(107),
-        height: hScale(30),
-        alignment: Alignment.center,
-        child: Text(
-          status,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              color: type != 3 ? const Color(0xFF1A2831): const Color(0xFFEB5757)),
-        ),
-      ),
-    );
+    return type == transactionStatus
+        ? Container(
+            width: wScale(107),
+            height: hScale(35),
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(260),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0XFF040415).withOpacity(0.1),
+                  spreadRadius: 4,
+                  blurRadius: 20,
+                  offset: const Offset(0, 1), // changes position of shadow
+                ),
+              ],
+            ),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xFFFFFFFF),
+                  padding: const EdgeInsets.all(0),
+                ),
+                child: Text(
+                  status,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: fSize(14),
+                      fontWeight: FontWeight.w600,
+                      color: type != 3
+                          ? const Color(0xFF70828D)
+                          : const Color(0xFFEB5757)),
+                ),
+                onPressed: () {
+                  handleTransactionStatus(type);
+                }),
+          )
+        : TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
+            ),
+            onPressed: () {
+              handleTransactionStatus(type);
+            },
+            child: Container(
+              width: wScale(107),
+              height: hScale(30),
+              alignment: Alignment.center,
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(14),
+                    color: type != 3
+                        ? const Color(0xFF1A2831)
+                        : const Color(0xFFEB5757)),
+              ),
+            ),
+          );
   }
 
   Widget transactionField(date, transactionName, value, status) {
     return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
-      margin: EdgeInsets.only(bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
+        width: wScale(327),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(16),
+            bottom: hScale(16)),
+        margin: EdgeInsets.only(bottom: hScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(10)),
+            topRight: Radius.circular(hScale(10)),
+            bottomLeft: Radius.circular(hScale(10)),
+            bottomRight: Radius.circular(hScale(10)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF106549).withOpacity(0.1),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF106549).withOpacity(0.1),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              transactionTimeField(date),
-              const CustomSpacer(size: 6),
-              transactionNameField(transactionName),
-              const CustomSpacer(size: 6),
-              moneyValue('', value, 14.0, FontWeight.w700, status==0 ? const Color(0xFF1A2831) : const Color(0xff60C094)),
-            ],
-          ),
-          SizedBox(
-            width: wScale(16),
-            height: hScale(18),
-            child: status == 0
-                ? Image.asset( 'assets/add_transaction.png', fit: BoxFit.contain, width: wScale(16))
-                : Image.asset( 'assets/check_transaction.png', fit: BoxFit.contain, width: wScale(16))
-          )
-        ],
-      )
-    );
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                transactionTimeField(date),
+                const CustomSpacer(size: 6),
+                transactionNameField(transactionName),
+                const CustomSpacer(size: 6),
+                moneyValue(
+                    '',
+                    value,
+                    14.0,
+                    FontWeight.w700,
+                    status == 0
+                        ? const Color(0xFF1A2831)
+                        : const Color(0xff60C094)),
+              ],
+            ),
+            SizedBox(
+                width: wScale(16),
+                height: hScale(18),
+                child: status == 0
+                    ? Image.asset('assets/add_transaction.png',
+                        fit: BoxFit.contain, width: wScale(16))
+                    : Image.asset('assets/check_transaction.png',
+                        fit: BoxFit.contain, width: wScale(16)))
+          ],
+        ));
   }
 
   Widget transactionTimeField(date) {
     return Text('$date',
-        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Color(0xff70828D)));
+        style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff70828D)));
   }
 
   Widget transactionNameField(name) {
@@ -625,84 +764,91 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-              title,
+          Text(title,
               style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:[
-                Text("SGD  ",
-                    style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
-                Text(value,
-                    style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
-              ]
-          )
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text("SGD  ",
+                style: TextStyle(
+                    fontSize: fSize(12), fontWeight: weight, color: color)),
+            Text(value,
+                style: TextStyle(
+                    fontSize: fSize(size), fontWeight: weight, color: color)),
+          ])
         ],
       ),
     );
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
-      return transactionField(item['date'], item['transactionName'], item['value'], item['status']);
+    return Column(
+        children: arr.map<Widget>((item) {
+      return transactionField(
+          item['date'], item['transactionName'], item['value'], item['status']);
     }).toList());
   }
 
-  _showSimpleModalDialog(context){
+  _showSimpleModalDialog(context) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(12.0)),
-          child: modalField()
-        );
-    });
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: modalField());
+        });
   }
 
   Widget modalField() {
-    return Column(
-        mainAxisSize: MainAxisSize.min,
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(vertical: hScale(25)),
+          child: Column(children: [
+            Image.asset('assets/snow_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text('Editing spend limit?',
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              'To make changes to the spend limit\nassigned to this card, please reach out to\nyour company administrator.',
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Container (
-              padding: EdgeInsets.symmetric(vertical: hScale(25)),
-              child: Column(
-                  children: [
-                    Image.asset('assets/snow_icon.png', fit: BoxFit.contain, height: wScale(30)),
-                    const CustomSpacer(size: 15),
-                    Text('Editing spend limit?', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w700)),
-                    const CustomSpacer(size: 10),
-                    Text('To make changes to the spend limit\nassigned to this card, please reach out to\nyour company administrator.',
-                      style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400), textAlign: TextAlign.center,),
-                  ]
-              )
+          TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(
+                  vertical: hScale(30), horizontal: wScale(25)),
+              primary: const Color(0xff30E7A9),
+              textStyle: TextStyle(
+                  fontSize: fSize(16), color: const Color(0xff30E7A9)),
+            ),
+            onPressed: () =>
+                Navigator.of(context, rootNavigator: true).pop('dialog'),
+            child: const Text('Cancel'),
           ),
-          Container(height: 1,color: const Color(0xFFD5DBDE)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: hScale(30), horizontal: wScale(25)),
-                  primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(fontSize: fSize(16), color: const Color(0xff30E7A9)),
-                ),
-                onPressed: () => Navigator.of(context, rootNavigator: true).pop('dialog'),
-                child: const Text('Cancel'),
-              ),
-              Container(width: 1, color: const Color(0xFFD5DBDE)),
-              TextButton(
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: hScale(30)),
-                  primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(fontSize: fSize(16), color: const Color(0xff30E7A9)),
-                ),
-                onPressed: () { Navigator.of(context, rootNavigator: true).pop('dialog'); },
-                child: const Text('Ok'),
-              )
-            ],
+          Container(width: 1, color: const Color(0xFFD5DBDE)),
+          TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: hScale(30)),
+              primary: const Color(0xff30E7A9),
+              textStyle: TextStyle(
+                  fontSize: fSize(16), color: const Color(0xff30E7A9)),
+            ),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop('dialog');
+            },
+            child: const Text('Ok'),
           )
-        ]
-    );
+        ],
+      )
+    ]);
   }
 
   Widget searchField() {
@@ -712,7 +858,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
           color: const Color(0xffffffff),
-          border: Border.all(color: const Color(0xff040415).withOpacity(0.1), width: hScale(1)),
+          border: Border.all(
+              color: const Color(0xff040415).withOpacity(0.1),
+              width: hScale(1)),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(hScale(10)),
             topRight: Radius.circular(hScale(10)),
@@ -730,47 +878,49 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                   controller: searchCtl,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(0),
-                    enabledBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
+                    enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
                     hintText: 'Type your search here',
                     hintStyle: TextStyle(
                         color: const Color(0xff040415).withOpacity(0.5),
                         fontSize: fSize(12),
                         fontWeight: FontWeight.w500),
-                    focusedBorder: const OutlineInputBorder( borderSide: BorderSide(color: Colors.transparent) ),
+                    focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent)),
                   ),
-                  style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500),
-                )
-            ),
+                  style: TextStyle(
+                      fontSize: fSize(12), fontWeight: FontWeight.w500),
+                )),
             SizedBox(
               width: wScale(20),
               child: TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff70828D),
-                  padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-                ),
-                onPressed: () { handleSearch(); },
-                // child: const Icon( Icons.search_rounded, color: Color(0xFFBFBFBF), size: 20 ),
-                  child: Image.asset('assets/search_icon.png', fit:BoxFit.contain, width: wScale(13),)
-              ),
+                  style: TextButton.styleFrom(
+                    primary: const Color(0xff70828D),
+                    padding: const EdgeInsets.all(0),
+                    textStyle: TextStyle(
+                        fontSize: fSize(14), color: const Color(0xff70828D)),
+                  ),
+                  onPressed: () {
+                    handleSearch();
+                  },
+                  // child: const Icon( Icons.search_rounded, color: Color(0xFFBFBFBF), size: 20 ),
+                  child: Image.asset(
+                    'assets/search_icon.png',
+                    fit: BoxFit.contain,
+                    width: wScale(13),
+                  )),
             ),
           ],
-        )
-    );
+        ));
   }
 
   Widget searchRowField() {
-    return Stack(
-        overflow: Overflow.visible,
-        children: [
-          searchRow(),
-          showCalendarModal ? Positioned(
-              top: hScale(50),
-              right:0,
-              child: calendarModalField()
-          ): const SizedBox()
-        ]
-    );
+    return Stack(overflow: Overflow.visible, children: [
+      searchRow(),
+      showCalendarModal
+          ? Positioned(top: hScale(50), right: 0, child: calendarModalField())
+          : const SizedBox()
+    ]);
   }
 
   Widget searchRow() {
@@ -787,15 +937,17 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               width: wScale(43),
               height: wScale(36),
               decoration: BoxDecoration(
-                  color: const Color(0xFFA3A3A3).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFFA3A3A3).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: wScale(12))
-                ),
-                child: Image.asset('assets/calendar.png', fit: BoxFit.contain, width: wScale(24)),
-                onPressed: () { handleCalendar();},
+                    padding: EdgeInsets.symmetric(horizontal: wScale(12))),
+                child: Image.asset('assets/calendar.png',
+                    fit: BoxFit.contain, width: wScale(24)),
+                onPressed: () {
+                  handleCalendar();
+                },
               ),
             ),
             SizedBox(
@@ -804,15 +956,19 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                 style: TextButton.styleFrom(
                   primary: const Color(0xff29C490),
                   padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(fontSize: fSize(12), color: const Color(0xff29C490),decoration: TextDecoration.underline),
+                  textStyle: TextStyle(
+                      fontSize: fSize(12),
+                      color: const Color(0xff29C490),
+                      decoration: TextDecoration.underline),
                 ),
-                onPressed: () { handleExport(); },
+                onPressed: () {
+                  handleExport();
+                },
                 child: const Text('Export'),
               ),
             )
           ],
-        )
-    );
+        ));
   }
 
   Widget exportButton() {
@@ -823,16 +979,18 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleSearch(); },
-          child: Text(
-              "Export",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleSearch();
+          },
+          child: Text("Export",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget calendarModalField() {
@@ -875,7 +1033,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         // padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
-      onPressed: () { setDateType(type); },
+      onPressed: () {
+        setDateType(type);
+      },
       child: Container(
         width: wScale(177),
         // padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
@@ -890,9 +1050,13 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   Widget dateRangeField() {
-    return  Container(
+    return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+        padding: EdgeInsets.only(
+            left: wScale(16),
+            right: wScale(16),
+            top: hScale(16),
+            bottom: hScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -922,9 +1086,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               const CustomSpacer(size: 17),
               searchButton(),
               const CustomSpacer(size: 5),
-            ]
-        )
-    );
+            ]));
   }
 
   Widget dateField(type) {
@@ -937,39 +1099,49 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           margin: EdgeInsets.only(top: hScale(8)),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(color:const Color(0xFF040415).withOpacity(0.1))
-          ),
+              border:
+                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
           child: TextButton(
               style: TextButton.styleFrom(
                 // primary: const Color(0xffF5F5F5).withOpacity(0.4),
                 padding: const EdgeInsets.all(0),
               ),
-              onPressed: () { _openDatePicker(type); },
-              child:Row(
+              onPressed: () {
+                _openDatePicker(type);
+              },
+              child: Row(
                 children: <Widget>[
                   Expanded(
                       child: TextField(
-                        style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500, color: const Color(0xFF040415)),
-                        controller: type ==1 ? startDateCtl: endDateCtl,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          enabledBorder:  const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                          hintText: 'Select Date of Birth',
-                          hintStyle: TextStyle( color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                          focusedBorder: const OutlineInputBorder( borderSide: BorderSide( color: Colors.white, width: 1.0) ),
-                        ),
-                        readOnly: true,
-                        onTap: () { _openDatePicker(type); },
-                      )
-                  ),
+                    style: TextStyle(
+                        fontSize: fSize(16),
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF040415)),
+                    controller: type == 1 ? startDateCtl : endDateCtl,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: const OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 1.0)),
+                      hintText: 'Select Date of Birth',
+                      hintStyle: TextStyle(
+                          color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      focusedBorder: const OutlineInputBorder(
+                          borderSide:
+                              BorderSide(color: Colors.white, width: 1.0)),
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      _openDatePicker(type);
+                    },
+                  )),
                   Container(
                       margin: EdgeInsets.only(right: wScale(20)),
-                      child: Image.asset('assets/calendar.png', fit:BoxFit.contain, width: wScale(18))
-                  )
+                      child: Image.asset('assets/calendar.png',
+                          fit: BoxFit.contain, width: wScale(18)))
                 ],
-              )
-          ),
+              )),
         ),
         Positioned(
           top: 0,
@@ -977,7 +1149,11 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: wScale(8)),
             color: Colors.white,
-            child: Text('Date of Birth (DD/MM/YY)', style: TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400, color: const Color(0xFFBFBFBF))),
+            child: Text('Date of Birth (DD/MM/YY)',
+                style: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFBFBFBF))),
           ),
         )
       ],
@@ -986,21 +1162,22 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
 
   void _openDatePicker(type) async {
     DateTime? pickedDate = await showDatePicker(
-        context: context, initialDate: DateTime.now(),
-        firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2101)
-    );
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(
+            2000), //DateTime.now() - not to allow to choose before today.
+        lastDate: DateTime(2101));
 
-    if(pickedDate != null ){
+    if (pickedDate != null) {
       String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
       setState(() {
-        if(type == 1) {
+        if (type == 1) {
           startDateCtl.text = formattedDate;
         } else {
           endDateCtl.text = formattedDate;
         }
       });
-    }else{
+    } else {
       print("Date is not selected");
     }
   }
@@ -1013,15 +1190,17 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           style: ElevatedButton.styleFrom(
             primary: const Color(0xff1A2831),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () { handleSearch(); },
-          child: Text(
-              "Search",
-              style: TextStyle(color: Colors.white, fontSize: fSize(16), fontWeight: FontWeight.w700 )),
-        )
-    );
+          onPressed: () {
+            handleSearch();
+          },
+          child: Text("Search",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 }

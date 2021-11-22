@@ -1,12 +1,3 @@
-// ignore_for_file: void_checks
-
-import 'package:flexflutter/ui/main/cards/physical_card.dart';
-import 'package:flexflutter/ui/main/cards/virtual_card.dart';
-import 'package:flexflutter/ui/main/credit/credit.dart';
-import 'package:flexflutter/ui/main/home/home.dart';
-import 'package:flexflutter/ui/main/more/more.dart';
-import 'package:flexflutter/ui/main/transactions/transaction_admin.dart';
-import 'package:flexflutter/ui/main/transactions/transaction_user.dart';
 import 'package:flexflutter/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
