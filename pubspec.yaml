@@ -41,6 +41,11 @@ dependencies:
   country_pickers: ^2.0.0
   percent_indicator: ^3.4.0
   intl: ^0.16.1
+  camera: ^0.8.1+7
+  path: ^1.8.0
+  path_provider: ^1.6.28
+  video_player: ^2.2.7
+  image_picker: ^0.6.7+22
 
 dev_dependencies:
   flutter_test:

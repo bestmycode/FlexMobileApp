@@ -1,4 +1,5 @@
 import 'package:flexflutter/ui/main/cards/manage_limits.dart';
+import 'package:flexflutter/ui/main/home/receipt_capture.dart';
 import 'package:flexflutter/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -726,8 +727,15 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                 width: wScale(16),
                 height: hScale(18),
                 child: status == 0
-                    ? Image.asset('assets/add_transaction.png',
-                        fit: BoxFit.contain, width: wScale(16))
+                    ? TextButton(
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                        onPressed: () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                              builder: (context) => ReceiptCapture()),
+                        ),
+                        child: Image.asset('assets/add_transaction.png',
+                            fit: BoxFit.contain, width: wScale(16)),
+                      )
                     : Image.asset('assets/check_transaction.png',
                         fit: BoxFit.contain, width: wScale(16)))
           ],
