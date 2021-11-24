@@ -1,3 +1,5 @@
+import 'package:flexflutter/ui/main/home/receipt_capture.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flexflutter/utils/scale.dart';
 
@@ -49,12 +51,7 @@ class TransactionItemState extends State<TransactionItem> {
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),
@@ -90,10 +87,32 @@ class TransactionItemState extends State<TransactionItem> {
                     width: wScale(16),
                     height: hScale(18),
                     child: widget.status == 0
-                        ? Image.asset('assets/add_transaction.png',
-                            fit: BoxFit.contain, width: wScale(16))
-                        : Image.asset('assets/check_transaction.png',
-                            fit: BoxFit.contain, width: wScale(16)))
+                        ? TextButton(
+                            style: TextButton.styleFrom(
+                                primary: const Color(0xffffffff),
+                                padding: const EdgeInsets.all(0)),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const ReceiptCapture()),
+                              );
+                            },
+                            child: Image.asset('assets/add_transaction.png',
+                                fit: BoxFit.contain, width: wScale(16)))
+                        : TextButton(
+                            style: TextButton.styleFrom(
+                                primary: const Color(0xffffffff),
+                                padding: const EdgeInsets.all(0)),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        const ReceiptCapture()),
+                              );
+                            },
+                            child: Image.asset('assets/check_transaction.png',
+                                fit: BoxFit.contain, width: wScale(16))))
                 : SizedBox(width: wScale(16))
           ],
         ));

@@ -46,6 +46,7 @@ dependencies:
   path_provider: ^1.6.28
   video_player: ^2.2.7
   image_picker: ^0.6.7+22
+  graphql_flutter: ^4.0.1
 
 dev_dependencies:
   flutter_test:

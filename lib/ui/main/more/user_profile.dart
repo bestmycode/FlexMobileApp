@@ -52,12 +52,7 @@ class UserProfileState extends State<UserProfile> {
             EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),

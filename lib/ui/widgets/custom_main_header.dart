@@ -28,12 +28,7 @@ class CustomMainHeader extends StatelessWidget {
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
           color: const Color(0xFFF5F5F5).withOpacity(0.4),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: TextButton(
             style: TextButton.styleFrom(

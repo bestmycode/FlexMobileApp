@@ -79,20 +79,7 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
             EdgeInsets.symmetric(horizontal: wScale(18), vertical: hScale(26)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF106549).withOpacity(0.1),
-              spreadRadius: 4,
-              blurRadius: 20,
-              offset: const Offset(0, 1), // changes position of shadow
-            ),
-          ],
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

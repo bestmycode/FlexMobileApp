@@ -296,12 +296,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
           border: Border.all(
               color: const Color(0xff040415).withOpacity(0.1),
               width: hScale(1)),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -357,12 +352,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         margin: EdgeInsets.only(bottom: hScale(10)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),

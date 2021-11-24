@@ -81,12 +81,7 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
         width: wScale(327),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF106549).withOpacity(0.1),

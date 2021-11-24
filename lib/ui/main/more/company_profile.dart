@@ -61,12 +61,7 @@ class CompanyProfileState extends State<CompanyProfile> {
             EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(hScale(10)),
-            topRight: Radius.circular(hScale(10)),
-            bottomLeft: Radius.circular(hScale(10)),
-            bottomRight: Radius.circular(hScale(10)),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -133,12 +128,17 @@ class CompanyProfileState extends State<CompanyProfile> {
     ));
   }
 
-  Widget customEditField(hint, label) {
+  Widget customEditField(hint, label, editable) {
     return Container(
         width: wScale(295),
         height: hScale(56),
         alignment: Alignment.center,
         child: TextField(
+          readOnly: !editable,
+          style: TextStyle(
+              fontSize: fSize(14),
+              fontWeight: FontWeight.w500,
+              color: editable ? Color(0xFF040415) : Color(0xFF7D7E80)),
           controller: TextEditingController()..text = label,
           decoration: InputDecoration(
             filled: true,
@@ -157,8 +157,9 @@ class CompanyProfileState extends State<CompanyProfile> {
                 color: const Color(0xff040415).withOpacity(0.4),
                 fontSize: fSize(14),
                 fontWeight: FontWeight.w500),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xff040415), width: 1.0)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Color(0xff040415).withOpacity(0.1), width: 1.0)),
           ),
         ));
   }
@@ -169,6 +170,11 @@ class CompanyProfileState extends State<CompanyProfile> {
         // height: hScale(56),
         alignment: Alignment.center,
         child: TextField(
+          readOnly: true,
+          style: TextStyle(
+              fontSize: fSize(14),
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF7D7E80)),
           controller: TextEditingController()..text = label,
           minLines: 3,
           maxLines: 7,
@@ -179,8 +185,9 @@ class CompanyProfileState extends State<CompanyProfile> {
                 borderSide: BorderSide(
                     color: const Color(0xff040415).withOpacity(0.1),
                     width: 1.0)),
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xff040415), width: 1.0)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: Color(0xff040415).withOpacity(0.1), width: 1.0)),
           ),
         ));
   }
@@ -259,41 +266,41 @@ class CompanyProfileState extends State<CompanyProfile> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const CustomSpacer(size: 14),
-        customEditField('Company Name', 'Global Ptv.Ltd'),
+        customEditField('Company Name', 'Global Ptv.Ltd', false),
         const CustomSpacer(size: 16),
-        customEditField('Company Registration Number', '234878'),
+        customEditField('Company Registration Number', '234878', false),
         const CustomSpacer(size: 16),
-        customEditField('Country', 'Singapore'),
+        customEditField('Country', 'Singapore', false),
         const CustomSpacer(size: 16),
-        customEditField('Base Currency', 'SGD'),
+        customEditField('Base Currency', 'SGD', false),
         const CustomSpacer(size: 16),
-        customEditField('Company Phone Number', '+65 9112 3950'),
+        customEditField('Company Phone Number', '+65 9112 3950', true),
         const CustomSpacer(size: 16),
-        customEditField('Company Type', 'Retail'),
+        customEditField('Company Type', 'Retail', false),
         const CustomSpacer(size: 16),
-        customEditField('Contact Person', 'Terry Herwit'),
+        customEditField('Contact Person', 'Terry Herwit', true),
         const CustomSpacer(size: 16),
-        customEditField('Company Email Address', 'terry@abc.co'),
+        customEditField('Company Email Address', 'terry@abc.co', true),
         const CustomSpacer(size: 16),
 
-        customEditField('Industry', '122-abchd'),
+        customEditField('Industry', '122-abchd', false),
         const CustomSpacer(size: 16),
 
         customMultiEditField(
             '340 - Manufacture of derivatives and \nintermediates produced from basic \nbuilding blocks (eg acetyls, acrylics, \noxochemicals.'),
 
         const CustomSpacer(size: 16),
-        customEditField('Company Address', '123 Tagore Lane'),
+        customEditField('Company Address', '123 Tagore Lane', false),
         const CustomSpacer(size: 16),
-        customEditField('Postal Code', '121145'),
+        customEditField('Postal Code', '121145', false),
         const CustomSpacer(size: 16),
-        customEditField('City', 'Singapore'),
+        customEditField('City', 'Singapore', false),
         const CustomSpacer(size: 16),
-        customEditField('Operating Address', '192 Sengkang Ave 3'),
+        customEditField('Operating Address', '192 Sengkang Ave 3', true),
         const CustomSpacer(size: 16),
-        customEditField('Postal Code', '959122'),
+        customEditField('Postal Code', '959122', true),
         const CustomSpacer(size: 16),
-        customEditField('City', 'Singapore'),
+        customEditField('City', 'Singapore', true),
         // customEditField(companyNameCtl, const Color(0xFFBDBDBD).withOpacity(0.1), 'Global Ptv.Ltd', 'Company Name')
       ],
     );
