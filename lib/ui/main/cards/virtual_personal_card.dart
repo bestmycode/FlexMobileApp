@@ -1,12 +1,12 @@
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class VirtualPersonalCard extends StatefulWidget {
-  const VirtualPersonalCard({Key? key}) : super(key: key);
+  const VirtualPersonalCard({Key key}) : super(key: key);
 
   @override
   VirtualPersonalCardState createState() => VirtualPersonalCardState();
@@ -27,6 +27,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
 
   int cardType = 1;
   int transactionStatus = 1;
+  bool showCardDetail = true;
   var transactionArr = [
     {
       'date': '21 June 2021',
@@ -107,6 +108,12 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     });
   }
 
+  handleShowCardDetail() {
+    setState(() {
+      showCardDetail = !showCardDetail;
+    });
+  }
+
   handleExport() {}
 
   @override
@@ -180,7 +187,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     return Container(
         width: wScale(295),
         height: wScale(187),
-        padding: EdgeInsets.all(hScale(10)),
+        padding: EdgeInsets.all(hScale(16)),
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/virtual_card_detail.png"),
@@ -188,38 +195,44 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
           ),
         ),
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [const SizedBox(), eyeIconField()],
               ),
-              const CustomSpacer(size: 26),
-              Text('Angel Matthews',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w100,
-                      fontSize: fSize(14))),
-              const CustomSpacer(size: 6),
-              Row(children: [
-                Text('2145 4587 4875 1211',
-                    style: TextStyle(color: Colors.white, fontSize: fSize(16))),
-                const Icon(Icons.content_copy,
-                    color: Color(0xff30E7A9), size: 14.0)
-              ]),
-              const CustomSpacer(size: 30),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Marketing Expenses',
+                      style:
+                          TextStyle(color: Colors.white, fontSize: fSize(16))),
+                  // const CustomSpacer(size: 6),
+                  Row(children: [
+                    Text(
+                        showCardDetail
+                            ? '2145 4587 4875 1211'
+                            : '* * * *  * * * *  * * * *  * * * *',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(16))),
+                    SizedBox(width: wScale(7)),
+                    const Icon(Icons.content_copy,
+                        color: Color(0xff30E7A9), size: 14.0)
+                  ]),
+                ],
+              ),
               Row(children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Valid Thru',
-                        style:
-                            TextStyle(color: Colors.white, fontSize: fSize(8))),
-                    Text('12/20',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(10))),
+                    Text(showCardDetail ? '12/20' : 'MM / DD',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: fSize(8),
+                            fontSize: fSize(11),
                             fontWeight: FontWeight.bold))
                   ],
                 ),
@@ -228,19 +241,21 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('CVV',
-                        style:
-                            TextStyle(color: Colors.white, fontSize: fSize(8))),
-                    Text('214',
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(10))),
+                    Text(showCardDetail ? '214' : '* * *',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: fSize(8),
+                            fontSize: fSize(11),
                             fontWeight: FontWeight.bold))
                   ],
                 ),
                 SizedBox(width: wScale(6)),
                 const Icon(Icons.content_copy,
                     color: Color(0xff30E7A9), size: 14.0)
-              ])
+              ]),
+              Text('John Tan',
+                  style: TextStyle(color: Colors.white, fontSize: fSize(16))),
             ]));
   }
 
@@ -257,19 +272,25 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                 top: hScale(5),
                 bottom: hScale(5)),
             decoration: BoxDecoration(
-              color: const Color(0xFFDEFEE9),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(hScale(16)),
-                topRight: Radius.circular(hScale(16)),
-                bottomLeft: Radius.circular(hScale(16)),
-                bottomRight: Radius.circular(hScale(16)),
-              ),
-            ),
-            child: Text('3,000.00',
-                style: TextStyle(
-                    fontSize: fSize(14),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF30E7A9))))
+                color: const Color(0xFFDEFEE9),
+                borderRadius: BorderRadius.all(Radius.circular(hScale(16)))),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('SGD ',
+                      style: TextStyle(
+                          fontSize: fSize(10),
+                          fontWeight: FontWeight.w600,
+                          height: 1,
+                          color: const Color(0xFF30E7A9))),
+                  Text('3,000.00',
+                      style: TextStyle(
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w600,
+                          height: 1,
+                          color: const Color(0xFF30E7A9)))
+                ]))
       ],
     );
   }
@@ -289,13 +310,14 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
             )),
         child: IconButton(
           padding: const EdgeInsets.all(0),
-          icon: const Icon(
-            Icons.remove_red_eye_outlined,
-            color: Color(0xff30E7A9),
-          ),
+          // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
+          icon: Image.asset(
+              showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png',
+              fit: BoxFit.contain,
+              height: hScale(16)),
           iconSize: hScale(17),
           onPressed: () {
-            print("ksksk");
+            handleShowCardDetail();
           },
         ));
   }
@@ -329,9 +351,32 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Monthly Spend Limit',
-              style:
-                  TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Monthly Spend Limit',
+                  style: TextStyle(
+                      fontSize: fSize(14),
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1A2831))),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SGD ',
+                        style: TextStyle(
+                            fontSize: fSize(10),
+                            fontWeight: FontWeight.w600,
+                            height: 1,
+                            color: const Color(0xFF1A2831))),
+                    Text('5,000.00',
+                        style: TextStyle(
+                            fontSize: fSize(14),
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1A2831))),
+                  ])
+            ],
+          ),
           const CustomSpacer(size: 12),
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -343,9 +388,16 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
             ),
           ),
           const CustomSpacer(size: 12),
-          Text('Great job, you are within your allocated limit!',
-              style: TextStyle(
-                  fontSize: fSize(12), color: const Color(0xFF70828D))),
+          Row(
+            children: [
+              Image.asset('assets/happy_emoji.png',
+                  fit: BoxFit.contain, width: wScale(18)),
+              SizedBox(width: wScale(10)),
+              Text('Great job, you are within your allocated limit!',
+                  style: TextStyle(
+                      fontSize: fSize(12), color: const Color(0xFF70828D))),
+            ],
+          )
         ],
       ),
     );
@@ -400,26 +452,13 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
       width: wScale(327),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('All Transactions',
-                  style: TextStyle(
-                      fontSize: fSize(16), fontWeight: FontWeight.w500)),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(
-                      fontSize: fSize(14), color: const Color(0xff30E7A9)),
-                ),
-                onPressed: () {
-                  handleExport();
-                },
-                child: const Text('Export',
-                    style: TextStyle(decoration: TextDecoration.underline)),
-              ),
-            ],
-          ),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text('My Grab Expenses’ Transactions',
+                style: TextStyle(
+                    fontSize: fSize(16),
+                    fontWeight: FontWeight.w500,
+                    height: 1.8)),
+          ]),
           const CustomSpacer(size: 10),
           transactionStatusField()
         ],
@@ -516,11 +555,8 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   Widget transactionField(date, transactionName, value, status) {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -603,10 +639,18 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text("SGD  ",
                 style: TextStyle(
-                    fontSize: fSize(12), fontWeight: weight, color: color)),
+                  fontSize: fSize(12),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1,
+                )),
             Text(value,
                 style: TextStyle(
-                    fontSize: fSize(size), fontWeight: weight, color: color)),
+                  fontSize: fSize(size),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1,
+                )),
           ])
         ],
       ),

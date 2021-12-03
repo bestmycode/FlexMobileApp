@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class ReceiptFile extends StatefulWidget {
-  const ReceiptFile({Key? key}) : super(key: key);
+  const ReceiptFile({Key key}) : super(key: key);
 
-  // final File? imageFile;
-  // const ReceiptFile({Key? key, this.imageFile}) : super(key: key);
+  // final File imageFile;
+  // const ReceiptFile({Key key, this.imageFile}) : super(key: key);
 
   @override
   ReceiptFileState createState() => ReceiptFileState();
@@ -46,9 +46,9 @@ class ReceiptFileState extends State<ReceiptFile> {
             width: wScale(301),
             height: hScale(519),
             margin: EdgeInsets.only(right: wScale(27)),
-            decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
-                image: const DecorationImage(
+            decoration: const BoxDecoration(
+                color: Color(0xFFF9F9F9),
+                image: DecorationImage(
                     image: AssetImage('assets/img_bill_scanned.png'),
                     fit: BoxFit.cover))),
         Positioned(
@@ -72,7 +72,7 @@ class ReceiptFileState extends State<ReceiptFile> {
         padding: EdgeInsets.all(wScale(8)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(8)),
-          color: const Color(0xffFFF2F2),
+          color: type == 0 ? const Color(0xffFFF2F2) : Colors.white,
         ),
         child: TextButton(
             style: TextButton.styleFrom(

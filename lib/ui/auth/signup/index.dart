@@ -1,17 +1,17 @@
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
-import 'package:flexflutter/ui/widgets/custom_mobile_textfield.dart';
+import 'package:co/ui/widgets/custom_mobile_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/signup_progress_header.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({Key key}) : super(key: key);
 
   @override
   SignUpScreenState createState() => SignUpScreenState();
@@ -147,7 +147,7 @@ class SignUpScreenState extends State<SignUpScreen> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagTerm = value!;
+                flagTerm = value;
               });
             },
           ),

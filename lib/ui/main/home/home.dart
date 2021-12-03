@@ -1,18 +1,18 @@
-import 'package:flexflutter/ui/main/home/deposit_funds.dart';
-import 'package:flexflutter/ui/main/home/notification.dart';
-import 'package:flexflutter/ui/main/home/request_card.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/home/deposit_funds.dart';
+import 'package:co/ui/main/home/notification.dart';
+import 'package:co/ui/main/home/request_card.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class HomeScreen extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const Home({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // const Home({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
 
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({Key key}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -251,10 +251,18 @@ class HomeScreenState extends State<HomeScreen> {
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text("SGD  ",
               style: TextStyle(
-                  fontSize: fSize(12), fontWeight: weight, color: color)),
+                fontSize: fSize(12),
+                fontWeight: weight,
+                color: color,
+                height: 1,
+              )),
           Text(value,
               style: TextStyle(
-                  fontSize: fSize(size), fontWeight: weight, color: color)),
+                fontSize: fSize(size),
+                fontWeight: weight,
+                color: color,
+                height: 1,
+              )),
         ])
       ],
     );

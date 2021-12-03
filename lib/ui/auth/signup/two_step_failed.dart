@@ -1,12 +1,12 @@
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 
 class TwoStepFailedScreen extends StatefulWidget {
-  const TwoStepFailedScreen({Key? key}) : super(key: key);
+  const TwoStepFailedScreen({Key key}) : super(key: key);
 
   @override
   TwoStepFailedScreenState createState() => TwoStepFailedScreenState();

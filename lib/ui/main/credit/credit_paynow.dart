@@ -1,12 +1,12 @@
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 
 class CreditPayNowScreen extends StatefulWidget {
-  const CreditPayNowScreen({Key? key}) : super(key: key);
+  const CreditPayNowScreen({Key key}) : super(key: key);
 
   @override
   CreditPayNowScreenState createState() => CreditPayNowScreenState();

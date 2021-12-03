@@ -1,14 +1,14 @@
-import 'package:flexflutter/ui/main/home/deposit_funds.dart';
-import 'package:flexflutter/ui/main/home/notification.dart';
-import 'package:flexflutter/ui/main/home/request_card.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/home/deposit_funds.dart';
+import 'package:co/ui/main/home/notification.dart';
+import 'package:co/ui/main/home/request_card.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class CompleteNewSubsidiary extends StatefulWidget {
-  const CompleteNewSubsidiary({Key? key}) : super(key: key);
+  const CompleteNewSubsidiary({Key key}) : super(key: key);
 
   @override
   CompleteNewSubsidiaryState createState() => CompleteNewSubsidiaryState();
@@ -183,10 +183,18 @@ class CompleteNewSubsidiaryState extends State<CompleteNewSubsidiary> {
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(value == '-' ? '' : "SGD  ",
               style: TextStyle(
-                  fontSize: fSize(12), fontWeight: weight, color: color)),
+                fontSize: fSize(12),
+                fontWeight: weight,
+                color: color,
+                height: 1,
+              )),
           Text(value,
               style: TextStyle(
-                  fontSize: fSize(size), fontWeight: weight, color: color)),
+                fontSize: fSize(size),
+                fontWeight: weight,
+                color: color,
+                height: 1,
+              )),
         ])
       ],
     );

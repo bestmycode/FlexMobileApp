@@ -1,14 +1,14 @@
-import 'package:flexflutter/ui/main/more/my_subsibiaries.dart';
-import 'package:flexflutter/ui/main/more/user_profile.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/more/my_subsibiaries.dart';
+import 'package:co/ui/main/more/user_profile.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class AccountSetting extends StatefulWidget {
-  const AccountSetting({Key? key}) : super(key: key);
+  const AccountSetting({Key key}) : super(key: key);
   @override
   AccountSettingState createState() => AccountSettingState();
 }

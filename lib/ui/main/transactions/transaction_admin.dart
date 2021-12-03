@@ -1,17 +1,17 @@
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/transaction_item.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 
 class TransactionAdmin extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const TransactionAdmin({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
-  const TransactionAdmin({Key? key}) : super(key: key);
+  // const TransactionAdmin({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const TransactionAdmin({Key key}) : super(key: key);
   @override
   TransactionAdminState createState() => TransactionAdminState();
 }
@@ -184,7 +184,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
                 Indexed(
                     index: 50,
                     child: Column(children: [
-                      const CustomSpacer(size: 100),
+                      const CustomSpacer(size: 80),
                       Indexer(children: [
                         Indexed(index: 100, child: searchRowField()),
                         Indexed(
@@ -238,7 +238,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
           ],
         ),
         child: Column(children: [
-          moneyValue('Total Balance', '0.00', 20.0, FontWeight.bold,
+          moneyValue('Total Balance', '0.00', 20.0, FontWeight.w700,
               const Color(0xff30E7A9)),
           const CustomSpacer(size: 10),
           moneyValue('Ledger Balance', '0.00', 18.0, FontWeight.w600,
@@ -262,10 +262,14 @@ class TransactionAdminState extends State<TransactionAdmin> {
                   fontSize: fSize(12),
                   fontWeight: weight,
                   color: color,
-                  height: 1.4)),
+                  height: 1)),
           Text(value,
+              textAlign: TextAlign.start,
               style: TextStyle(
-                  fontSize: fSize(size), fontWeight: weight, color: color)),
+                  fontSize: fSize(size),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1)),
         ])
       ],
     );
@@ -599,15 +603,12 @@ class TransactionAdminState extends State<TransactionAdmin> {
   Widget dateRangeField() {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         // margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),
@@ -703,7 +704,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   void _openDatePicker(type) async {
-    DateTime? pickedDate = await showDatePicker(
+    DateTime pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(
@@ -711,7 +712,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
         lastDate: DateTime(2101));
 
     if (pickedDate != null) {
-      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
       setState(() {
         if (type == 1) {
           startDateCtl.text = formattedDate;

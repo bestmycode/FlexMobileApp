@@ -1,10 +1,10 @@
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class CompanyProfile extends StatefulWidget {
-  const CompanyProfile({Key? key}) : super(key: key);
+  const CompanyProfile({Key key}) : super(key: key);
   @override
   CompanyProfileState createState() => CompanyProfileState();
 }
@@ -76,6 +76,7 @@ class CompanyProfileState extends State<CompanyProfile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             titleField(),
+            const CustomSpacer(size: 6),
             flagEditable ? editableField() : nonEditableField()
           ],
         ));
@@ -138,11 +139,14 @@ class CompanyProfileState extends State<CompanyProfile> {
           style: TextStyle(
               fontSize: fSize(14),
               fontWeight: FontWeight.w500,
-              color: editable ? Color(0xFF040415) : Color(0xFF7D7E80)),
+              color:
+                  editable ? const Color(0xFF040415) : const Color(0xFF7D7E80)),
           controller: TextEditingController()..text = label,
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFFBDBDBD).withOpacity(0.1),
+            fillColor: editable
+                ? Colors.white
+                : const Color(0xFFBDBDBD).withOpacity(0.1),
             enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(
                     color: const Color(0xff040415).withOpacity(0.1),

@@ -1,9 +1,9 @@
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({Key key}) : super(key: key);
 
   @override
   MainScreenState createState() => MainScreenState();

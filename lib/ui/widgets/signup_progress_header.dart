@@ -1,8 +1,8 @@
-import 'package:flexflutter/constants/constants.dart';
+import 'package:co/constants/constants.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class SignupProgressHeader extends StatefulWidget {
   final String title;
@@ -10,7 +10,7 @@ class SignupProgressHeader extends StatefulWidget {
   final String prev;
 
   const SignupProgressHeader(
-      {Key? key,
+      {Key key,
       this.title = "Create an account",
       this.progress = 1,
       this.prev = SIGN_UP})

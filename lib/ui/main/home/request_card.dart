@@ -1,23 +1,23 @@
 import 'dart:ui';
 
-import 'package:flexflutter/ui/main/cards/name_on_card.dart';
+import 'package:co/ui/main/cards/name_on_card.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'dart:math' as math;
 
 class RequestCard extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
 
-  // const PhysicalCards({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // const PhysicalCards({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
 
-  const RequestCard({Key? key}) : super(key: key);
+  const RequestCard({Key key}) : super(key: key);
   @override
   RequestCardState createState() => RequestCardState();
 }
@@ -389,12 +389,14 @@ class RequestCardState extends State<RequestCard> {
                 style: TextStyle(
                     fontSize: fSize(10),
                     fontWeight: FontWeight.w600,
+                    height: 1,
                     color: const Color(0xFF30E7A9))),
             SizedBox(width: wScale(3)),
             Text(value,
                 style: TextStyle(
                     fontSize: fSize(14),
                     fontWeight: FontWeight.w600,
+                    height: 1,
                     color: const Color(0xFF30E7A9))),
           ],
         ));

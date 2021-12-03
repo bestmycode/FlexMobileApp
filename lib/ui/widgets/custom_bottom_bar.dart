@@ -1,21 +1,21 @@
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/ui/main/cards/physical_card.dart';
-import 'package:flexflutter/ui/main/cards/virtual_card.dart';
-import 'package:flexflutter/ui/main/credit/credit.dart';
-import 'package:flexflutter/ui/main/home/home.dart';
-import 'package:flexflutter/ui/main/more/account_setting.dart';
-import 'package:flexflutter/ui/main/more/company_setting.dart';
-import 'package:flexflutter/ui/main/transactions/transaction_admin.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/ui/main/cards/physical_card.dart';
+import 'package:co/ui/main/cards/virtual_card.dart';
+import 'package:co/ui/main/credit/credit.dart';
+import 'package:co/ui/main/home/home.dart';
+import 'package:co/ui/main/more/account_setting.dart';
+import 'package:co/ui/main/more/company_setting.dart';
+import 'package:co/ui/main/transactions/transaction_admin.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'dart:io' show Platform;
 
 class CustomBottomBar extends StatefulWidget {
   final int active;
 
-  const CustomBottomBar({Key? key, this.active = 0}) : super(key: key);
+  const CustomBottomBar({Key key, this.active = 0}) : super(key: key);
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();

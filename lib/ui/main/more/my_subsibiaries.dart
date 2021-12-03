@@ -1,13 +1,13 @@
 import 'dart:ui';
 import 'package:expandable/expandable.dart';
-import 'package:flexflutter/ui/main/more/new_subsidiary.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/more/new_subsidiary.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class MySubsibiaries extends StatefulWidget {
-  const MySubsibiaries({Key? key}) : super(key: key);
+  const MySubsibiaries({Key key}) : super(key: key);
   @override
   MySubsibiariesState createState() => MySubsibiariesState();
 }
@@ -123,7 +123,6 @@ class MySubsibiariesState extends State<MySubsibiaries> {
               informationField(),
               const CustomSpacer(size: 33),
               titleSubsidiariesField(),
-              const CustomSpacer(size: 15),
               getSubsidiariesArrWidgets(subsidiariesArr),
               const CustomSpacer(size: 24),
               titleInvitationField(),
@@ -135,7 +134,8 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   Widget companyNameField() {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.all(hScale(24)),
+        height: hScale(73),
+        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(10)),
           image: const DecorationImage(
@@ -143,13 +143,16 @@ class MySubsibiariesState extends State<MySubsibiaries> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(children: [
-          Text('Green Grocer Pte Ltd',
-              style: TextStyle(
-                  fontSize: fSize(22),
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white))
-        ]));
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Green Grocer Pte Ltd',
+                  style: TextStyle(
+                      fontSize: fSize(22),
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white))
+            ]));
   }
 
   Widget informationField() {
@@ -214,10 +217,10 @@ class MySubsibiariesState extends State<MySubsibiaries> {
                 color: const Color(0xFF1A2831))),
         TextButton(
             style: TextButton.styleFrom(
-                primary: const Color(0xff29C490).withOpacity(0.4),
+                primary: const Color(0xff29C490),
                 padding: const EdgeInsets.all(0),
                 textStyle: TextStyle(
-                    fontSize: fSize(12),
+                    fontSize: fSize(14),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF29C490),
                     decoration: TextDecoration.underline)),
@@ -399,8 +402,8 @@ class MySubsibiariesState extends State<MySubsibiaries> {
             ),
             const CustomSpacer(size: 30),
             SizedBox(
-                width: wScale(141),
-                height: hScale(56),
+                width: wScale(135),
+                height: hScale(60),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     primary: const Color(0xff1A2831),

@@ -1,18 +1,18 @@
-import 'package:flexflutter/ui/widgets/billing_item.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/transaction_item.dart';
+import 'package:co/ui/widgets/billing_item.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 import 'credit_payment.dart';
 
 class CreditScreen extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const Credit({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
-  const CreditScreen({Key? key}) : super(key: key);
+  // const Credit({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const CreditScreen({Key key}) : super(key: key);
 
   @override
   CreditScreenState createState() => CreditScreenState();
@@ -361,10 +361,16 @@ class CreditScreenState extends State<CreditScreen> {
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('$unit  ',
               style: TextStyle(
-                  fontSize: fSize(12), fontWeight: weight, color: color)),
+                  fontSize: fSize(12),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1)),
           Text(value,
               style: TextStyle(
-                  fontSize: fSize(size), fontWeight: weight, color: color)),
+                  fontSize: fSize(size),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1)),
         ])
       ],
     );

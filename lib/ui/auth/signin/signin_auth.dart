@@ -1,21 +1,24 @@
 import 'dart:async';
 
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
+import 'package:local_auth/local_auth.dart';
+import 'package:flutter/services.dart';
 
 class SignInAuthScreen extends StatefulWidget {
-  const SignInAuthScreen({Key? key}) : super(key: key);
+  const SignInAuthScreen({Key key}) : super(key: key);
 
   @override
   SignInAuthScreenState createState() => SignInAuthScreenState();
 }
 
-class SignInAuthScreenState extends State<SignInAuthScreen>
-    with SingleTickerProviderStateMixin {
+class SignInAuthScreenState extends State<SignInAuthScreen> {
+  final LocalAuthentication _localAuthentication = LocalAuthentication();
+
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -30,28 +33,13 @@ class SignInAuthScreenState extends State<SignInAuthScreen>
 
   int flagStatus = 0;
 
-  startTime() async {
-    var _duration = const Duration(seconds: 3);
-    return Timer(_duration, stateAuth);
-  }
-
-  stateAuth() {
-    setState(() {
-      flagStatus = 2;
-    });
-    Timer(const Duration(seconds: 3), navigationMainPage);
-  }
-
   navigationMainPage() {
     // Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
     Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
   }
 
   handleEnableFaceID() {
-    setState(() {
-      flagStatus = 1;
-    });
-    startTime();
+    authenticate();
   }
 
   handleSetUpLater() {
@@ -61,6 +49,36 @@ class SignInAuthScreenState extends State<SignInAuthScreen>
   @override
   void initState() {
     super.initState();
+  }
+
+  authenticate() async {
+    if (await _isBiometricAvailable()) {
+      await _getListOfBiometricTypes();
+      await _authenticateUser();
+    }
+  }
+
+  Future<bool> _isBiometricAvailable() async {
+    bool isAvailable = await _localAuthentication.canCheckBiometrics;
+    return isAvailable;
+  }
+
+  Future<void> _getListOfBiometricTypes() async {
+    List<BiometricType> listOfBiometrics =
+        await _localAuthentication.getAvailableBiometrics();
+  }
+
+  Future<void> _authenticateUser() async {
+    bool isAuthenticated =
+        await _localAuthentication.authenticateWithBiometrics(
+      localizedReason: "Use a biometria para prosseguir",
+      useErrorDialogs: true,
+      stickyAuth: true,
+    );
+
+    if (isAuthenticated) {
+      Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
+    }
   }
 
   @override
@@ -190,4 +208,10 @@ class SignInAuthScreenState extends State<SignInAuthScreen>
           ),
         ));
   }
+}
+
+enum _SupportState {
+  unknown,
+  supported,
+  unsupported,
 }

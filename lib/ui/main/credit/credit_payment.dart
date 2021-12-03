@@ -1,15 +1,15 @@
-import 'package:flexflutter/ui/main/credit/credit_direct_debit.dart';
-import 'package:flexflutter/ui/main/credit/credit_manually_trasfer.dart';
-import 'package:flexflutter/ui/main/credit/credit_paynow.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/main/credit/credit_direct_debit.dart';
+import 'package:co/ui/main/credit/credit_manually_trasfer.dart';
+import 'package:co/ui/main/credit/credit_paynow.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 
 class CreditPaymentScreen extends StatefulWidget {
-  const CreditPaymentScreen({Key? key}) : super(key: key);
+  const CreditPaymentScreen({Key key}) : super(key: key);
 
   @override
   CreditPaymentScreenState createState() => CreditPaymentScreenState();

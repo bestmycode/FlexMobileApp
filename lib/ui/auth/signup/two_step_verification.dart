@@ -1,18 +1,18 @@
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_picker_dialog.dart';
 import 'package:country_pickers/utils/utils.dart';
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:intl/intl.dart';
 
 class TwoStepVerificationScreen extends StatefulWidget {
-  const TwoStepVerificationScreen({Key? key}) : super(key: key);
+  const TwoStepVerificationScreen({Key key}) : super(key: key);
 
   @override
   TwoStepVerificationScreenState createState() =>
@@ -424,7 +424,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
       );
 
   void _openDatePicker() async {
-    DateTime? pickedDate = await showDatePicker(
+    DateTime pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(
@@ -432,7 +432,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
         lastDate: DateTime(2101));
 
     if (pickedDate != null) {
-      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
       setState(() {
         birthdayCtl.text = formattedDate;
       });

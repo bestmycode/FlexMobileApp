@@ -1,14 +1,14 @@
-import 'package:flexflutter/ui/main/more/app_setting.dart';
-import 'package:flexflutter/ui/main/more/company_profile.dart';
-import 'package:flexflutter/ui/main/more/team_setting.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/more/app_setting.dart';
+import 'package:co/ui/main/more/company_profile.dart';
+import 'package:co/ui/main/more/team_setting.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class CompanySetting extends StatefulWidget {
-  const CompanySetting({Key? key}) : super(key: key);
+  const CompanySetting({Key key}) : super(key: key);
   @override
   CompanySettingState createState() => CompanySettingState();
 }
@@ -74,7 +74,8 @@ class CompanySettingState extends State<CompanySetting> {
   Widget companyTitle() {
     return Container(
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.all(hScale(24)),
+        height: hScale(96),
+        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(10)),
           image: const DecorationImage(
@@ -90,11 +91,17 @@ class CompanySettingState extends State<CompanySetting> {
             ),
           ],
         ),
-        child: Text('Green Grocer Pte Ltd',
-            style: TextStyle(
-                fontSize: fSize(22),
-                fontWeight: FontWeight.w700,
-                color: Colors.white)));
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Green Grocer Pte Ltd',
+                style: TextStyle(
+                    fontSize: fSize(22),
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white))
+          ],
+        ));
   }
 
   Widget userSettingTypeField() {
@@ -141,6 +148,8 @@ class CompanySettingState extends State<CompanySetting> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: fSize(14),
+              fontWeight:
+                  type == settingType ? FontWeight.w600 : FontWeight.w500,
               color:
                   type == settingType ? Colors.black : const Color(0xff70828D)),
         ),

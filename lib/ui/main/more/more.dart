@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class More extends StatefulWidget {
-  const More({Key? key}) : super(key: key);
+  const More({Key key}) : super(key: key);
 
   @override
   MoreState createState() => MoreState();

@@ -1,6 +1,6 @@
-# Flex by Finaxar
+# Flex
 
-Flex by Finaxar application made by using Flutter.
+Flex application made by using Flutter.
 
 ## Getting Started
 

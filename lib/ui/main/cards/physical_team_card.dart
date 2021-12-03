@@ -1,13 +1,13 @@
-import 'package:flexflutter/ui/main/cards/physical_personal_card.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/cards/physical_personal_card.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 import 'package:indexed/indexed.dart';
 
 class PhysicalTeamCards extends StatefulWidget {
-  const PhysicalTeamCards({Key? key}) : super(key: key);
+  const PhysicalTeamCards({Key key}) : super(key: key);
 
   @override
   PhysicalTeamCardsState createState() => PhysicalTeamCardsState();
@@ -167,6 +167,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+      margin: EdgeInsets.only(top: hScale(14)),
       child: Indexer(children: [
         Indexed(index: 100, child: headerField()),
         Indexed(
@@ -483,6 +484,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                           ? Text('SGD ',
                               style: TextStyle(
                                   fontSize: fSize(8),
+                                  height: 1,
                                   color: type != 1
                                       ? const Color(0xFF30E7A9)
                                       : const Color(0xFF1A2831)))
@@ -491,6 +493,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                           style: TextStyle(
                               fontSize: fSize(14),
                               fontWeight: FontWeight.w600,
+                              height: 1,
                               color: type != 1
                                   ? const Color(0xFF30E7A9)
                                   : const Color(0xFF1A2831)))

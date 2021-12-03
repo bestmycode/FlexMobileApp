@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class ReceiptDetails extends StatefulWidget {
-  const ReceiptDetails({Key? key}) : super(key: key);
+  const ReceiptDetails({Key key}) : super(key: key);
 
   @override
   ReceiptDetailsState createState() => ReceiptDetailsState();

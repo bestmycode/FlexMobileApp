@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class CustomTextField extends StatelessWidget {
   final String hint;
@@ -8,10 +8,10 @@ class CustomTextField extends StatelessWidget {
   final bool pwd;
   final Color fillColor;
   const CustomTextField(
-      {Key? key,
-      required this.ctl,
-      required this.hint,
-      required this.label,
+      {Key key,
+      this.ctl,
+      this.hint,
+      this.label,
       this.pwd = false,
       this.fillColor = const Color(0xFFFFFFFF)})
       : super(key: key);

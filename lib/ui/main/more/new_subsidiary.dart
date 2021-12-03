@@ -1,14 +1,14 @@
-import 'package:flexflutter/ui/main/more/complete_new_subsidiary.dart';
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/main/more/complete_new_subsidiary.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class NewSubsidiary extends StatefulWidget {
-  const NewSubsidiary({Key? key}) : super(key: key);
+  const NewSubsidiary({Key key}) : super(key: key);
   @override
   NewSubsidiaryState createState() => NewSubsidiaryState();
 }
@@ -225,7 +225,7 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagAddress = value!;
+                flagAddress = value;
               });
             },
           ),

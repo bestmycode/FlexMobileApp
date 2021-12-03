@@ -1,18 +1,18 @@
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_picker_dialog.dart';
 import 'package:country_pickers/utils/utils.dart';
-import 'package:flexflutter/ui/widgets/custom_mobile_textfield.dart';
-import 'package:flexflutter/ui/widgets/signup_progress_header.dart';
+import 'package:co/ui/widgets/custom_mobile_textfield.dart';
+import 'package:co/ui/widgets/signup_progress_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:localstorage/localstorage.dart';
 
 class CompanyDetailScreen extends StatefulWidget {
-  const CompanyDetailScreen({Key? key}) : super(key: key);
+  const CompanyDetailScreen({Key key}) : super(key: key);
 
   @override
   CompanyDetailScreenState createState() => CompanyDetailScreenState();

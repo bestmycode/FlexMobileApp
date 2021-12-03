@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Validator {
-  String? validateName(String value) {
+  String validateName(String value) {
     String pattern = r'(^[a-zA-Z ]*$)';
     RegExp regExp = RegExp(pattern);
     if (value.isEmpty) {
@@ -12,7 +12,7 @@ class Validator {
     return '';
   }
 
-  Future<String?> validateMobile(String value) async {
+  Future<String> validateMobile(String value) async {
     String pattern = r'(^[0-9]*$)';
     RegExp regExp = RegExp(pattern);
     if (value.isEmpty) {
@@ -25,16 +25,16 @@ class Validator {
     return '';
   }
 
-  String? validatePasswordLength(String value){
-    if(value.isEmpty){
+  String validatePasswordLength(String value) {
+    if (value.isEmpty) {
       return "Password can't be empty";
-    } else if (value.length < 8){
+    } else if (value.length < 8) {
       return "Password must be longer than 8 characters";
     }
     return '';
   }
 
-  String? validateEmail(String value) {
+  String validateEmail(String value) {
     String pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regExp = RegExp(pattern);

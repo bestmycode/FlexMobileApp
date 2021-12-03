@@ -1,13 +1,13 @@
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/transaction_item.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 
 class VirtualMyTransactions extends StatefulWidget {
-  const VirtualMyTransactions({Key? key}) : super(key: key);
+  const VirtualMyTransactions({Key key}) : super(key: key);
 
   @override
   VirtualMyTransactionsState createState() => VirtualMyTransactionsState();
@@ -153,10 +153,10 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
             index: 50,
             child: Column(
               children: [
-                const CustomSpacer(size: 45),
+                const CustomSpacer(size: 36),
                 showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
                 showDateRange ? dateRangeField() : const SizedBox(),
-                const CustomSpacer(size: 15),
+                showDateRange ? const SizedBox() : const CustomSpacer(size: 15),
                 getTransactionArrWidgets(transactionArr),
               ],
             )),
@@ -209,7 +209,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           style: TextStyle(
               fontSize: fSize(14),
               color: type == 3
-                  ? Color(0xFFEB5757)
+                  ? const Color(0xFFEB5757)
                   : type == activeType
                       ? Colors.black
                       : const Color(0xff70828D)),
@@ -224,17 +224,18 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         height: hScale(36),
         padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
-          color: const Color(0xffffffff),
+          color: const Color(0xFFFFFFFF),
           border: Border.all(
               color: const Color(0xff040415).withOpacity(0.1),
               width: hScale(1)),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
                 width: wScale(150),
+                height: hScale(36),
                 child: TextField(
                   textAlignVertical: TextAlignVertical.center,
                   controller: searchCtl,
@@ -314,6 +315,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
             ),
             SizedBox(
               width: wScale(40),
+              height: hScale(36),
               child: TextButton(
                 style: TextButton.styleFrom(
                   primary: const Color(0xff29C490),
@@ -351,15 +353,12 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   Widget dateRangeField() {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),
@@ -418,7 +417,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
                       enabledBorder: const OutlineInputBorder(
                           borderSide:
                               BorderSide(color: Colors.white, width: 1.0)),
-                      hintText: 'Select Date of Birth',
+                      hintText: 'DD/MM/YYYY',
                       hintStyle: TextStyle(
                           color: const Color(0xffBFBFBF), fontSize: fSize(14)),
                       focusedBorder: const OutlineInputBorder(
@@ -443,7 +442,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: wScale(8)),
             color: Colors.white,
-            child: Text('Date of Birth (DD/MM/YY)',
+            child: Text(type == 1 ? 'Start Date' : 'End Date',
                 style: TextStyle(
                     fontSize: fSize(12),
                     fontWeight: FontWeight.w400,
@@ -455,7 +454,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
   void _openDatePicker(type) async {
-    DateTime? pickedDate = await showDatePicker(
+    DateTime pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(
@@ -463,7 +462,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
         lastDate: DateTime(2101));
 
     if (pickedDate != null) {
-      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
       setState(() {
         if (type == 1) {
           startDateCtl.text = formattedDate;

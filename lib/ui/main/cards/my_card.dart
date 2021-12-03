@@ -1,21 +1,21 @@
-import 'package:flexflutter/ui/widgets/custom_header.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_header.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class MyCards extends StatefulWidget {
-  const MyCards({Key? key}) : super(key: key);
+  const MyCards({Key key}) : super(key: key);
 
   @override
   MyCardsState createState() => MyCardsState();
 }
 
 class MyCardsState extends State<MyCards> {
-
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
+
   wScale(double scale) {
     return Scale().wScale(context, scale);
   }
@@ -27,19 +27,72 @@ class MyCardsState extends State<MyCards> {
   int cardType = 1;
   int transactionStatus = 1;
   var transactionArr = [
-    {'date':'21 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage1', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'22 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage2', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'23 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage3', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'24 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage4', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'25 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage5', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'26 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage6', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'},
-    {'date':'27 June 2021', 'time':'03:45 AM', 'transactionName':'Mobile Phone Rechage7', 'status':'Cancelled', 'userName':'Erin Rosser', 'cardNum':'2314', 'value':'1,200.00'}
-
+    {
+      'date': '21 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage1',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '22 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage2',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '23 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage3',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '24 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage4',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '25 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage5',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '26 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage6',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    },
+    {
+      'date': '27 June 2021',
+      'time': '03:45 AM',
+      'transactionName': 'Mobile Phone Rechage7',
+      'status': 'Cancelled',
+      'userName': 'Erin Rosser',
+      'cardNum': '2314',
+      'value': '1,200.00'
+    }
   ];
 
-  handleBack() {
-
-  }
+  handleBack() {}
 
   handleCardType(type) {
     setState(() {
@@ -53,9 +106,7 @@ class MyCardsState extends State<MyCards> {
     });
   }
 
-  handleExport() {
-
-  }
+  handleExport() {}
 
   @override
   void initState() {
@@ -64,26 +115,28 @@ class MyCardsState extends State<MyCards> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        cardDetailField(),
-        const CustomSpacer(size: 10),
-        spendLimitField(),
-        const CustomSpacer(size: 20),
-        actionButtonField(),
-        const CustomSpacer(size: 20),
-        allTransactionField(),
-        const CustomSpacer(size: 15),
-        getTransactionArrWidgets(transactionArr),
-        const CustomSpacer(size: 70),
-      ]
-    );
+    return Column(children: [
+      cardDetailField(),
+      const CustomSpacer(size: 10),
+      spendLimitField(),
+      const CustomSpacer(size: 20),
+      actionButtonField(),
+      const CustomSpacer(size: 20),
+      allTransactionField(),
+      const CustomSpacer(size: 15),
+      getTransactionArrWidgets(transactionArr),
+      const CustomSpacer(size: 70),
+    ]);
   }
 
   Widget cardDetailField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -104,11 +157,7 @@ class MyCardsState extends State<MyCards> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          cardField(),
-          const CustomSpacer(size: 14),
-          cardValueField()
-        ],
+        children: [cardField(), const CustomSpacer(size: 14), cardValueField()],
       ),
     );
   }
@@ -129,65 +178,80 @@ class MyCardsState extends State<MyCards> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(),
-                  eyeIconField()
-                ],
+                children: [const SizedBox(), eyeIconField()],
               ),
               const CustomSpacer(size: 26),
-              Text('Angel Matthews', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w100, fontSize: fSize(14))),
+              Text('Angel Matthews',
+                  style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w100,
+                      fontSize: fSize(14))),
               const CustomSpacer(size: 6),
-              Row(
-                children:[
-                  Text('2145 4587 4875 1211', style: TextStyle(color: Colors.white, fontSize: fSize(16))),
-                  const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
-                ]
-              ),
+              Row(children: [
+                Text('2145 4587 4875 1211',
+                    style: TextStyle(color: Colors.white, fontSize: fSize(16))),
+                const Icon(Icons.content_copy,
+                    color: Color(0xff30E7A9), size: 14.0)
+              ]),
               const CustomSpacer(size: 30),
-              Row(
-                  children:[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Valid Thru', style: TextStyle(color: Colors.white, fontSize: fSize(8))),
-                        Text('12/20', style: TextStyle(color: Colors.white, fontSize: fSize(8), fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                    SizedBox(width: wScale(10)),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('CVV', style: TextStyle(color: Colors.white, fontSize: fSize(8))),
-                        Text('214', style: TextStyle(color: Colors.white, fontSize: fSize(8), fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                    SizedBox(width: wScale(6)),
-                    const Icon( Icons.content_copy, color: Color(0xff30E7A9), size: 14.0 )
-                  ]
-              )
-            ]
-        )
-    );
+              Row(children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Valid Thru',
+                        style:
+                            TextStyle(color: Colors.white, fontSize: fSize(8))),
+                    Text('12/20',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fSize(8),
+                            fontWeight: FontWeight.bold))
+                  ],
+                ),
+                SizedBox(width: wScale(10)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('CVV',
+                        style:
+                            TextStyle(color: Colors.white, fontSize: fSize(8))),
+                    Text('214',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fSize(8),
+                            fontWeight: FontWeight.bold))
+                  ],
+                ),
+                SizedBox(width: wScale(6)),
+                const Icon(Icons.content_copy,
+                    color: Color(0xff30E7A9), size: 14.0)
+              ])
+            ]));
   }
 
   Widget cardValueField() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Available Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
+        Text('Available Limit',
+            style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
         Container(
-          padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top:hScale(5), bottom: hScale(5)),
-          decoration: BoxDecoration(
-            color: const Color(0xFFDEFEE9),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(hScale(16)),
-              topRight: Radius.circular(hScale(16)),
-              bottomLeft: Radius.circular(hScale(16)),
-              bottomRight: Radius.circular(hScale(16)),
+            padding: EdgeInsets.only(
+                left: wScale(16),
+                right: wScale(16),
+                top: hScale(5),
+                bottom: hScale(5)),
+            decoration: BoxDecoration(
+              color: const Color(0xFFDEFEE9),
+              borderRadius: BorderRadius.all(
+                Radius.circular(hScale(16)),
+              ),
             ),
-          ),
-          child: Text('3,000.00', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600, color: const Color(0xFF30E7A9)))
-        )
+            child: Text('3,000.00',
+                style: TextStyle(
+                    fontSize: fSize(14),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF30E7A9))))
       ],
     );
   }
@@ -204,21 +268,28 @@ class MyCardsState extends State<MyCards> {
               topRight: Radius.circular(hScale(17)),
               bottomLeft: Radius.circular(hScale(17)),
               bottomRight: Radius.circular(hScale(17)),
-            )
-        ),
+            )),
         child: IconButton(
           padding: const EdgeInsets.all(0),
-          icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
+          icon: const Icon(
+            Icons.remove_red_eye_outlined,
+            color: Color(0xff30E7A9),
+          ),
           iconSize: hScale(17),
-          onPressed: () {print("ksksk");},
-        )
-    );
+          onPressed: () {
+            print("ksksk");
+          },
+        ));
   }
 
   Widget spendLimitField() {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -240,14 +311,23 @@ class MyCardsState extends State<MyCards> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Monthly Spend Limit', style:TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
+          Text('Monthly Spend Limit',
+              style:
+                  TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
           const CustomSpacer(size: 12),
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: LinearProgressIndicator( value: 0.8, backgroundColor: const Color(0xFFF4F4F4), color: const Color(0xFF30E7A9), minHeight: hScale(10),),
+            child: LinearProgressIndicator(
+              value: 0.8,
+              backgroundColor: const Color(0xFFF4F4F4),
+              color: const Color(0xFF30E7A9),
+              minHeight: hScale(10),
+            ),
           ),
           const CustomSpacer(size: 12),
-          Text('Great job, you are within your allocated limit!', style:TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
+          Text('Great job, you are within your allocated limit!',
+              style: TextStyle(
+                  fontSize: fSize(12), color: const Color(0xFF70828D))),
         ],
       ),
     );
@@ -259,11 +339,10 @@ class MyCardsState extends State<MyCards> {
           padding: const EdgeInsets.all(0),
           primary: const Color(0xffffffff),
           side: const BorderSide(width: 0, color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        onPressed: () {  },
+        onPressed: () {},
         child: SizedBox(
             width: wScale(102),
             height: hScale(82),
@@ -272,25 +351,29 @@ class MyCardsState extends State<MyCards> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset(imageUrl, fit: BoxFit.contain, height: wScale(24)),
-                const CustomSpacer(size: 10,),
-                Text(text, style:TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w500, color: Colors.black), textAlign: TextAlign.center,),
+                const CustomSpacer(
+                  size: 10,
+                ),
+                Text(
+                  text,
+                  style: TextStyle(
+                      fontSize: fSize(12),
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black),
+                  textAlign: TextAlign.center,
+                ),
               ],
-            )
-        )
-    );
+            )));
   }
 
   Widget actionButtonField() {
     return SizedBox(
       width: wScale(327),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            actionButton('assets/free.png', 'Freeze Card'),
-            actionButton('assets/limit.png', 'Edit Limit'),
-            actionButton('assets/cancel.png', 'Cancel Card'),
-          ]
-      ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        actionButton('assets/free.png', 'Freeze Card'),
+        actionButton('assets/limit.png', 'Edit Limit'),
+        actionButton('assets/cancel.png', 'Cancel Card'),
+      ]),
     );
   }
 
@@ -302,14 +385,20 @@ class MyCardsState extends State<MyCards> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('All Transactions', style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w500)),
+              Text('All Transactions',
+                  style: TextStyle(
+                      fontSize: fSize(16), fontWeight: FontWeight.w500)),
               TextButton(
                 style: TextButton.styleFrom(
                   primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff30E7A9)),
+                  textStyle: TextStyle(
+                      fontSize: fSize(14), color: const Color(0xff30E7A9)),
                 ),
-                onPressed: () { handleExport(); },
-                child: const Text('Export', style:TextStyle(decoration: TextDecoration.underline)),
+                onPressed: () {
+                  handleExport();
+                },
+                child: const Text('Export',
+                    style: TextStyle(decoration: TextDecoration.underline)),
               ),
             ],
           ),
@@ -334,66 +423,68 @@ class MyCardsState extends State<MyCards> {
           bottomRight: Radius.circular(hScale(17)),
         ),
       ),
-      child: Row(
-          children: [
-            transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
-            transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
-            transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
-          ]
-      ),
+      child: Row(children: [
+        transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
+        transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
+        transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
+      ]),
     );
   }
 
   Widget transactionStatusButton(status, type, textColor) {
-    return type == transactionStatus ?
-    ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0,color: Color(0xffffffff)),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10)
-          ),
-        ),
-        onPressed: () { handleTransactionStatus(type); },
-        child: Container(
-          width: wScale(107),
-          height: hScale(30),
-          alignment: Alignment.center,
-          child: Text(
-            status,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: fSize(14),
-                color: textColor),
-          ),
-        )
-    ) : TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff70828D),
-        padding: const EdgeInsets.all(0),
-        textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-      ),
-      onPressed: () { handleTransactionStatus(type); },
-      child: Container(
-        width: wScale(107),
-        height: hScale(30),
-        alignment: Alignment.center,
-        child: Text(
-          status,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              color: textColor),
-        ),
-      ),
-    );
+    return type == transactionStatus
+        ? ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(0),
+              primary: const Color(0xffffffff),
+              side: const BorderSide(width: 0, color: Color(0xffffffff)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {
+              handleTransactionStatus(type);
+            },
+            child: Container(
+              width: wScale(107),
+              height: hScale(30),
+              alignment: Alignment.center,
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: fSize(14), color: textColor),
+              ),
+            ))
+        : TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
+            ),
+            onPressed: () {
+              handleTransactionStatus(type);
+            },
+            child: Container(
+              width: wScale(107),
+              height: hScale(30),
+              alignment: Alignment.center,
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: fSize(14), color: textColor),
+              ),
+            ),
+          );
   }
 
   Widget transactionField(date, transactionName, value) {
     return Container(
       width: wScale(327),
-      padding: EdgeInsets.only(left: wScale(16), right: wScale(16), top: hScale(16), bottom: hScale(16)),
+      padding: EdgeInsets.only(
+          left: wScale(16),
+          right: wScale(16),
+          top: hScale(16),
+          bottom: hScale(16)),
       margin: EdgeInsets.only(bottom: hScale(16)),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -426,7 +517,10 @@ class MyCardsState extends State<MyCards> {
 
   Widget transactionTimeField(date) {
     return Text('${date}',
-        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Color(0xff70828D)));
+        style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            color: Color(0xff70828D)));
   }
 
   Widget transactionNameField(name) {
@@ -449,26 +543,30 @@ class MyCardsState extends State<MyCards> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-            title,
-            style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children:[
-              Text("SGD  ",
-                  style: TextStyle(fontSize: fSize(12), fontWeight: weight, color: color)),
-              Text(value,
-                  style: TextStyle(fontSize: fSize(size), fontWeight: weight, color: color)),
-            ]
-        )
+        Text(title, style: TextStyle(fontSize: fSize(12), color: Colors.white)),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text("SGD  ",
+              style: TextStyle(
+                  fontSize: fSize(12),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: fSize(size),
+                  fontWeight: weight,
+                  color: color,
+                  height: 1)),
+        ])
       ],
     );
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(children: arr.map<Widget>((item) {
-      return transactionField(item['date'], item['transactionName'], item['value']);
+    return Column(
+        children: arr.map<Widget>((item) {
+      return transactionField(
+          item['date'], item['transactionName'], item['value']);
     }).toList());
   }
-
 }

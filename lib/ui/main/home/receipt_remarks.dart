@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class ReceiptRemarks extends StatefulWidget {
-  const ReceiptRemarks({Key? key}) : super(key: key);
+  const ReceiptRemarks({Key key}) : super(key: key);
 
   @override
   ReceiptRemarksState createState() => ReceiptRemarksState();
@@ -27,6 +27,36 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
 
   bool flagRemarks = false;
   var remarkArr = [
+    {
+      'name': 'John Tan',
+      'date': '20 Dec 2021 | 8:40 PM',
+      'detail':
+          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
+    },
+    {
+      'name': 'John Tan',
+      'date': '20 Dec 2021 | 8:40 PM',
+      'detail':
+          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
+    },
+    {
+      'name': 'John Tan',
+      'date': '20 Dec 2021 | 8:40 PM',
+      'detail':
+          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
+    },
+    {
+      'name': 'John Tan',
+      'date': '20 Dec 2021 | 8:40 PM',
+      'detail':
+          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
+    },
+    {
+      'name': 'John Tan',
+      'date': '20 Dec 2021 | 8:40 PM',
+      'detail':
+          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
+    },
     {
       'name': 'John Tan',
       'date': '20 Dec 2021 | 8:40 PM',
@@ -80,6 +110,14 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF106549).withOpacity(0.1),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -87,14 +125,14 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
           children: [
             Text(name,
                 style: TextStyle(
-                    fontSize: fSize(14),
+                    fontSize: fSize(16),
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF1A2831))),
             CustomSpacer(size: 6),
             Text(date,
                 style: TextStyle(
-                    fontSize: fSize(10),
-                    fontWeight: FontWeight.w500,
+                    fontSize: fSize(14),
+                    fontWeight: FontWeight.w400,
                     color: const Color(0xFF29C490))),
             CustomSpacer(size: 20),
             Text(detail,

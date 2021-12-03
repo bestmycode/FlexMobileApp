@@ -1,7 +1,8 @@
-import 'package:flexflutter/ui/main/home/receipt_capture.dart';
+import 'package:co/ui/main/home/receipt_capture.dart';
+import 'package:co/ui/main/home/receipt_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class TransactionItem extends StatefulWidget {
   final String date;
@@ -13,7 +14,7 @@ class TransactionItem extends StatefulWidget {
   final String value;
 
   const TransactionItem(
-      {Key? key,
+      {Key key,
       this.date = '9 Nov 2021',
       this.time = '12:00 AM',
       this.transactionName = 'Flex Transaction Name',
@@ -43,15 +44,12 @@ class TransactionItemState extends State<TransactionItem> {
   Widget build(BuildContext context) {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),
@@ -108,7 +106,7 @@ class TransactionItemState extends State<TransactionItem> {
                               Navigator.of(context).push(
                                 CupertinoPageRoute(
                                     builder: (context) =>
-                                        const ReceiptCapture()),
+                                        const ReceiptScreen()),
                               );
                             },
                             child: Image.asset('assets/check_transaction.png',
@@ -185,12 +183,16 @@ class TransactionItemState extends State<TransactionItem> {
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text("SGD  ",
                   style: TextStyle(
-                      fontSize: fSize(12), fontWeight: weight, color: color)),
+                      fontSize: fSize(12),
+                      fontWeight: weight,
+                      color: color,
+                      height: 1)),
               Text(value,
                   style: TextStyle(
                       fontSize: fSize(size),
                       fontWeight: weight,
                       color: color,
+                      height: 1,
                       decoration: widget.status == 4
                           ? TextDecoration.lineThrough
                           : TextDecoration.none)),

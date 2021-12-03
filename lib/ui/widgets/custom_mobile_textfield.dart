@@ -2,7 +2,7 @@ import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_picker_dialog.dart';
 import 'package:country_pickers/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:flutter/rendering.dart';
 
 import 'custom_spacer.dart';
@@ -14,10 +14,10 @@ class CustomMobileTextField extends StatefulWidget {
   final bool pwd;
   final Color fillColor;
   const CustomMobileTextField(
-      {Key? key,
-      required this.ctl,
-      required this.hint,
-      required this.label,
+      {Key key,
+      this.ctl,
+      this.hint,
+      this.label,
       this.pwd = false,
       this.fillColor = const Color(0xFFFFFFFF)})
       : super(key: key);

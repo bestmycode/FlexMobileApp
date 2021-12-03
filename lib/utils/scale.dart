@@ -14,6 +14,6 @@ class Scale {
   }
 
   double fSize(BuildContext context, double size) {
-    return wScale(context, size);
+    return hScale(context, size);
   }
 }

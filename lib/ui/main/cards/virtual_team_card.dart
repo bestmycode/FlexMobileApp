@@ -1,13 +1,13 @@
-import 'package:flexflutter/ui/main/cards/virtual_personal_card.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/main/cards/virtual_personal_card.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 import 'package:indexed/indexed.dart';
 
 class VirtualTeamCards extends StatefulWidget {
-  const VirtualTeamCards({Key? key}) : super(key: key);
+  const VirtualTeamCards({Key key}) : super(key: key);
 
   @override
   VirtualTeamCardsState createState() => VirtualTeamCardsState();
@@ -494,7 +494,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                             style: TextStyle(
                                 fontSize: fSize(8),
                                 fontWeight: FontWeight.w500,
-                                height: 1.6,
+                                height: 1,
                                 color: type == 1
                                     ? const Color(0xFF30E7A9)
                                     : const Color(0xFF1A2831)))
@@ -503,6 +503,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
+                            height: 1,
                             color: type == 2
                                 ? const Color(0xFF1A2831)
                                 : const Color(0xFF30E7A9)))

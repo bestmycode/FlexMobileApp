@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/constants/constants.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+import 'package:co/constants/constants.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({Key key}) : super(key: key);
 
   @override
   SignInScreenState createState() => SignInScreenState();
@@ -146,7 +146,7 @@ class SignInScreenState extends State<SignInScreen> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagRemember = value!;
+                flagRemember = value;
               });
             },
           ),

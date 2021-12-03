@@ -1,17 +1,17 @@
-import 'package:flexflutter/ui/widgets/custom_bottom_bar.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/transaction_item.dart';
+import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
+import 'package:co/utils/scale.dart';
+import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:indexed/indexed.dart';
 
 class TransactionUser extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const TransactionUser({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
-  const TransactionUser({Key? key}) : super(key: key);
+  // const TransactionUser({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const TransactionUser({Key key}) : super(key: key);
 
   @override
   TransactionUserState createState() => TransactionUserState();
@@ -213,10 +213,18 @@ class TransactionUserState extends State<TransactionUser> {
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text("SGD  ",
               style: TextStyle(
-                  fontSize: fSize(12), fontWeight: weight, color: color)),
+                fontSize: fSize(12),
+                fontWeight: weight,
+                color: color,
+                height: 1,
+              )),
           Text(value,
               style: TextStyle(
-                  fontSize: fSize(size), fontWeight: weight, color: color)),
+                fontSize: fSize(size),
+                fontWeight: weight,
+                color: color,
+                height: 1,
+              )),
         ])
       ],
     );
@@ -401,11 +409,8 @@ class TransactionUserState extends State<TransactionUser> {
   Widget dateRangeField() {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,

@@ -21,15 +21,15 @@ class CircleProgressBar extends StatefulWidget {
   final double maxNumber;
 
   const CircleProgressBar(
-      this.size, {
-        this.backgroundColor = Colors.grey,
-        this.foreColor = Colors.blueAccent,
-        this.duration = 3000,
-        this.strokeWidth = 10.0,
-        this.startNumber = 0.0,
-        this.maxNumber = 360,
-        this.textPercent = true,
-      });
+    this.size, {
+    this.backgroundColor = Colors.grey,
+    this.foreColor = Colors.blueAccent,
+    this.duration = 3000,
+    this.strokeWidth = 10.0,
+    this.startNumber = 0.0,
+    this.maxNumber = 360,
+    this.textPercent = true,
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -39,9 +39,9 @@ class CircleProgressBar extends StatefulWidget {
 
 class CircleProgressBarState extends State<CircleProgressBar>
     with SingleTickerProviderStateMixin {
-  late Animation<double> _doubleAnimation;
-  late AnimationController _animationController;
-  late CurvedAnimation curve;
+  Animation<double> _doubleAnimation;
+  AnimationController _animationController;
+  CurvedAnimation curve;
 
   @override
   void initState() {
@@ -60,6 +60,7 @@ class CircleProgressBarState extends State<CircleProgressBar>
     });
     onAnimationStart();
   }
+
   @override
   void reassemble() {
     onAnimationStart();
@@ -93,7 +94,7 @@ class CircleProgressBarState extends State<CircleProgressBar>
           child: Center(
             child: Text(
                 "${_doubleAnimation.value.round() == widget.maxNumber ? "完成" : "${widget.textPercent ? "$percent%" : "${_doubleAnimation.value.round()}/${widget.maxNumber.round()}"}"}",
-                style: TextStyle(color: Colors.black, fontSize: 20) ),
+                style: TextStyle(color: Colors.black, fontSize: 20)),
           ),
         ));
   }

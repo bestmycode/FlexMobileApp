@@ -1,14 +1,17 @@
-import 'package:flexflutter/ui/main/cards/manage_limits.dart';
-import 'package:flexflutter/ui/main/home/receipt_capture.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
+// ignore_for_file: prefer_const_constructors
+
+import 'package:co/ui/main/cards/manage_limits.dart';
+import 'package:co/ui/main/home/receipt_capture.dart';
+import 'package:co/ui/main/home/receipt_screen.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 
 class PhysicalMyCards extends StatefulWidget {
-  const PhysicalMyCards({Key? key}) : super(key: key);
+  const PhysicalMyCards({Key key}) : super(key: key);
 
   @override
   PhysicalMyCardsState createState() => PhysicalMyCardsState();
@@ -181,7 +184,6 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
       actionButtonField(),
       const CustomSpacer(size: 20),
       allTransactionField(),
-      const CustomSpacer(size: 15),
       Indexer(children: [
         Indexed(index: 100, child: searchRowField()),
         Indexed(
@@ -271,7 +273,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         padding: EdgeInsets.all(hScale(16)),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/physical_card_detail.png"),
+            image: AssetImage("assets/virtual_card_detail.png"),
             fit: BoxFit.contain,
           ),
         ),
@@ -286,10 +288,10 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Angel Matthews',
+                  Text('Marketing Expenses',
                       style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w100,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w300,
                           fontSize: fSize(14))),
                   const CustomSpacer(size: 6),
                   Row(children: [
@@ -357,24 +359,15 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                 bottom: hScale(5)),
             decoration: BoxDecoration(
               color: const Color(0xFFDEFEE9),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(hScale(16)),
-                topRight: Radius.circular(hScale(16)),
-                bottomLeft: Radius.circular(hScale(16)),
-                bottomRight: Radius.circular(hScale(16)),
+              borderRadius: BorderRadius.all(
+                Radius.circular(hScale(16)),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('SGD',
-                    style: TextStyle(
-                        fontSize: fSize(10),
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF30E7A9))),
-                SizedBox(width: wScale(3)),
-                Text('3,000.00',
+                Text(r'S$3,000.00',
                     style: TextStyle(
                         fontSize: fSize(14),
                         fontWeight: FontWeight.w600,
@@ -457,22 +450,6 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                           fontSize: fSize(14),
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF1A2831))),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('SGD',
-                            style: TextStyle(
-                                fontSize: fSize(10),
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1A2831))),
-                        SizedBox(width: wScale(3)),
-                        Text('5000.00',
-                            style: TextStyle(
-                                fontSize: fSize(14),
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1A2831))),
-                      ])
                 ],
               ),
               const CustomSpacer(size: 12),
@@ -505,11 +482,8 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     return Container(
         width: wScale(102),
         // height: hScale(82),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -673,11 +647,8 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget transactionField(date, transactionName, value, status) {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -721,13 +692,20 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                         style: TextButton.styleFrom(padding: EdgeInsets.zero),
                         onPressed: () => Navigator.of(context).push(
                           CupertinoPageRoute(
-                              builder: (context) => ReceiptCapture()),
+                              builder: (context) => const ReceiptCapture()),
                         ),
                         child: Image.asset('assets/add_transaction.png',
                             fit: BoxFit.contain, width: wScale(16)),
                       )
-                    : Image.asset('assets/check_transaction.png',
-                        fit: BoxFit.contain, width: wScale(16)))
+                    : TextButton(
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                        onPressed: () => Navigator.of(context).push(
+                          CupertinoPageRoute(
+                              builder: (context) => const ReceiptScreen()),
+                        ),
+                        child: Image.asset('assets/check_transaction.png',
+                            fit: BoxFit.contain, width: wScale(16)),
+                      ))
           ],
         ));
   }
@@ -767,10 +745,16 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text("SGD  ",
                 style: TextStyle(
-                    fontSize: fSize(12), fontWeight: weight, color: color)),
+                    fontSize: fSize(12),
+                    fontWeight: weight,
+                    color: color,
+                    height: 1)),
             Text(value,
                 style: TextStyle(
-                    fontSize: fSize(size), fontWeight: weight, color: color)),
+                    fontSize: fSize(size),
+                    fontWeight: weight,
+                    color: color,
+                    height: 1)),
           ])
         ],
       ),
@@ -859,7 +843,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           border: Border.all(
               color: const Color(0xff040415).withOpacity(0.1),
               width: hScale(1)),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1045,15 +1029,12 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget dateRangeField() {
     return Container(
         width: wScale(327),
-        padding: EdgeInsets.only(
-            left: wScale(16),
-            right: wScale(16),
-            top: hScale(16),
-            bottom: hScale(16)),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: BorderRadius.all(const Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),
@@ -1112,7 +1093,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                       enabledBorder: const OutlineInputBorder(
                           borderSide:
                               BorderSide(color: Colors.white, width: 1.0)),
-                      hintText: 'Select Date of Birth',
+                      hintText: 'DD/MM/YYYY',
                       hintStyle: TextStyle(
                           color: const Color(0xffBFBFBF), fontSize: fSize(14)),
                       focusedBorder: const OutlineInputBorder(
@@ -1137,7 +1118,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: wScale(8)),
             color: Colors.white,
-            child: Text('Date of Birth (DD/MM/YY)',
+            child: Text(type == 1 ? 'Start Date' : 'End Date',
                 style: TextStyle(
                     fontSize: fSize(12),
                     fontWeight: FontWeight.w400,
@@ -1149,7 +1130,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   void _openDatePicker(type) async {
-    DateTime? pickedDate = await showDatePicker(
+    DateTime pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(
@@ -1157,7 +1138,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         lastDate: DateTime(2101));
 
     if (pickedDate != null) {
-      String formattedDate = DateFormat('dd-MM-yyyy').format(pickedDate);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
       setState(() {
         if (type == 1) {
           startDateCtl.text = formattedDate;

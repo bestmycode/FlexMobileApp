@@ -1,12 +1,12 @@
 import 'package:expandable/expandable.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/ui/widgets/custom_textfield.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
+import 'package:indexed/indexed.dart';
 
 class TeamSetting extends StatefulWidget {
-  const TeamSetting({Key? key}) : super(key: key);
+  const TeamSetting({Key key}) : super(key: key);
   @override
   TeamSettingState createState() => TeamSettingState();
 }
@@ -87,16 +87,18 @@ class TeamSettingState extends State<TeamSetting> {
   // var userRoles = ['User', 'Admin'];
   int userRole = -1;
   bool showUserRoles = false;
-
   handleEditProfile() {}
 
-  showUserRolesField() {
+  showUserRolesField(setState) {
     setState(() {
       showUserRoles = true;
     });
   }
 
-  handleConfirm() {}
+  handleConfirm() {
+    setState(() {});
+    Navigator.of(context).pop();
+  }
 
   @override
   void initState() {
@@ -157,7 +159,7 @@ class TeamSettingState extends State<TeamSetting> {
         padding: EdgeInsets.symmetric(horizontal: wScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -172,12 +174,10 @@ class TeamSettingState extends State<TeamSetting> {
             const CustomSpacer(size: 28),
             // CustomTextField(
             //     ctl: selectRoleCtl, hint: 'Select Role', label: 'Role'),
-            userRoleField(0),
+            userRoleField(0, setState),
             const CustomSpacer(size: 32),
-            CustomTextField(
-                ctl: userEmailCtl,
-                hint: 'Enter User Email Here',
-                label: 'New Member Email'),
+            customTextField(
+                userEmailCtl, 'Enter User Email Here', 'New Member Email'),
             const CustomSpacer(size: 30),
             inviteButton(),
             const CustomSpacer(size: 20),
@@ -224,7 +224,7 @@ class TeamSettingState extends State<TeamSetting> {
         margin: EdgeInsets.only(bottom: hScale(5)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.25),
@@ -405,7 +405,7 @@ class TeamSettingState extends State<TeamSetting> {
         ));
   }
 
-  Widget userRoleField(type) {
+  Widget userRoleField(type, setState) {
     return Stack(
       children: [
         Container(
@@ -422,7 +422,7 @@ class TeamSettingState extends State<TeamSetting> {
                 onPressed: () {
                   type == 0
                       ? _showUserRoleModal(context)
-                      : showUserRolesField();
+                      : showUserRolesField(setState);
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -464,17 +464,19 @@ class TeamSettingState extends State<TeamSetting> {
   _showUserRoleModal(context) {
     showDialog(
         context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-              backgroundColor: Colors.transparent,
-              insetPadding: EdgeInsets.all(10),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.0)),
-              child: userRoleModalField());
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+                backgroundColor: Colors.transparent,
+                insetPadding: const EdgeInsets.all(10),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0)),
+                child: userRoleModalField(setState));
+          });
         });
   }
 
-  Widget userRoleModalField() {
+  Widget userRoleModalField(setState) {
     return Container(
       width: wScale(295),
       padding:
@@ -520,51 +522,92 @@ class TeamSettingState extends State<TeamSetting> {
           ],
         ),
         const CustomSpacer(size: 23),
-        selectUserRoleField(),
-        const CustomSpacer(size: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [modalBackButton('Back'), modalSaveButton('Confirm')],
-        )
+        Indexer(children: [
+          Indexed(index: 100, child: selectUserRoleField(setState)),
+          Indexed(
+              index: 50,
+              child: Column(
+                children: [
+                  const CustomSpacer(size: 85),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      modalBackButton('Back'),
+                      modalSaveButton('Confirm')
+                    ],
+                  )
+                ],
+              )),
+        ]),
       ]),
     );
   }
 
-  Widget selectUserRoleField() {
-    return Stack(
-        // overflow: Overflow.visible,
-        children: [
-          userRoleField(1),
+  Widget selectUserRoleField(setState) {
+    return Container(
+        height: hScale(150),
+        child: Stack(overflow: Overflow.visible, children: [
+          userRoleField(1, setState),
           showUserRoles == true
-              ? Positioned(top: hScale(50), right: 0, child: userRoles())
+              ? Positioned(
+                  top: hScale(65), right: 0, child: userRoles(setState))
               : const SizedBox()
-        ]);
+        ]));
   }
 
-  Widget userRoles() {
+  Widget userRoles(setState) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
       ),
-      child: Column(children: [userRoleButton(0), userRoleButton(1)]),
+      child: Column(
+          children: [userRoleButton(0, setState), userRoleButton(1, setState)]),
     );
   }
 
-  Widget userRoleButton(index) {
+  Widget userRoleButton(index, setState) {
     return SizedBox(
         width: wScale(295),
         height: hScale(36),
         child: TextButton(
             style: TextButton.styleFrom(
-                primary: const Color(0xffF5F5F5).withOpacity(0.4),
+                primary: userRole == -1
+                    ? const Color(0xFF1A2831)
+                    : index == userRole
+                        ? const Color(0xFF29C490)
+                        : const Color(0xFF1A2831),
                 // padding: const EdgeInsets.all(0),
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: wScale(18)),
                 textStyle: TextStyle(
-                    fontSize: fSize(12), fontWeight: FontWeight.w400)),
-            child: Text(index == 0 ? 'Admin' : 'User'),
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w400,
+                    color: userRole == -1
+                        ? const Color(0xFFBFBFBF)
+                        : index == userRole
+                            ? const Color(0xFF29C490)
+                            : const Color(0xFF1A2831))),
+            child: Text(
+              index == -1
+                  ? 'Select Role'
+                  : index == 0
+                      ? 'Admin'
+                      : 'User',
+              textAlign: TextAlign.left,
+            ),
             onPressed: () {
               setState(() {
                 userRole = index;
+                showUserRoles = false;
               });
             }));
   }
@@ -577,7 +620,9 @@ class TeamSettingState extends State<TeamSetting> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 0),
-            primary: const Color(0xffc9c9c9).withOpacity(0.1),
+            primary: const Color(0xff1A2831).withOpacity(0.1),
+            side: BorderSide(
+                width: 0, color: const Color(0xff1A2831).withOpacity(0.1)),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
@@ -614,5 +659,57 @@ class TeamSettingState extends State<TeamSetting> {
                   fontSize: fSize(16),
                   fontWeight: FontWeight.w700)),
         ));
+  }
+
+  Widget customTextField(ctl, hint, label) {
+    return Stack(
+      children: [
+        Container(
+            width: wScale(295),
+            height: hScale(64),
+            padding: EdgeInsets.only(top: hScale(8)),
+            alignment: Alignment.center,
+            child: TextField(
+              style: TextStyle(
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF040415)),
+              controller: ctl,
+              onChanged: (text) {
+                if (text != '' && userRole != -1)
+                  setState(() {
+                    isButtonDisabled = true;
+                  });
+              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Color(0xFFFFFFFF),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: const Color(0xff040415).withOpacity(0.1),
+                        width: 1.0)),
+                hintText: hint,
+                hintStyle: TextStyle(
+                    color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Color(0xff040415), width: 1.0)),
+              ),
+            )),
+        Positioned(
+          top: 0,
+          left: wScale(10),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
+            color: Colors.white,
+            child: Text(label,
+                style: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFFBFBFBF))),
+          ),
+        )
+      ],
+    );
   }
 }

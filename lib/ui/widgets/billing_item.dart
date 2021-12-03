@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/utils/scale.dart';
 
 class BillingItem extends StatefulWidget {
   final String statementDate;
@@ -8,7 +8,7 @@ class BillingItem extends StatefulWidget {
   final int status; // 0: unpaid, 1: overdue, 2: paid
 
   const BillingItem({
-    Key? key,
+    Key key,
     this.statementDate = '30 Jan 2021',
     this.totalAmount = '0.00',
     this.dueDate = '05 Mar 2021',
@@ -120,17 +120,19 @@ class BillingItemState extends State<BillingItem> {
                   color: const Color(0xFF70828D),
                   height: 1.7)),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('SGD ',
                   style: TextStyle(
                       fontSize: fSize(8),
                       fontWeight: FontWeight.w500,
                       color: valueColor,
-                      height: 1.2)),
+                      height: 1)),
               Text(value,
                   style: TextStyle(
                       fontSize: fSize(12),
                       fontWeight: FontWeight.w500,
+                      height: 1,
                       color: valueColor))
             ],
           )

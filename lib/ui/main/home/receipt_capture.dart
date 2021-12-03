@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:flexflutter/ui/main/home/receipt_screen.dart';
-import 'package:flexflutter/ui/widgets/custom_main_header.dart';
-import 'package:flexflutter/ui/widgets/custom_spacer.dart';
-import 'package:flexflutter/utils/scale.dart';
+import 'package:co/ui/main/home/receipt_screen.dart';
+import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ReceiptCapture extends StatefulWidget {
-  const ReceiptCapture({Key? key}) : super(key: key);
+  const ReceiptCapture({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -19,7 +19,7 @@ class ReceiptCapture extends StatefulWidget {
 }
 
 class _ReceiptCapture extends State<ReceiptCapture> {
-  File? imageFile;
+  File imageFile;
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -64,7 +64,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
                         image: AssetImage('assets/empty_transaction.png'),
                         fit: BoxFit.contain)
                     : DecorationImage(
-                        image: FileImage(imageFile!), fit: BoxFit.contain))),
+                        image: FileImage(imageFile), fit: BoxFit.contain))),
         const CustomSpacer(size: 31),
         takeFlag == false ? takeButton() : buttonField()
       ],
@@ -85,7 +85,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
         margin: EdgeInsets.only(left: wScale(8), right: wScale(8)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xffc9c9c9).withOpacity(0.1),
+            primary: const Color(0xffe8e9ea),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
@@ -163,7 +163,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
     }
 
     if (imageFile != null) {
-      print("You selected  image : " + imageFile!.path);
+      print("You selected  image : " + imageFile.path);
       setState(() {
         debugPrint("SELECTED IMAGE PICK   $imageFile");
       });
