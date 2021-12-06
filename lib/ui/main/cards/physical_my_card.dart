@@ -11,7 +11,7 @@ import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 
 class PhysicalMyCards extends StatefulWidget {
-  const PhysicalMyCards({Key key}) : super(key: key);
+  const PhysicalMyCards({Key? key}) : super(key: key);
 
   @override
   PhysicalMyCardsState createState() => PhysicalMyCardsState();
@@ -1130,7 +1130,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   }
 
   void _openDatePicker(type) async {
-    DateTime pickedDate = await showDatePicker(
+    DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(

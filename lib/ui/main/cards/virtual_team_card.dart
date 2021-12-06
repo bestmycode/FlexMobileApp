@@ -7,7 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:indexed/indexed.dart';
 
 class VirtualTeamCards extends StatefulWidget {
-  const VirtualTeamCards({Key key}) : super(key: key);
+  const VirtualTeamCards({Key? key}) : super(key: key);
 
   @override
   VirtualTeamCardsState createState() => VirtualTeamCardsState();

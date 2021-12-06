@@ -8,10 +8,10 @@ class CustomTextField extends StatelessWidget {
   final bool pwd;
   final Color fillColor;
   const CustomTextField(
-      {Key key,
-      this.ctl,
-      this.hint,
-      this.label,
+      {Key? key,
+      required this.ctl,
+      required this.hint,
+      required this.label,
       this.pwd = false,
       this.fillColor = const Color(0xFFFFFFFF)})
       : super(key: key);

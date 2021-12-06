@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class MyCards extends StatefulWidget {
-  const MyCards({Key key}) : super(key: key);
+  const MyCards({Key? key}) : super(key: key);
 
   @override
   MyCardsState createState() => MyCardsState();

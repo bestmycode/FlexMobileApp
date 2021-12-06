@@ -12,9 +12,9 @@ class NameOnCard extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
 
-  // const PhysicalCards({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // const PhysicalCards({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
 
-  const NameOnCard({Key key}) : super(key: key);
+  const NameOnCard({Key? key}) : super(key: key);
   @override
   NameOnCardState createState() => NameOnCardState();
 }

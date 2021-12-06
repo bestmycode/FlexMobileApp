@@ -12,7 +12,7 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:localstorage/localstorage.dart';
 
 class CompanyDetailScreen extends StatefulWidget {
-  const CompanyDetailScreen({Key key}) : super(key: key);
+  const CompanyDetailScreen({Key? key}) : super(key: key);
 
   @override
   CompanyDetailScreenState createState() => CompanyDetailScreenState();

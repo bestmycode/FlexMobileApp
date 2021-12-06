@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class VirtualPersonalCard extends StatefulWidget {
-  const VirtualPersonalCard({Key key}) : super(key: key);
+  const VirtualPersonalCard({Key? key}) : super(key: key);
 
   @override
   VirtualPersonalCardState createState() => VirtualPersonalCardState();

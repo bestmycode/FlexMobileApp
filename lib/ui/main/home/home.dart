@@ -10,9 +10,9 @@ import 'package:co/utils/scale.dart';
 class HomeScreen extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const Home({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // const Home({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
 
-  const HomeScreen({Key key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();

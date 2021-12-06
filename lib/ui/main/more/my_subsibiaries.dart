@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class MySubsibiaries extends StatefulWidget {
-  const MySubsibiaries({Key key}) : super(key: key);
+  const MySubsibiaries({Key? key}) : super(key: key);
   @override
   MySubsibiariesState createState() => MySubsibiariesState();
 }

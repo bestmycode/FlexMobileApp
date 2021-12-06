@@ -1,12 +1,19 @@
+import 'dart:convert';
+
+import 'package:co/utils/basedata.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:auth0/auth0.dart';
+// import 'package:flutter_auth0/flutter_auth0.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key key}) : super(key: key);
+  const SignInScreen({Key? key}) : super(key: key);
 
   @override
   SignInScreenState createState() => SignInScreenState();
@@ -27,28 +34,63 @@ class SignInScreenState extends State<SignInScreen> {
 
   final emailCtr = TextEditingController();
   final passwordCtr = TextEditingController();
-
+  String errorText = '';
   bool flagRemember = false;
 
-  handleLogin() {
-    // String? emailValidate = Validator().validateEmail(emailCtr.text);
-    // String? passwordValidate = Validator().validatePasswordLength(passwordCtr.text);
-    // if(emailValidate!.isNotEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(emailValidate),
-    //     ),
-    //   );
-    // } else if(passwordValidate!.isNotEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(passwordValidate),
-    //     ),
-    //   );
-    // } else {
-    //   Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
-    // }
-    Navigator.of(context).pushReplacementNamed(SIGN_IN_AUTH);
+  handleLogin() async {
+    // This is a part to get token for "FXR Mobiel App"
+    var url = '${BaseData.BASE_URL}/oauth/token';
+
+    var data = {
+      "client_id": BaseData.CLIENT_ID,
+      "client_secret": BaseData.CLIENT_SECRET,
+      "audience": BaseData.AUDIENCE,
+      "grant_type": "client_credentials"
+    };
+
+    var tokenResponse = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: json.encode(data));
+
+    var body = json.decode(tokenResponse.body);
+    var token = body["access_token"];
+
+    // This is a part to login via Email/Password
+    var client = Auth0Client(
+        clientId: data["client_id"],
+        clientSecret: data["client_secret"],
+        domain: "finaxar-staging.auth0.com",
+        connectTimeout: 10000,
+        sendTimeout: 10000,
+        receiveTimeout: 60000,
+        useLoggerInterceptor: true,
+        accessToken: token);
+    // Ref : https://pub.dev/packages/auth0/install
+    try {
+      var user = await client.passwordGrant({
+          // "username": "ronak+testflex@finaxar.com",
+          // "password": "Finone@1234",
+          "username": emailCtr.text,
+          "password": passwordCtr.text,
+          "scope": "openid profile email",
+          "realm": "Username-Password-Authentication"
+        });
+        var aEmail = emailCtr.text;
+        var rgEmail = Uri.encodeComponent(aEmail);
+        var aaa_url = 'https://finaxar-staging.auth0.com/api/v2/users-by-email?email=' + rgEmail;
+        var userResp = await http.get(aaa_url, headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        });
+
+        var temp = json.decode(userResp.body);
+
+        Navigator.of(context).pushReplacementNamed(SIGN_IN_AUTH);
+    } catch (error) {
+      setState(() {
+        errorText = error.toString().split('invalid_grant')[1];
+      });
+    }
+   
   }
 
   handleRegister() {
@@ -69,26 +111,28 @@ class SignInScreenState extends State<SignInScreen> {
     return Material(
         child: Scaffold(
             body: SingleChildScrollView(
-                child: Column(children: [
-      logo(),
-      const CustomSpacer(size: 66),
-      title(),
-      const CustomSpacer(size: 50),
-      CustomTextField(
-          ctl: emailCtr, hint: 'Enter Email Address', label: 'Email'),
-      const CustomSpacer(size: 32),
-      CustomTextField(
-          ctl: passwordCtr,
-          hint: 'Enter Password',
-          label: 'Password',
-          pwd: true),
-      const CustomSpacer(size: 24),
-      forgotPwdField(),
-      const CustomSpacer(size: 25),
-      loginButton(),
-      const CustomSpacer(size: 62),
-      registerField()
-    ]))));
+                child: Container(
+                  color: Colors.white,
+                  child: Column(children: [
+                    logo(),
+                    const CustomSpacer(size: 66),
+                    title(),
+                    const CustomSpacer(size: 50),
+                    CustomTextField(
+                        ctl: emailCtr, hint: 'Enter Email Address', label: 'Email'),
+                    const CustomSpacer(size: 32),
+                    CustomTextField(
+                        ctl: passwordCtr,
+                        hint: 'Enter Password',
+                        label: 'Password',
+                        pwd: true),
+                    const CustomSpacer(size: 24),
+                    forgotPwdField(),
+                    const CustomSpacer(size: 25),
+                    loginButton(),
+                    errorText != '' ? showErrorText(): const CustomSpacer(size: 62),
+                    registerField()
+                  ])))));
   }
 
   Widget logo() {
@@ -146,7 +190,7 @@ class SignInScreenState extends State<SignInScreen> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagRemember = value;
+                flagRemember = value!;
               });
             },
           ),
@@ -197,7 +241,7 @@ class SignInScreenState extends State<SignInScreen> {
               style: TextStyle(
                   color: Colors.white,
                   fontSize: fSize(16),
-                  fontWeight: FontWeight.w700)),
+                    fontWeight: FontWeight.w700)),
         ));
   }
 
@@ -208,7 +252,7 @@ class SignInScreenState extends State<SignInScreen> {
         Text("Don't have an account?",
             style:
                 TextStyle(color: const Color(0xFF666666), fontSize: fSize(14))),
-        registerButton()
+        registerButton(),
       ],
     );
   }
@@ -224,6 +268,16 @@ class SignInScreenState extends State<SignInScreen> {
         handleRegister();
       },
       child: const Text('Register'),
+    );
+  }
+
+  Widget showErrorText() {
+    return Container(
+      height: hScale(62),
+      alignment:Alignment.center,
+      child: Text(errorText,
+            style:
+                TextStyle(color: const Color(0xFFEB5757), fontSize: fSize(16), fontWeight: FontWeight.bold)),
     );
   }
 }

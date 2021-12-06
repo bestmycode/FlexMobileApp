@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 class TransactionAdmin extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const TransactionAdmin({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
-  const TransactionAdmin({Key key}) : super(key: key);
+  // const TransactionAdmin({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const TransactionAdmin({Key? key}) : super(key: key);
   @override
   TransactionAdminState createState() => TransactionAdminState();
 }
@@ -704,7 +704,7 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   void _openDatePicker(type) async {
-    DateTime pickedDate = await showDatePicker(
+    DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class AppSetting extends StatefulWidget {
-  const AppSetting({Key key}) : super(key: key);
+  const AppSetting({Key? key}) : super(key: key);
   @override
   AppSettingState createState() => AppSettingState();
 }

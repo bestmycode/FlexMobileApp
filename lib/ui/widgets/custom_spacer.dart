@@ -4,7 +4,7 @@ import 'package:co/utils/scale.dart';
 class CustomSpacer extends StatelessWidget {
   final double size;
 
-  const CustomSpacer({Key key, this.size = 0}) : super(key: key);
+  const CustomSpacer({Key? key, this.size = 0}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

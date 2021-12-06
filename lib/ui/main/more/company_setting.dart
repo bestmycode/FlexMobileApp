@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class CompanySetting extends StatefulWidget {
-  const CompanySetting({Key key}) : super(key: key);
+  const CompanySetting({Key? key}) : super(key: key);
   @override
   CompanySettingState createState() => CompanySettingState();
 }

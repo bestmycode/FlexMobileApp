@@ -14,7 +14,7 @@ class TransactionItem extends StatefulWidget {
   final String value;
 
   const TransactionItem(
-      {Key key,
+      {Key? key,
       this.date = '9 Nov 2021',
       this.time = '12:00 AM',
       this.transactionName = 'Flex Transaction Name',

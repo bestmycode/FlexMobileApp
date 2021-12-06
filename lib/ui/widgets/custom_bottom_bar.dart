@@ -15,7 +15,7 @@ import 'dart:io' show Platform;
 class CustomBottomBar extends StatefulWidget {
   final int active;
 
-  const CustomBottomBar({Key key, this.active = 0}) : super(key: key);
+  const CustomBottomBar({Key? key, this.active = 0}) : super(key: key);
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();

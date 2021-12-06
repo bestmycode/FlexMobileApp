@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 
 class AlmostDoneScreen extends StatefulWidget {
-  const AlmostDoneScreen({Key key}) : super(key: key);
+  const AlmostDoneScreen({Key? key}) : super(key: key);
 
   @override
   AlmostDoneScreenState createState() => AlmostDoneScreenState();

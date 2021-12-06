@@ -8,7 +8,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 
 class Transactions extends StatefulWidget {
-  const Transactions({Key key}) : super(key: key);
+  const Transactions({Key? key}) : super(key: key);
 
   @override
   TransactionsState createState() => TransactionsState();

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class ReceiptDetails extends StatefulWidget {
-  const ReceiptDetails({Key key}) : super(key: key);
+  const ReceiptDetails({Key? key}) : super(key: key);
 
   @override
   ReceiptDetailsState createState() => ReceiptDetailsState();

@@ -4,7 +4,7 @@ import 'package:co/utils/scale.dart';
 class CustomMainHeader extends StatelessWidget {
   final String title;
 
-  const CustomMainHeader({Key key, this.title = ""}) : super(key: key);
+  const CustomMainHeader({Key? key, this.title = ""}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

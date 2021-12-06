@@ -10,8 +10,8 @@ import 'package:indexed/indexed.dart';
 class TransactionUser extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const TransactionUser({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
-  const TransactionUser({Key key}) : super(key: key);
+  // const TransactionUser({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const TransactionUser({Key? key}) : super(key: key);
 
   @override
   TransactionUserState createState() => TransactionUserState();

@@ -11,9 +11,9 @@ class PhysicalCards extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
 
-  // const PhysicalCards({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
+  // const PhysicalCards({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
 
-  const PhysicalCards({Key key}) : super(key: key);
+  const PhysicalCards({Key? key}) : super(key: key);
   @override
   PhysicalCardsState createState() => PhysicalCardsState();
 }

@@ -11,8 +11,8 @@ import 'credit_payment.dart';
 class CreditScreen extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
-  // const Credit({Key key, required this.controller, required this.navigatorKey}) : super(key: key);
-  const CreditScreen({Key key}) : super(key: key);
+  // const Credit({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
+  const CreditScreen({Key? key}) : super(key: key);
 
   @override
   CreditScreenState createState() => CreditScreenState();

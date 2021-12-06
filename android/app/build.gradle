@@ -50,13 +50,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId 'flexnow.co'
+        applicationId "flexnow.co"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         manifestPlaceholders = [
-            'appAuthRedirectScheme': 'flexnow.co'
+            "appAuthRedirectScheme": "flexnow.co"
         ]
     }
 

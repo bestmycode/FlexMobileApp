@@ -10,7 +10,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 
 class SignInAuthScreen extends StatefulWidget {
-  const SignInAuthScreen({Key key}) : super(key: key);
+  const SignInAuthScreen({Key? key}) : super(key: key);
 
   @override
   SignInAuthScreenState createState() => SignInAuthScreenState();

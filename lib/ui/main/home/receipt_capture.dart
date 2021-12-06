@@ -10,7 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ReceiptCapture extends StatefulWidget {
-  const ReceiptCapture({Key key}) : super(key: key);
+  const ReceiptCapture({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -19,7 +19,7 @@ class ReceiptCapture extends StatefulWidget {
 }
 
 class _ReceiptCapture extends State<ReceiptCapture> {
-  File imageFile;
+  File? imageFile;
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -64,7 +64,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
                         image: AssetImage('assets/empty_transaction.png'),
                         fit: BoxFit.contain)
                     : DecorationImage(
-                        image: FileImage(imageFile), fit: BoxFit.contain))),
+                        image: FileImage(imageFile!), fit: BoxFit.contain))),
         const CustomSpacer(size: 31),
         takeFlag == false ? takeButton() : buttonField()
       ],
@@ -163,7 +163,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
     }
 
     if (imageFile != null) {
-      print("You selected  image : " + imageFile.path);
+      print("You selected  image : " + imageFile!.path);
       setState(() {
         debugPrint("SELECTED IMAGE PICK   $imageFile");
       });

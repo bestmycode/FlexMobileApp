@@ -6,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class ReceiptFile extends StatefulWidget {
-  const ReceiptFile({Key key}) : super(key: key);
+  const ReceiptFile({Key? key}) : super(key: key);
 
-  // final File imageFile;
-  // const ReceiptFile({Key key, this.imageFile}) : super(key: key);
+  // final File? imageFile;
+  // const ReceiptFile({Key? key, this.imageFile}) : super(key: key);
 
   @override
   ReceiptFileState createState() => ReceiptFileState();

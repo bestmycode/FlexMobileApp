@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({Key key}) : super(key: key);
+  const UserProfile({Key? key}) : super(key: key);
   @override
   UserProfileState createState() => UserProfileState();
 }

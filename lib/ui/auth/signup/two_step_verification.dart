@@ -12,7 +12,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:intl/intl.dart';
 
 class TwoStepVerificationScreen extends StatefulWidget {
-  const TwoStepVerificationScreen({Key key}) : super(key: key);
+  const TwoStepVerificationScreen({Key? key}) : super(key: key);
 
   @override
   TwoStepVerificationScreenState createState() =>
@@ -424,7 +424,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
       );
 
   void _openDatePicker() async {
-    DateTime pickedDate = await showDatePicker(
+    DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key key}) : super(key: key);
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   MainScreenState createState() => MainScreenState();

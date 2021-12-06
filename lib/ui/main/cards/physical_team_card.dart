@@ -7,7 +7,7 @@ import 'package:expandable/expandable.dart';
 import 'package:indexed/indexed.dart';
 
 class PhysicalTeamCards extends StatefulWidget {
-  const PhysicalTeamCards({Key key}) : super(key: key);
+  const PhysicalTeamCards({Key? key}) : super(key: key);
 
   @override
   PhysicalTeamCardsState createState() => PhysicalTeamCardsState();

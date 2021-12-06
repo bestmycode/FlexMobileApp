@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 
 class CreditPayNowScreen extends StatefulWidget {
-  const CreditPayNowScreen({Key key}) : super(key: key);
+  const CreditPayNowScreen({Key? key}) : super(key: key);
 
   @override
   CreditPayNowScreenState createState() => CreditPayNowScreenState();

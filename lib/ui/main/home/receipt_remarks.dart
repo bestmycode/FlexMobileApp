@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class ReceiptRemarks extends StatefulWidget {
-  const ReceiptRemarks({Key key}) : super(key: key);
+  const ReceiptRemarks({Key? key}) : super(key: key);
 
   @override
   ReceiptRemarksState createState() => ReceiptRemarksState();

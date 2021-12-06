@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:indexed/indexed.dart';
 
 class TeamSetting extends StatefulWidget {
-  const TeamSetting({Key key}) : super(key: key);
+  const TeamSetting({Key? key}) : super(key: key);
   @override
   TeamSettingState createState() => TeamSettingState();
 }

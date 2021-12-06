@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class NewSubsidiary extends StatefulWidget {
-  const NewSubsidiary({Key key}) : super(key: key);
+  const NewSubsidiary({Key? key}) : super(key: key);
   @override
   NewSubsidiaryState createState() => NewSubsidiaryState();
 }
@@ -225,7 +225,7 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagAddress = value;
+                flagAddress = value!;
               });
             },
           ),

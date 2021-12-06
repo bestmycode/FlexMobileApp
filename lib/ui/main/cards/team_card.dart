@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 
 class TeamCards extends StatefulWidget {
-  const TeamCards({Key key}) : super(key: key);
+  const TeamCards({Key? key}) : super(key: key);
 
   @override
   TeamCardsState createState() => TeamCardsState();

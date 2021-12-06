@@ -1,17 +1,23 @@
+import 'dart:convert';
+
+import 'package:auth0/auth0.dart';
+import 'package:co/utils/basedata.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:co/ui/widgets/custom_mobile_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key key}) : super(key: key);
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
   SignUpScreenState createState() => SignUpScreenState();
@@ -44,12 +50,36 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   bool flagTerm = false;
   int signUpProgress = 1;
+  String errorText = '';
+  String queryText = '''
+    {
+      countries{
+        id, name
+      }
+    }
+  ''';
+
+  // String queryText = '''
+  // {
+  //     characters(page: 1, filter: { name: "rick" }) {
+  //       info {
+  //         count
+  //       }
+  //       results {
+  //         name
+  //         status
+  //       }
+  //     }
+  // }''';
 
   handleBack() {
     Navigator.of(context).pop();
   }
 
-  handleContinue() {
+  handleContinue() async {
+    setState(() {
+      errorText = '';
+    });
     storage.setItem('firstName', firstNameCtl.text);
     storage.setItem('lastName', lastNameCtl.text);
     storage.setItem('mobileNumber', mobileNumberCtl.text);
@@ -58,7 +88,46 @@ class SignUpScreenState extends State<SignUpScreen> {
     storage.setItem('password', passwordCtl.text);
     storage.setItem('flagTerm', flagTerm);
 
-    Navigator.of(context).pushReplacementNamed(MAIL_VERIFY);
+    var url = '${BaseData.BASE_URL}/oauth/token';
+
+    var data = {
+      "client_id": BaseData.CLIENT_ID,
+      "client_secret": BaseData.CLIENT_SECRET,
+      "audience": BaseData.AUDIENCE,
+      "grant_type": "client_credentials"
+    };
+
+    var tokenResponse = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: json.encode(data));
+
+    var body = json.decode(tokenResponse.body);
+    var token = body["access_token"];
+    var client = Auth0Client(
+        clientId: data["client_id"],
+        clientSecret: data["client_secret"],
+        domain: "finaxar-staging.auth0.com",
+        connectTimeout: 10000,
+        sendTimeout: 10000,
+        receiveTimeout: 60000,
+        useLoggerInterceptor: true,
+        accessToken: token);
+    print("${client}");
+    // Ref : https://pub.dev/packages/auth0/
+
+    // try {
+    //   var user = await client.createUser({
+    //     "email": companyEmailCtl.text,
+    //     "phone_number": "+8617640105623",
+    //     "given_name": firstNameCtl.text,
+    //     "family_name": lastNameCtl.text,
+    //     "connection": "Username-Password-Authentication",
+    //     "password": passwordCtl.text,
+    //   });
+    // } catch(error) {
+    //   setState(() {
+    //     errorText = error.toString();
+    //   });
+    // }
   }
 
   handleLogin() {
@@ -81,44 +150,66 @@ class SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(children: [
-      const SignupProgressHeader(prev: SPLASH_SCREEN),
-      const CustomSpacer(size: 38),
-      CustomTextField(
-          ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),
-      const CustomSpacer(size: 32),
-      CustomTextField(
-          ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
-      const CustomSpacer(size: 32),
-      CustomMobileTextField(
-          ctl: mobileNumberCtl,
-          hint: 'Enter Mobile Number',
-          label: 'Mobile Number'),
-      const CustomSpacer(size: 32),
-      CustomTextField(
-          ctl: companyNameCtl,
-          hint: 'Enter Company Name',
-          label: 'Registered Company Name'),
-      const CustomSpacer(size: 32),
-      CustomTextField(
-          ctl: companyEmailCtl,
-          hint: 'Enter Company Email Address',
-          label: 'Company Email Address'),
-      const CustomSpacer(size: 32),
-      CustomTextField(
-          ctl: passwordCtl,
-          hint: 'At Least 8 Characters',
-          label: 'Password',
-          pwd: true),
-      const CustomSpacer(size: 21),
-      termsField(),
-      const CustomSpacer(size: 22),
-      continueButton(),
-      const CustomSpacer(size: 45),
-      loginField(),
-      const CustomSpacer(size: 52),
-    ]))));
+      body: Query(
+        options: QueryOptions(
+          document: gql(queryText),
+        ),
+        builder: (QueryResult result, { VoidCallback? refetch, FetchMore? fetchMore }) {
+          if (result.hasException) {
+            print(result.exception.toString());
+            return Text(result.exception.toString(), textAlign: TextAlign.center,);
+          }
+          
+          if (result.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return SingleChildScrollView(
+              child: Column(children: [
+            const SignupProgressHeader(prev: SPLASH_SCREEN),
+            const CustomSpacer(size: 38),
+            CustomTextField(
+                ctl: firstNameCtl,
+                hint: 'Enter First Name',
+                label: 'First Name'),
+            const CustomSpacer(size: 32),
+            CustomTextField(
+                ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
+            const CustomSpacer(size: 32),
+            CustomMobileTextField(
+                ctl: mobileNumberCtl,
+                hint: 'Enter Mobile Number',
+                label: 'Mobile Number'),
+            const CustomSpacer(size: 32),
+            CustomTextField(
+                ctl: companyNameCtl,
+                hint: 'Enter Company Name',
+                label: 'Registered Company Name'),
+            const CustomSpacer(size: 32),
+            CustomTextField(
+                ctl: companyEmailCtl,
+                hint: 'Enter Company Email Address',
+                label: 'Company Email Address'),
+            const CustomSpacer(size: 32),
+            CustomTextField(
+                ctl: passwordCtl,
+                hint: 'At Least 8 Characters',
+                label: 'Password',
+                pwd: true),
+            const CustomSpacer(size: 21),
+            termsField(),
+            const CustomSpacer(size: 22),
+            continueButton(),
+            errorText != '' ? showErrorText() : const CustomSpacer(size: 45),
+            loginField(),
+            const CustomSpacer(size: 52),
+          ]));
+        },
+      ),
+      
+    ));
   }
 
   Widget termsField() {
@@ -147,7 +238,7 @@ class SignUpScreenState extends State<SignUpScreen> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagTerm = value;
+                flagTerm = value!;
               });
             },
           ),
@@ -232,5 +323,17 @@ class SignUpScreenState extends State<SignUpScreen> {
           },
           child: const Text('Login'),
         ));
+  }
+
+  Widget showErrorText() {
+    return Container(
+      height: hScale(45),
+      alignment: Alignment.center,
+      child: Text(errorText,
+          style: TextStyle(
+              color: const Color(0xFFEB5757),
+              fontSize: fSize(16),
+              fontWeight: FontWeight.bold)),
+    );
   }
 }

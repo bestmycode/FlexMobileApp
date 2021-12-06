@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
 
 class LoadingScreen extends StatefulWidget {
-  const LoadingScreen({Key key}) : super(key: key);
+  const LoadingScreen({Key? key}) : super(key: key);
 
   @override
   LoadingScreenState createState() => LoadingScreenState();
@@ -15,8 +15,8 @@ class LoadingScreenState extends State<LoadingScreen>
     with SingleTickerProviderStateMixin {
   var _visible = true;
 
-  AnimationController animationController;
-  Animation<double> animation;
+  late AnimationController animationController;
+  late Animation<double> animation;
 
   startTime() async {
     var _duration = const Duration(seconds: 3);
@@ -30,15 +30,13 @@ class LoadingScreenState extends State<LoadingScreen>
   @override
   void initState() {
     super.initState();
-    // animationController =
-    //     AnimationController(vsync: this, duration: const Duration(seconds: 3));
-    // animation =
-    //     CurvedAnimation(parent: animationController, curve: Curves.easeOut);
+    animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 3));
+    animation =
+        CurvedAnimation(parent: animationController, curve: Curves.easeOut);
 
-    // animation.addListener(() => setState(() {
-    //       _visible = !_visible;
-    //     }));
-    // animationController.forward();
+    animation.addListener(() => setState(() {_visible = !_visible;}));
+    animationController.forward();
 
     startTime();
   }

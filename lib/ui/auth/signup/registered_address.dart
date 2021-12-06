@@ -8,7 +8,7 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:localstorage/localstorage.dart';
 
 class RegisteredAddressScreen extends StatefulWidget {
-  const RegisteredAddressScreen({Key key}) : super(key: key);
+  const RegisteredAddressScreen({Key? key}) : super(key: key);
 
   @override
   RegisteredAddressScreenState createState() => RegisteredAddressScreenState();
@@ -188,7 +188,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
             activeColor: const Color(0xff30E7A9),
             onChanged: (value) {
               setState(() {
-                flagAddress = value;
+                flagAddress = value!;
               });
             },
           ),

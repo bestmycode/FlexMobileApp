@@ -12,8 +12,8 @@ class VirtualCards extends StatefulWidget {
   // final CupertinoTabController controller;
   // final GlobalKey<NavigatorState> navigatorKey;
 
-  // const VirtualCards({Key key,  required this.controller, required this.navigatorKey}) : super(key: key);
-  const VirtualCards({Key key}) : super(key: key);
+  // const VirtualCards({Key? key,  required this.controller, required this.navigatorKey}) : super(key: key);
+  const VirtualCards({Key? key}) : super(key: key);
   @override
   VirtualCardsState createState() => VirtualCardsState();
 }
@@ -34,7 +34,7 @@ class VirtualCardsState extends State<VirtualCards> {
   int cardType = 1;
 
   handleBack() {
-    DefaultTabController.of(context).animateTo(1);
+    DefaultTabController.of(context)!.animateTo(1);
   }
 
   handleCardType(type) {

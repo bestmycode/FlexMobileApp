@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class ReceiptScreen extends StatefulWidget {
-  final File imageFile;
-  const ReceiptScreen({Key key, this.imageFile}) : super(key: key);
+  final File? imageFile;
+  const ReceiptScreen({Key? key, this.imageFile}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {

@@ -7,7 +7,7 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/services.dart';
 
 class MailVerifyScreen extends StatefulWidget {
-  const MailVerifyScreen({Key key}) : super(key: key);
+  const MailVerifyScreen({Key? key}) : super(key: key);
 
   @override
   MailVerifyScreenState createState() => MailVerifyScreenState();

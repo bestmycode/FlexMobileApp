@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 
 class TwoStepFailedScreen extends StatefulWidget {
-  const TwoStepFailedScreen({Key key}) : super(key: key);
+  const TwoStepFailedScreen({Key? key}) : super(key: key);
 
   @override
   TwoStepFailedScreenState createState() => TwoStepFailedScreenState();

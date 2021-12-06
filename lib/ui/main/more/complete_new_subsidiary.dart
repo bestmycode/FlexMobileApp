@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class CompleteNewSubsidiary extends StatefulWidget {
-  const CompleteNewSubsidiary({Key key}) : super(key: key);
+  const CompleteNewSubsidiary({Key? key}) : super(key: key);
 
   @override
   CompleteNewSubsidiaryState createState() => CompleteNewSubsidiaryState();

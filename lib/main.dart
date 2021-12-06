@@ -22,10 +22,15 @@ import 'package:co/ui/auth/signup/two_step_verification.dart';
 import 'package:co/ui/auth/signup/two_step_final.dart';
 import 'package:co/ui/auth/signup/two_step_failed.dart';
 
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:co/utils/basedata.dart';
+import 'dart:convert';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,30 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    return MaterialApp(
+
+    final HttpLink httpLink = HttpLink("https://gql.staging.fxr.one/v1/graphiql/");
+    AuthLink authLink = AuthLink(getToken: () async =>
+      // final temptoken = token;
+      // return '$temptoken';
+      'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJqQXhNekkwTjBWR1JqazRNalk0TWtZME1VTTBNVGd3TURsQlJVWTJOMFJCUXpVMU1UWXlSUSJ9.eyJodHRwOi8vYXBwLnN0YWdpbmcuZmluYXhhci5jb20vdXNlcl9tZXRhZGF0YSI6eyJmaXJzdF9uYW1lIjoiUm9uYWsiLCJsYXN0X25hbWUiOiJKYWluIiwicGhvbmUiOiIrOTE4ODc4MjQ0NTU0IiwiY29tcGFueV9uYW1lIjoiW1RFU1RdIGZsZXggbmV3IGNoYW5nZXMiLCJjb21wYW55X3R5cGUiOiJQYXJ0bmVyc2hpcHMiLCJsYW5ndWFnZSI6ImVuIiwic2lnbnVwX2NvdW50cnkiOiJzZyIsImdlb19kYXRhIjp7ImNvdW50cnlfY29kZSI6IklOIiwiY291bnRyeV9jb2RlMyI6IklORCIsImNvdW50cnlfbmFtZSI6IkluZGlhIiwiY2l0eV9uYW1lIjoiUHVuZSIsImxhdGl0dWRlIjoxOC42MTYxLCJsb25naXR1ZGUiOjczLjcyODYsInRpbWVfem9uZSI6IkFzaWEvS29sa2F0YSIsImNvbnRpbmVudF9jb2RlIjoiQVMifSwiaWQiOjE5OTMsInRva2VuIjoiWW53MFpBOVhLLUtwR3ZFZ2dSZE9wMng1THBZc3VHZzAifSwiaXNzIjoiaHR0cHM6Ly9maW5heGFyLXN0YWdpbmcuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwMTAxY2RkMTljOTI3MDA2YzUxNDdhYSIsImF1ZCI6WyJodHRwczovL2ZpbmF4YXItc3RhZ2luZy5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZmluYXhhci1zdGFnaW5nLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2Mzg3NzE4MjEsImV4cCI6MTYzODc3OTAyMSwiYXpwIjoibExUWnA5VTRSUkRONDlXdHA5YTE2c2lzamw0TXJFa0wiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIn0.YMsQ8Az4jzsTxJLoHpy1pUx0iz1Ma_ArE35xGRvg_q8vjYgrAuSH82Y2JTGjCaOmxCrDu40CUcPIoR5bbliK-u9VeiZWJ79ofe9puvbrRohGlfdyKhM7B-fv8Ye_5_-iWTdh7nPpq9OsLLYHXVCaAdoplHzuVS165F9nUe9zdMZmBcWjQyLJSVhDZyiDJgxUMvP-xMOXrLQVkepKSSHjHlVyRDAAzCKUvEdzAhX6otszVoIVyWbHgaHcZnZsBzMN4beiq0MjgM4SDZWyXLWI1z17GhWDfo3wVfYJMAVZV0jyWGEFhKkDUfVaBQMrhsAIkbttBAWSk-33jxxz4fg0Ow'
+    );
+    final Link link = authLink.concat(httpLink);
+
+    // final HttpLink rickAndMortyHttpLink =
+    //     HttpLink('https://rickandmortyapi.com/graphql');
+
+    ValueNotifier<GraphQLClient> client = ValueNotifier(
+      GraphQLClient(
+        link: link,
+        cache: GraphQLCache(
+          store: InMemoryStore(),
+        ),
+      ),
+    );
+
+    return GraphQLProvider(
+      client: client,
+      child: MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
         LOADING_SCREEN: (BuildContext context) => const LoadingScreen(),
@@ -62,6 +90,18 @@ class MyApp extends StatelessWidget {
         CREDIT_SCREEN: (BuildContext context) => const CreditScreen(),
       },
       initialRoute: LOADING_SCREEN,
-    );
+      
+    ));
   }
 }
+
+// class AuthenticationState extends ChangeNotifier{
+
+//   final _token = [];
+//   dynamic get authenticationToken => _token;
+
+//   void changeAuthState(value){
+//     _token.add(value);
+//     notifyListeners();
+//   }
+// }

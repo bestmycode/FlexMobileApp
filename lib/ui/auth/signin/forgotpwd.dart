@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 
 class ForgotPwdScreen extends StatefulWidget {
-  const ForgotPwdScreen({Key key}) : super(key: key);
+  const ForgotPwdScreen({Key? key}) : super(key: key);
 
   @override
   ForgotPwdScreenState createState() => ForgotPwdScreenState();

@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 
 class CreditManuallyTransferScreen extends StatefulWidget {
-  const CreditManuallyTransferScreen({Key key}) : super(key: key);
+  const CreditManuallyTransferScreen({Key? key}) : super(key: key);
 
   @override
   CreditManuallyTransferScreenState createState() =>

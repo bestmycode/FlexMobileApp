@@ -7,7 +7,7 @@ import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 
 class VirtualMyTransactions extends StatefulWidget {
-  const VirtualMyTransactions({Key key}) : super(key: key);
+  const VirtualMyTransactions({Key? key}) : super(key: key);
 
   @override
   VirtualMyTransactionsState createState() => VirtualMyTransactionsState();
@@ -454,7 +454,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
   }
 
   void _openDatePicker(type) async {
-    DateTime pickedDate = await showDatePicker(
+    DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(

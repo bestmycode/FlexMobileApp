@@ -8,7 +8,7 @@ class BillingItem extends StatefulWidget {
   final int status; // 0: unpaid, 1: overdue, 2: paid
 
   const BillingItem({
-    Key key,
+    Key? key,
     this.statementDate = '30 Jan 2021',
     this.totalAmount = '0.00',
     this.dueDate = '05 Mar 2021',

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class PersonalCard extends StatefulWidget {
-  const PersonalCard({Key key}) : super(key: key);
+  const PersonalCard({Key? key}) : super(key: key);
 
   @override
   PersonalCardState createState() => PersonalCardState();

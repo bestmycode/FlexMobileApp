@@ -6,7 +6,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 
 class DepositFundsScreen extends StatefulWidget {
-  const DepositFundsScreen({Key key}) : super(key: key);
+  const DepositFundsScreen({Key? key}) : super(key: key);
 
   @override
   DepositFundsScreenState createState() => DepositFundsScreenState();

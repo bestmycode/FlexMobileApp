@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class AccountSetting extends StatefulWidget {
-  const AccountSetting({Key key}) : super(key: key);
+  const AccountSetting({Key? key}) : super(key: key);
   @override
   AccountSettingState createState() => AccountSettingState();
 }

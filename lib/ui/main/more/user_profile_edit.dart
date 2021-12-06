@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class UserProfileEdit extends StatefulWidget {
-  const UserProfileEdit({Key key}) : super(key: key);
+  const UserProfileEdit({Key? key}) : super(key: key);
   @override
   UserProfileEditState createState() => UserProfileEditState();
 }
