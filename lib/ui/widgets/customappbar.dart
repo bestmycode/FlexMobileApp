@@ -23,8 +23,6 @@ class CustomAppBar extends StatelessWidget {
                   Icons.arrow_back,
                 ),
                 onPressed: () {
-                  // ignore: avoid_print
-                  print("pop");
                   Navigator.of(context).pop();
                 })
           ],

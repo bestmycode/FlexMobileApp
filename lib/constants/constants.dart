@@ -1,5 +1,6 @@
 // ignore: constant_identifier_names
 const String LOADING_SCREEN = 'loading';
+const String FIRST_LOADING_SCREEN = "first_loading";
 // ignore: constant_identifier_names
 const String SPLASH_SCREEN = 'splash';
 // ignore: constant_identifier_names
@@ -10,6 +11,8 @@ const String SIGN_IN_AUTH = 'signin_auth';
 const String FORGOT_PWD = 'forgotpwd';
 // ignore: constant_identifier_names
 const String SIGN_UP = 'signup';
+// ignore: constant_identifier_names
+const String SIGN_UP_WEB = 'signup_web';
 // ignore: constant_identifier_names
 const String MAIL_VERIFY = 'mail_verify';
 // ignore: constant_identifier_names

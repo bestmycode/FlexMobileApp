@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class PhysicalPersonalCard extends StatefulWidget {
-  const PhysicalPersonalCard({Key? key}) : super(key: key);
+  final cardData;
+  const PhysicalPersonalCard({Key? key, this.cardData}) : super(key: key);
 
   @override
   PhysicalPersonalCardState createState() => PhysicalPersonalCardState();
@@ -131,14 +132,14 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return Material(
         child: Scaffold(
             body: Stack(children: [
       SingleChildScrollView(
           child: Column(children: [
         const CustomSpacer(size: 44),
-        const CustomMainHeader(title: 'Angel Matthew’s Card'),
+        CustomMainHeader(title: '${widget.cardData["accountName"]}’s Card'),
         const CustomSpacer(size: 31),
         cardDetailField(),
         const CustomSpacer(size: 10),
@@ -214,7 +215,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Angel Matthews',
+                  Text(widget.cardData['accountName'],
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w300,
@@ -223,7 +224,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                   Row(children: [
                     Text(
                         showCardDetail
-                            ? '2145 4587 4875 1211'
+                            ? widget.cardData['permanentAccountNumber']
                             : '* * * *  * * * *  * * * *  * * * *',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(16))),
@@ -240,7 +241,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                     Text('Valid Thru',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ? '12/20' : 'MM / DD',
+                    Text(showCardDetail ? widget.cardData['expiryDate'] : 'MM / DD',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -254,7 +255,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                     Text('CVV',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ? '214' : '* * *',
+                    Text(showCardDetail ? widget.cardData['cvv'] : '* * *',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -286,14 +287,19 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                 Radius.circular(hScale(16)),
               ),
             ),
-            child: Text(r'S$3,000.00',
-                style: TextStyle(
-                    fontSize: fSize(14),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF30E7A9))))
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.cardData['currencyCode'],
+                  style: TextStyle( fontSize: fSize(8), fontWeight: FontWeight.w500, height: 1,)),
+                Text(widget.cardData['financeAccountLimits'][0]['availableLimit'].toString(),
+                  style: TextStyle( fontSize: fSize(8), fontWeight: FontWeight.w500, height: 1,)),  
+              ]
+          ))
       ],
     );
-  }
+  }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
   Widget eyeIconField() {
     return Container(
@@ -310,6 +316,7 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
             )),
         child: IconButton(
           padding: const EdgeInsets.all(0),
+          
           // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
           icon: Image.asset(
               showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png',
@@ -323,6 +330,9 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
   }
 
   Widget spendLimitField() {
+
+    var limitData = widget.cardData['financeAccountLimits'][0];
+    double percentage = (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
     return Container(
       width: wScale(327),
       padding: EdgeInsets.only(
@@ -363,7 +373,8 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(r'S$5,000.00',
+                    Text(widget.cardData['currencyCode'], style:TextStyle(fontSize: fSize(8), fontWeight: FontWeight.w500, color: Color(0xFF1A2831) )),
+                    Text(widget.cardData['financeAccountLimits'][0]['limitValue'].toString(),
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w600,
@@ -384,12 +395,21 @@ class PhysicalPersonalCardState extends State<PhysicalPersonalCard> {
           const CustomSpacer(size: 12),
           Row(
             children: [
-              Image.asset('assets/happy_emoji.png',
+              Image.asset(percentage < 0.8 ? 'assets/emoji1.png': percentage < 0.9 ? 'assets/emoji2.png' : 'assets/emoji3.png',
                   fit: BoxFit.contain, width: wScale(18)),
               SizedBox(width: wScale(10)),
-              Text('Great job, you are within your allocated limit!',
+              Text(
+                percentage < 0.8
+                ? 'Great job, you are within your allocated limit!'
+                : percentage < 0.9
+                  ? 'Careful! You are almost at the limit.'
+                  : 'You have reached the limit.',
                   style: TextStyle(
                       fontSize: fSize(12), color: const Color(0xFF70828D))),
+              percentage >= 0.8 ? Container(height: hScale(12), child: TextButton(
+                style: TextButton.styleFrom(padding: EdgeInsets.all(0)),
+                onPressed: () {},
+                child: Text('Add more!', style: TextStyle(fontSize: fSize(12), color: const Color(0xFF30E7A9))))): SizedBox()
             ],
           )
         ],

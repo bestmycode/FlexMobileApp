@@ -2,9 +2,7 @@ import 'dart:ui';
 
 import 'package:co/ui/main/cards/name_on_card.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:co/ui/main/cards/physical_team_card.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
-import 'package:co/ui/widgets/custom_header.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';

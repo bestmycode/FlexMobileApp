@@ -1,27 +1,34 @@
 import 'package:co/constants/constants.dart';
 import 'package:co/ui/main/cards/physical_card.dart';
+import 'package:co/ui/main/cards/physical_user_card.dart';
 import 'package:co/ui/main/cards/virtual_card.dart';
 import 'package:co/ui/main/credit/credit.dart';
 import 'package:co/ui/main/home/home.dart';
 import 'package:co/ui/main/more/account_setting.dart';
 import 'package:co/ui/main/more/company_setting.dart';
 import 'package:co/ui/main/transactions/transaction_admin.dart';
+import 'package:co/ui/main/transactions/transaction_user.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'dart:io' show Platform;
+import 'package:localstorage/localstorage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomBottomBar extends StatefulWidget {
   final int active;
-
-  const CustomBottomBar({Key? key, this.active = 0}) : super(key: key);
+  final bool mobileVerified;
+  const CustomBottomBar(
+      {Key? key, this.active = 0, this.mobileVerified = true})
+      : super(key: key);
 
   @override
   CustomBottomBarState createState() => CustomBottomBarState();
 }
 
 class CustomBottomBarState extends State<CustomBottomBar> {
+  final LocalStorage userStorage = LocalStorage('user_info');
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -35,6 +42,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   }
 
   handleTabItem(active) {
+    bool isAdmin = userStorage.getItem("isAdmin");
     if (widget.active % 10 == active % 10 &&
         active % 10 != 1 &&
         active % 10 != 4) {
@@ -42,32 +50,46 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     } else if (active == 0) {
       Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
     } else if (active % 10 == 1) {
-      _openCardTypeDialog();
+      widget.mobileVerified ? _openCardTypeDialog() : null;
     } else if (active == 2) {
-      Navigator.of(context).pushReplacementNamed(TRANSACTION_ADMIN);
+      widget.mobileVerified ? Navigator.of(context)
+          .pushReplacementNamed(isAdmin ? TRANSACTION_ADMIN : TRANSACTION_USER): null;
     } else if (active == 3) {
-      Navigator.of(context).pushReplacementNamed(CREDIT_SCREEN);
+      widget.mobileVerified ? Navigator.of(context).pushReplacementNamed(CREDIT_SCREEN): null;
     } else if (active == 4) {
       _openMenuDialog();
-      // Navigator.of(context).pushReplacementNamed(PHYSICAL_CARD);
     }
   }
 
   handleCard(type) {
     Navigator.pop(context);
-    if (type == 1) {
-      Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const PhysicalCards()),
-      );
+    bool isAdmin = userStorage.getItem("isAdmin");
+    if (isAdmin) {
+      if (type == 1) {
+        Navigator.of(context).push(
+          CupertinoPageRoute(builder: (context) => const PhysicalCards()),
+        );
+      } else {
+        Navigator.of(context).push(
+          CupertinoPageRoute(builder: (context) => const VirtualCards()),
+        );
+      }
     } else {
-      Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const VirtualCards()),
-      );
+      if (type == 1) {
+        Navigator.of(context).push(
+          CupertinoPageRoute(builder: (context) => const PhysicalUserCard()),
+        );
+      } else {
+        Navigator.of(context).push(
+          CupertinoPageRoute(builder: (context) => const VirtualCards()),
+        );
+      }
     }
   }
 
   handleMenu(type, active) {
     Navigator.pop(context);
+    bool isAdmin = userStorage.getItem("isAdmin");
     if (widget.active == active) {
       return;
     }
@@ -88,7 +110,9 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     }
     if (type == 'transaction') {
       Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const TransactionAdmin()),
+        CupertinoPageRoute(
+            builder: (context) =>
+                isAdmin ? const TransactionAdmin() : const TransactionUser()),
       );
     }
     if (type == 'credit') {
@@ -98,7 +122,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     }
     if (type == 'company_setting') {
       Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const CompanySetting()),
+        CupertinoPageRoute(builder: (context) => CompanySetting(tabIndex: 0)),
       );
     }
     if (type == 'account_setting') {
@@ -106,10 +130,14 @@ class CustomBottomBarState extends State<CustomBottomBar> {
         CupertinoPageRoute(builder: (context) => const AccountSetting()),
       );
     }
+    if (type == "logout") {
+      Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isAdmin = userStorage.getItem("isAdmin");
     return Container(
         width: MediaQuery.of(context).size.width,
         height: hScale(88),
@@ -126,31 +154,33 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                     widget.active == 0
                         ? 'assets/green_home.png'
                         : 'assets/grey_home.png',
-                    'Home',
+                    AppLocalizations.of(context)!.home,
                     0),
                 navItem(
                     widget.active % 10 == 1
                         ? 'assets/green_card.png'
                         : 'assets/grey_card.png',
-                    'Cards',
+                    AppLocalizations.of(context)!.cards,
                     1),
                 navItem(
                     widget.active == 2
                         ? 'assets/green_transaction.png'
                         : 'assets/grey_transaction.png',
-                    'Transactions',
+                    AppLocalizations.of(context)!.transactions,
                     2),
-                navItem(
-                    widget.active == 3
-                        ? 'assets/green_credit.png'
-                        : 'assets/grey_credit.png',
-                    'Credit',
-                    3),
+                isAdmin
+                    ? navItem(
+                        widget.active == 3
+                            ? 'assets/green_credit.png'
+                            : 'assets/grey_credit.png',
+                        AppLocalizations.of(context)!.credit,
+                        3)
+                    : SizedBox(),
                 navItem(
                     widget.active % 10 == 4
                         ? 'assets/green_more.png'
                         : 'assets/grey_more.png',
-                    'More',
+                    AppLocalizations.of(context)!.more,
                     4),
               ],
             )
@@ -159,27 +189,33 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   }
 
   Widget navItem(icon, title, active) {
-    return TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xFFFFFFFF),
-          padding: EdgeInsets.symmetric(horizontal: wScale(0)),
-        ),
-        onPressed: () {
-          handleTabItem(active);
-        },
-        child: Column(
-          children: [
-            Image.asset(icon, height: hScale(18), fit: BoxFit.contain),
-            const CustomSpacer(size: 8),
-            Text(title,
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w400,
-                    color: active == widget.active % 10
-                        ? const Color(0xFF29C490)
-                        : const Color(0xFFBFBFBF)))
-          ],
-        ));
+    bool isAdmin = userStorage.getItem("isAdmin");
+    return Container(
+        width: isAdmin
+            ? MediaQuery.of(context).size.width / 5
+            : MediaQuery.of(context).size.width / 4,
+        alignment: Alignment.center,
+        child: TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xFFFFFFFF),
+              padding: EdgeInsets.symmetric(horizontal: wScale(0)),
+            ),
+            onPressed: () {
+              handleTabItem(active);
+            },
+            child: Column(
+              children: [
+                Image.asset(icon, height: hScale(18), fit: BoxFit.contain),
+                const CustomSpacer(size: 8),
+                Text(title,
+                    style: TextStyle(
+                        fontSize: fSize(12),
+                        fontWeight: FontWeight.w400,
+                        color: active == widget.active % 10
+                            ? const Color(0xFF29C490)
+                            : const Color(0xFFBFBFBF)))
+              ],
+            )));
   }
 
   void _openCardTypeDialog() => showModalBottomSheet<void>(
@@ -194,7 +230,13 @@ class CustomBottomBarState extends State<CustomBottomBar> {
           return Container(
               height: hScale(209),
               padding: EdgeInsets.symmetric(horizontal: hScale(24)),
-              // color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(hScale(24)),
+                  topRight: Radius.circular(hScale(24)),
+                ),
+              ),
               child: Container(
                   color: Colors.white,
                   child: Column(
@@ -203,11 +245,15 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                       Platform.isAndroid
                           ? const CustomSpacer(size: 35)
                           : const CustomSpacer(size: 67),
-                      modalItem('Physical Cards', 'assets/green_card.png',
-                          'assets/green_card.png', () => handleCard(1), 100),
+                      modalItem(
+                          AppLocalizations.of(context)!.physicalcards,
+                          'assets/green_card.png',
+                          'assets/green_card.png',
+                          () => handleCard(1),
+                          100),
                       const CustomSpacer(size: 18),
                       modalItem(
-                          'Virtual Cards',
+                          AppLocalizations.of(context)!.virtualcards,
                           'assets/issue_virtual_card.png',
                           'assets/green_card.png',
                           () => handleCard(2),
@@ -227,9 +273,17 @@ class CustomBottomBarState extends State<CustomBottomBar> {
           ),
         ),
         builder: (BuildContext context) {
+          bool isAdmin = userStorage.getItem("isAdmin");
           return Container(
-              height: hScale(621),
+              height: !widget.mobileVerified ? hScale(366) : isAdmin ? hScale(621) : hScale(474),
               padding: EdgeInsets.symmetric(horizontal: hScale(24)),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(hScale(24)),
+                  topRight: Radius.circular(hScale(24)),
+                ),
+              ),
               child: Container(
                 color: Colors.white,
                 child: Column(
@@ -238,7 +292,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                   children: [
                     const CustomSpacer(size: 52),
                     modalItem(
-                        'Home',
+                        AppLocalizations.of(context)!.home,
                         'assets/green_home.png',
                         'assets/white_home.png',
                         () => handleMenu('home', 0),
@@ -246,56 +300,68 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                     Platform.isAndroid
                         ? const CustomSpacer(size: 0)
                         : const CustomSpacer(size: 18),
-                    modalItem(
-                        'Physical Cards',
-                        'assets/green_card.png',
-                        'assets/white_card.png',
-                        () => handleMenu('physical_card', 1),
-                        1),
-                    Platform.isAndroid
-                        ? const CustomSpacer(size: 0)
-                        : const CustomSpacer(size: 18),
-                    modalItem(
-                        'Virtual Cards',
-                        'assets/issue_virtual_card.png',
-                        'assets/white_virtual_card.png',
-                        () => handleMenu('virtual_card', 11),
-                        11),
-                    Platform.isAndroid
-                        ? const CustomSpacer(size: 0)
-                        : const CustomSpacer(size: 18),
-                    modalItem(
-                        'Transactions',
-                        'assets/green_transaction.png',
-                        'assets/white_transaction.png',
-                        () => handleMenu('transaction', 2),
-                        2),
-                    Platform.isAndroid
-                        ? const CustomSpacer(size: 0)
-                        : const CustomSpacer(size: 18),
-                    modalItem(
-                        'Flex PLUS Credit',
-                        'assets/green_credit.png',
-                        'assets/white_credit.png',
-                        () => handleMenu('credit', 3),
-                        3),
+                    widget.mobileVerified ? Column(
+                      children: [
+                        modalItem(
+                            AppLocalizations.of(context)!.physicalcards,
+                            'assets/green_card.png',
+                            'assets/white_card.png',
+                            () => handleMenu('physical_card', 1),
+                            1),
+                        Platform.isAndroid
+                            ? const CustomSpacer(size: 0)
+                            : const CustomSpacer(size: 18),
+                        modalItem(
+                            AppLocalizations.of(context)!.virtualcards,
+                            'assets/issue_virtual_card.png',
+                            'assets/white_virtual_card.png',
+                            () => handleMenu('virtual_card', 11),
+                            11),
+                        Platform.isAndroid
+                            ? const CustomSpacer(size: 0)
+                            : const CustomSpacer(size: 18),
+                        modalItem(
+                            AppLocalizations.of(context)!.transactions,
+                            'assets/green_transaction.png',
+                            'assets/white_transaction.png',
+                            () => handleMenu('transaction', 2),
+                            2),
+                        isAdmin
+                            ? Platform.isAndroid
+                                ? const CustomSpacer(size: 0)
+                                : const CustomSpacer(size: 18)
+                            : SizedBox(),
+                        isAdmin
+                            ? modalItem(
+                                AppLocalizations.of(context)!.flexpluscredit,
+                                'assets/green_credit.png',
+                                'assets/white_credit.png',
+                                () => handleMenu('credit', 3),
+                                3)
+                            : SizedBox(),
+                      ],
+                    ) : SizedBox(),
                     const CustomSpacer(size: 31),
                     Container(
                         width: wScale(327),
                         height: 1,
                         color: const Color(0xFFDAE3E9)),
                     const CustomSpacer(size: 30),
+                    isAdmin
+                        ? modalItem(
+                            AppLocalizations.of(context)!.companysettings,
+                            'assets/green_company_setting.png',
+                            'assets/white_company_setting.png',
+                            () => handleMenu('company_setting', 4),
+                            4)
+                        : SizedBox(),
+                    isAdmin
+                        ? Platform.isAndroid
+                            ? const CustomSpacer(size: 0)
+                            : const CustomSpacer(size: 18)
+                        : SizedBox(),
                     modalItem(
-                        'Company Settings',
-                        'assets/green_company_setting.png',
-                        'assets/white_company_setting.png',
-                        () => handleMenu('company_setting', 4),
-                        4),
-                    Platform.isAndroid
-                        ? const CustomSpacer(size: 0)
-                        : const CustomSpacer(size: 18),
-                    modalItem(
-                        'Account Settings',
+                        AppLocalizations.of(context)!.accountsettings,
                         'assets/green_user_setting.png',
                         'assets/white_user_setting.png',
                         () => handleMenu('account_setting', 14),
@@ -304,7 +370,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                         ? const CustomSpacer(size: 0)
                         : const CustomSpacer(size: 18),
                     modalItem(
-                        'Log Out',
+                        AppLocalizations.of(context)!.logout,
                         'assets/green_logout.png',
                         'assets/white_logout.png',
                         () => handleMenu('logout', 5),

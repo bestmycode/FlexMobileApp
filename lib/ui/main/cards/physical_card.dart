@@ -3,17 +3,15 @@ import 'package:co/ui/main/cards/physical_team_card.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/queries.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:localstorage/localstorage.dart';
 
 class PhysicalCards extends StatefulWidget {
-  // final CupertinoTabController controller;
-  // final GlobalKey<NavigatorState> navigatorKey;
-
-  // const PhysicalCards({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
-
-  const PhysicalCards({Key? key}) : super(key: key);
+  final defaultType;
+  const PhysicalCards({Key? key, this.defaultType = 0}) : super(key: key);
   @override
   PhysicalCardsState createState() => PhysicalCardsState();
 }
@@ -31,7 +29,13 @@ class PhysicalCardsState extends State<PhysicalCards> {
     return Scale().fSize(context, size);
   }
 
-  int cardType = 1;
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String getBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
+  String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
+  String getRecentTransactions = Queries.QUERY_RECENT_TRANSACTIONS;
+
+  int cardType = 0;
 
   handleCardType(type) {
     setState(() {
@@ -42,6 +46,9 @@ class PhysicalCardsState extends State<PhysicalCards> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      cardType = widget.defaultType;
+    });
   }
 
   @override
@@ -56,20 +63,10 @@ class PhysicalCardsState extends State<PhysicalCards> {
             child: SingleChildScrollView(
                 child: Column(children: [
               const CustomSpacer(size: 44),
-              // Row(
-              //     children: [
-              //       SizedBox(width: wScale(20)),
-              //       backButton(),
-              //       SizedBox(width: wScale(20)),
-              //       Text('Physical Card', style: TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-              //     ]
-              // ),
               const CustomMainHeader(title: 'Physical Card'),
               const CustomSpacer(size: 38),
               cardGroupField(),
-              cardType == 1
-                  ? const PhysicalMyCards()
-                  : const PhysicalTeamCards(),
+              cardType == 0 ? PhysicalMyCards() : PhysicalTeamCards(),
               const CustomSpacer(size: 88),
             ]))),
       ),
@@ -136,8 +133,8 @@ class PhysicalCardsState extends State<PhysicalCards> {
         ),
       ),
       child: Row(children: [
-        cardGroupButton('My Card', 1),
-        cardGroupButton('Team Cards', 2),
+        cardGroupButton('My Card', 0),
+        cardGroupButton('Team Cards', 1),
       ]),
     );
   }

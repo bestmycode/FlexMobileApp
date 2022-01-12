@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/basedata.dart';
+import 'package:co/utils/validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ForgotPwdScreen extends StatefulWidget {
   const ForgotPwdScreen({Key? key}) : super(key: key);
@@ -26,14 +32,38 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
   }
 
   final emailCtr = TextEditingController();
+  String resultText = "";
   bool flagSubmit = false;
+  bool isErrorEmailCtl = false;
 
-  handleBack() {}
+  handleBack() {
+    Navigator.of(context).pop();
+  }
 
-  handleSubmit() {
-    setState(() {
-      flagSubmit = true;
-    });
+  handleSubmit() async {
+    String? valid = Validator().validateEmail(emailCtr.text);
+    if(valid != "") {
+      setState(() {
+        isErrorEmailCtl = true;  
+      });
+    } else {
+      Uri url = Uri.parse('${BaseData.BASE_URL}/dbconnections/change_password');
+      var data = {
+        "client_id": BaseData.CLIENT_ID,
+        "client_secret": BaseData.CLIENT_SECRET,
+        "Referer": "https://app.staging.fxr.one/",
+        "connection": "Username-Password-Authentication",
+        "email": emailCtr.text
+      };
+
+      await http.post(url,
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(data));
+            
+      setState(() {
+        flagSubmit = true;
+      });
+    }
   }
 
   handleLogin() {
@@ -59,7 +89,29 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
                 submitTitle(),
                 const CustomSpacer(size: 46),
                 CustomTextField(
-                    ctl: emailCtr, hint: 'Enter Email Address', label: 'Email'),
+                    ctl: emailCtr,
+                    isError: isErrorEmailCtl,
+                    onChanged: (text) {
+                      setState(() {
+                        isErrorEmailCtl = 
+                          Validator().validateEmail(text) == ""
+                          ? false : true;
+                      });
+                    },
+                    hint: AppLocalizations.of(context)!.enterEmailAddress,
+                    label: AppLocalizations.of(context)!.email),
+                isErrorEmailCtl
+                  ? Container(
+                      height: hScale(32),
+                      width: wScale(295),
+                      padding: EdgeInsets.only(top: hScale(5)),
+                      child: Text(Validator().validateEmail(emailCtr.text).toString(),
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontSize: fSize(12),
+                              color: Color(0xFFEB5757),
+                              fontWeight: FontWeight.w400)))
+                  : const CustomSpacer(size: 32),
               ],
             ),
       customButton(flagSubmit)
@@ -82,7 +134,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
               width: MediaQuery.of(context).size.width,
               height: hScale(40),
               child: Stack(alignment: Alignment.center, children: [
-                Text("Forgot Password",
+                Text(AppLocalizations.of(context)!.forgotPassword,
                     style: TextStyle(
                         color: const Color(0xffffffff),
                         fontSize: fSize(24),
@@ -128,7 +180,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
   Widget submitTitle() {
     return Container(
         margin: EdgeInsets.only(top: hScale(39)),
-        child: Text("Please enter your \n e-mail address below:",
+        child: Text(AppLocalizations.of(context)!.pleaseEnterYourEmail,
             textAlign: TextAlign.center,
             style:
                 TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600)));
@@ -144,17 +196,17 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
               fontSize: fSize(16),
               color: Colors.black,
             ),
-            children: const [
+            children: [
               TextSpan(
-                  text: 'We have sent an e-mail to\n',
+                  text: AppLocalizations.of(context)!.weHaveSentAnEmail,
                   style: TextStyle(fontWeight: FontWeight.w600)),
               TextSpan(
-                  text: 'jasmine.foo@flex.com',
+                  text: '${emailCtr.text}\n',
                   style: TextStyle(
                       color: Color(0xFF3362c4), fontWeight: FontWeight.w600)),
               TextSpan(
-                  text:
-                      'Please follow the instructions in the e-mail\n on how to reset your password',
+                  text: AppLocalizations.of(context)!.pelaseFollowResetPassword,
+                  // text: resultText,
                   style: TextStyle(fontWeight: FontWeight.w600)),
             ],
           ),
@@ -176,7 +228,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
           onPressed: () {
             !flag ? handleSubmit() : handleLogin();
           },
-          child: Text(!flag ? "Submit" : 'Log In',
+          child: Text(!flag ? AppLocalizations.of(context)!.submit : AppLocalizations.of(context)!.loginSpace,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: fSize(16),

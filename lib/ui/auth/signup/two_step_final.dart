@@ -1,9 +1,17 @@
+import 'dart:async';
+
 import 'package:co/constants/constants.dart';
+import 'package:co/ui/auth/signup/almost_done.dart';
+import 'package:co/ui/auth/signup/two_step_failed.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class TwoStepFinalScreen extends StatefulWidget {
   const TwoStepFinalScreen({Key? key}) : super(key: key);
@@ -25,12 +33,27 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
     return Scale().fSize(context, size);
   }
 
-  handleContinue() {
-    Navigator.of(context).pushReplacementNamed(ALMOST_DONE);
+  final LocalStorage tokenStorage = LocalStorage('token');
+  String getUserInfo = Queries.QUERY_DASHBOARD_LAYOUT;
+  Timer? timer;
+  bool isLoading = false;
+  handleContinue(isMobileVerified) {
+    if(!isMobileVerified) {
+      setState(() {
+        isLoading = true;
+      });
+      Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => TwoStepFailedScreen()),
+      );
+    } else {
+      Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => AlmostDoneScreen()),
+      );
+    }
   }
 
   handleResendSMS() {
-    Navigator.of(context).pushReplacementNamed(TWO_STEP_FAILED);
+    
   }
 
   @override
@@ -40,6 +63,37 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    return Material(
+        child: Scaffold(
+            body: Query(
+              options: QueryOptions(
+                document: gql(getUserInfo),
+                variables: {},
+                // pollInterval: const Duration(seconds: 10),
+              ),
+              builder: (QueryResult result,
+                  {VoidCallback? refetch, FetchMore? fetchMore}) {
+                if (result.hasException) {
+                  return Text(result.exception.toString());
+                }
+
+                if (result.isLoading) {
+                  // return null;
+                  return mainHome(false);
+                }
+
+                var resultData = result.data;
+                bool isMobileVerified = resultData!['user']['mobileVerified'];
+                return mainHome(isMobileVerified);
+    })));
+  }
+
+  Widget mainHome(isMobileVerified) {
     return Material(
         child: Scaffold(
             body: SingleChildScrollView(
@@ -67,7 +121,7 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
           'Once you have completed the verification\nprocess, click Continue',
           0xff1A2831),
       const CustomSpacer(size: 38),
-      continueButton(),
+      continueButton(isMobileVerified),
       const CustomSpacer(size: 30),
       resendSMSButton(),
       const CustomSpacer(size: 76),
@@ -156,7 +210,7 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
     );
   }
 
-  Widget continueButton() {
+  Widget continueButton(isMobileVerified) {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -168,7 +222,7 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleContinue();
+            handleContinue(isMobileVerified);
           },
           child: Text("Continue",
               style: TextStyle(

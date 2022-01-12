@@ -1,8 +1,13 @@
+import 'package:co/ui/auth/signin/signin.dart';
+import 'package:co/ui/auth/signup/index.dart';
+import 'package:co/ui/auth/signup/signup_web.dart';
 import 'package:co/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -25,11 +30,21 @@ class SplashScreenState extends State<SplashScreen> {
   }
 
   handleExistingUser() async {
-    Navigator.of(context).pushReplacementNamed(SIGN_IN);
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => SignInScreen()),
+    );
   }
 
-  handleNewCustomer() {
-    Navigator.of(context).pushReplacementNamed(SIGN_UP);
+  handleNewCustomer() async {    
+    // Navigator.of(context).push(
+    //   CupertinoPageRoute(builder: (context) => SignUpWebScreen()),
+    // );
+    var signupUrl = 'https://app.staging.fxr.one/signup';
+    if (await canLaunch(signupUrl)) {
+      await launch(signupUrl);
+    } else {
+      throw 'Could not launch $signupUrl';
+    }
   }
 
   @override
@@ -82,7 +97,7 @@ class SplashScreenState extends State<SplashScreen> {
           onPressed: () async {
             await handleExistingUser();
           },
-          child: const Text("Existing User",
+          child: Text(AppLocalizations.of(context)!.existingUser,
               style: TextStyle(
                   color: Color(0xff1A2831),
                   fontSize: 16,
@@ -101,10 +116,10 @@ class SplashScreenState extends State<SplashScreen> {
           style: ElevatedButton.styleFrom(
             primary: Colors.transparent,
           ),
-          onPressed: () {
-            handleNewCustomer();
+          onPressed: () async {
+            await handleNewCustomer();
           },
-          child: const Text("New Customer",
+          child: Text(AppLocalizations.of(context)!.newCustomer,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

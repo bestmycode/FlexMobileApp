@@ -27,7 +27,7 @@ class Validator {
 
   String? validatePasswordLength(String value){
     if(value.isEmpty){
-      return "Password can't be empty";
+      return "This field is required.";
     } else if (value.length < 8){
       return "Password must be longer than 8 characters";
     }
@@ -39,9 +39,9 @@ class Validator {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regExp = RegExp(pattern);
     if (value.isEmpty) {
-      return "Email is Required";
+      return "This field is required.";
     } else if (!regExp.hasMatch(value)) {
-      return "Invalid Email";
+      return "Please input valid Email address";
     } else {
       return '';
     }

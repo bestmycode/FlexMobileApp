@@ -1,9 +1,14 @@
 import 'dart:async';
 
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class AppSetting extends StatefulWidget {
   const AppSetting({Key? key}) : super(key: key);
@@ -27,6 +32,12 @@ class AppSettingState extends State<AppSetting> {
   int appType = 0;
   bool syncing = false;
   bool synced = false;
+  final LocalStorage tokenStorage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String getCompanySettingQuery = Queries.QUERY_GET_COMPANY_SETTING;
+  String partnerConnectionMutation = FXRMutations.MUTATION_PARTNER_CONNECT;
+  String partnerBAnkPushMutation = FXRMutations.MUTATION_PARTNER_BANK_PUSH;
+
   startTime() async {
     var _duration = const Duration(seconds: 3);
     return Timer(_duration, handleSynced);
@@ -45,13 +56,29 @@ class AppSettingState extends State<AppSetting> {
     });
   }
 
-  handleSync() {
+  handleSync(runMutation, id) {
     if (!synced) {
+      runMutation(
+          {"orgId": userStorage.getItem('orgId'), "partner": "xero_bank_feed"});
       setState(() {
         syncing = true;
       });
       startTime();
     }
+  }
+
+  handleRemovePartnerBank(runMutation) {
+    runMutation({'orgId': userStorage.getItem('orgId')});
+  }
+
+  handleConnectNewApp(runMutation, id) {
+    runMutation({
+      "callback":
+          "https://app.staging.fxr.one/flex/organization/apps/integration",
+      "orgId": userStorage.getItem('orgId'),
+      "partner": id,
+      "startDate": new DateTime.now()
+    });
   }
 
   @override
@@ -61,6 +88,35 @@ class AppSettingState extends State<AppSetting> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    var orgId = userStorage.getItem('orgId');
+    return Query(
+        options: QueryOptions(
+          document: gql(getCompanySettingQuery),
+          variables: {'orgId': orgId},
+          // pollInterval: const Duration(seconds: 10),
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Text(result.exception.toString());
+          }
+
+          if (result.isLoading) {
+            return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+          }
+          var organizationApps = result.data!['organizationApps'];
+          return mainHome(organizationApps);
+        });
+  }
+
+  Widget mainHome(organizationApps) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const CustomSpacer(size: 15),
       Text('Connected Apps',
@@ -69,7 +125,7 @@ class AppSettingState extends State<AppSetting> {
               fontWeight: FontWeight.w600,
               color: const Color(0xFF1A2831))),
       const CustomSpacer(size: 15),
-      connectedAppField(),
+      connectedApp(organizationApps),
       const CustomSpacer(size: 30),
       Text('Connect a New App',
           style: TextStyle(
@@ -77,12 +133,23 @@ class AppSettingState extends State<AppSetting> {
               fontWeight: FontWeight.w600,
               color: const Color(0xFF1A2831))),
       appTypeField(),
-      appsDetailField(),
+      appsDetailField(organizationApps),
       const CustomSpacer(size: 30),
     ]);
   }
 
-  Widget connectedAppField() {
+  Widget connectedApp(organizationApps) {
+    var appsList = organizationApps['installedApps'];
+    return organizationApps['installedApps'].length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(159))
+        : Column(
+            children: appsList.map<Widget>((item) {
+            return connectedAppField(item);
+          }).toList());
+  }
+
+  Widget connectedAppField(item) {
     return Container(
         width: wScale(327),
         padding:
@@ -102,57 +169,98 @@ class AppSettingState extends State<AppSetting> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            connectedAppIcon(),
+            connectedAppIcon(item['integrationId'], item['status']),
             const CustomSpacer(size: 6),
-            Text('Xero Accounting',
+            Text(item['integrationId'],
                 style: TextStyle(
                     fontSize: fSize(18),
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF1A2831))),
             const CustomSpacer(size: 6),
-            Text('Last Sync : 12 August 2019',
+            Text("Last Sync : ${item['lastUpdateAttempt']}",
                 style: TextStyle(
                     fontSize: fSize(14),
                     fontWeight: FontWeight.w400,
                     color: const Color(0xFF70828D))),
             const CustomSpacer(size: 26),
-            buttonField()
+            buttonField(item['integrationId'], item['status'])
           ],
         ));
   }
 
-  Widget connectedAppIcon() {
+  Widget connectedAppIcon(id, status) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset('assets/xero.png', fit: BoxFit.contain, height: hScale(59)),
+        Image.asset(
+            id == 'xero'
+                ? 'assets/xero.png'
+                : id == "lazada"
+                    ? 'assets/lazada.png'
+                    : 'assets/xero.png',
+            fit: BoxFit.contain,
+            height: hScale(59)),
         Container(
           margin: EdgeInsets.only(top: hScale(10)),
           padding:
               EdgeInsets.symmetric(vertical: hScale(4), horizontal: wScale(8)),
-          decoration: const BoxDecoration(
-            color: Color(0xFFE1FFEF),
+          decoration: BoxDecoration(
+            color: status == "CONNECTED"
+                ? Color(0xFFE1FFEF)
+                : Color(0xFFFF0000).withOpacity(0.1),
             borderRadius: BorderRadius.all(Radius.circular(100)),
           ),
-          child: Text('connected',
+          child: Text(
+              status == "CONNECTED"
+                  ? 'Connected'
+                  : status == "UPDATE_FAILED"
+                      ? "Update Failed"
+                      : '',
               style: TextStyle(
                   fontSize: fSize(12),
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF2ED47A))),
+                  color: status == "CONNECTED"
+                      ? const Color(0xFF2ED47A)
+                      : const Color(0xFFFF0000))),
         )
       ],
     );
   }
 
-  Widget buttonField() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [syncActionButton(), deleteActionButton()],
-    );
+  Widget buttonField(id, status) {
+    return status == "CONNECTED"
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [mutationSyncButton(id), mutationRemoveButton()],
+          )
+        : SizedBox();
   }
 
-  Widget syncActionButton() {
+  Widget mutationSyncButton(id) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(partnerBAnkPushMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                if (resultData['partnerSync']['status'] == "success") {
+                  print("success");
+                } else {
+                  print('failed');
+                }
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return syncActionButton(runMutation, id);
+            }));
+  }
+
+  Widget syncActionButton(runMutation, id) {
     return TextButton(
       style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
       child: Container(
@@ -182,12 +290,31 @@ class AppSettingState extends State<AppSetting> {
                 : const SizedBox()
           ])),
       onPressed: () {
-        handleSync();
+        handleSync(runMutation, id);
       },
     );
   }
 
-  Widget deleteActionButton() {
+  Widget mutationRemoveButton() {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(partnerBAnkPushMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                print(resultData);
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return removeActionButton(runMutation);
+            }));
+  }
+
+  Widget removeActionButton(runMutation) {
     return TextButton(
       style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
       child: Container(
@@ -208,7 +335,9 @@ class AppSettingState extends State<AppSetting> {
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFEB5757))),
           ])),
-      onPressed: () {},
+      onPressed: () {
+        handleRemovePartnerBank(runMutation);
+      },
     );
   }
 
@@ -265,16 +394,30 @@ class AppSettingState extends State<AppSetting> {
     );
   }
 
-  Widget appsDetailField() {
-    return Row(
-      children: [
-        appField('assets/xero.png', 'Xero Payment'),
-        appField('assets/quickbooks.png', 'Quickbooks'),
-      ],
-    );
+  Widget appsDetailField(organizationApps) {
+    var appsList = appType == 0
+        ? organizationApps['connectToApps']
+        : appType == 1
+            ? organizationApps['connectToApps']
+                .where((item) => item['integrationType'] == "ACCOUNTING")
+                .toList()
+            : appType == 2
+                ? organizationApps['connectToApps']
+                    .where((item) => item['integrationType'] == "BANK")
+                    .toList()
+                : organizationApps['connectToApps']
+                    .where((item) => item['integrationType'] == "PAYMENT")
+                    .toList();
+    return Wrap(
+        children: appsList.map<Widget>((item) {
+      return appField(
+          item['id'] == 'qb' ? 'assets/quickbooks.png' : 'assets/xero.png',
+          item['name'],
+          item['integrationId']);
+    }).toList());
   }
 
-  Widget appField(icon, name) {
+  Widget appField(icon, name, id) {
     return Container(
       width: wScale(155),
       height: hScale(197),
@@ -309,13 +452,32 @@ class AppSettingState extends State<AppSetting> {
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF70828D))),
           const CustomSpacer(size: 14),
-          connectActionButton()
+          mutationConnectButton(id)
         ],
       ),
     );
   }
 
-  Widget connectActionButton() {
+  Widget mutationConnectButton(id) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(partnerConnectionMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                print(resultData);
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return connectActionButton(runMutation, id);
+            }));
+  }
+
+  Widget connectActionButton(runMutation, id) {
     return TextButton(
       style: TextButton.styleFrom(padding: const EdgeInsets.all(0)),
       child: Container(
@@ -332,7 +494,9 @@ class AppSettingState extends State<AppSetting> {
                 fontWeight: FontWeight.w700,
                 color: Colors.white)),
       ),
-      onPressed: () {},
+      onPressed: () {
+        handleConnectNewApp(runMutation, id);
+      },
     );
   }
 }

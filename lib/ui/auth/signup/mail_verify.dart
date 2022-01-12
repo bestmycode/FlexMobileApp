@@ -1,13 +1,19 @@
+import 'package:co/constants/constants.dart';
+import 'package:co/ui/auth/signup/company_detail.dart';
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
-import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class MailVerifyScreen extends StatefulWidget {
-  const MailVerifyScreen({Key? key}) : super(key: key);
+  final verifyCode;
+  const MailVerifyScreen({Key? key, this.verifyCode}) : super(key: key);
 
   @override
   MailVerifyScreenState createState() => MailVerifyScreenState();
@@ -25,25 +31,29 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   fSize(double size) {
     return Scale().fSize(context, size);
   }
-
-  final numCtl1 = TextEditingController(text: '1');
-  final numCtl2 = TextEditingController(text: '1');
-  final numCtl3 = TextEditingController(text: '1');
-  final numCtl4 = TextEditingController(text: '1');
-  final numCtl5 = TextEditingController(text: '1');
-  final numCtl6 = TextEditingController(text: '1');
+  final LocalStorage infoStorage = LocalStorage('sign_up_info1');
+  final LocalStorage storage = LocalStorage('token');
+  
+  final numCtl1 = TextEditingController(text: '');
+  final numCtl2 = TextEditingController(text: '');
+  final numCtl3 = TextEditingController(text: '');
+  final numCtl4 = TextEditingController(text: '');
+  final numCtl5 = TextEditingController(text: '');
+  final numCtl6 = TextEditingController(text: '');
   bool flagValid = true;
+  String verifyMutation = FXRMutations.MUTATION_VERIFY_CODE;
 
-  handleVerify() {
-    bool flag = numCtl1.text == "1" &&
-        numCtl2.text == "1" &&
-        numCtl3.text == "1" &&
-        numCtl4.text == "1" &&
-        numCtl5.text == "1" &&
-        numCtl6.text == "1";
+  handleVerify(runMutation) {
+    int verify_num = int.parse('${numCtl1.text}${numCtl2.text}${numCtl3.text}${numCtl4.text}${numCtl5.text}${numCtl6.text}');
+    runMutation({'verificationCode': verify_num});
+    bool flag = verify_num == widget.verifyCode;
     setState(() {
       flagValid = flag;
-      if (flag) Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
+      // if (flag) Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
+      if(flag)
+        Navigator.of(context).push(
+          CupertinoPageRoute(builder: (context) => CompanyDetailScreen()),
+        );
     });
   }
 
@@ -51,28 +61,54 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
 
   @override
   void initState() {
+    setState(() {
+      // email = storage.getItem('companyEmail');  
+    });
     super.initState();
   }
 
+  
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Material(
-        child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(children: [
-      const SignupProgressHeader(),
-      const CustomSpacer(size: 40),
-      mailIcon(),
-      const CustomSpacer(size: 28),
-      mailTitle(),
-      const CustomSpacer(size: 26),
-      mailSection(),
-      const CustomSpacer(size: 36),
-      verifyNumberSection(),
-      flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
-      subSection(),
-      verifyButton(),
-    ]))));
+      child: Scaffold(
+          body: Mutation(
+      options: MutationOptions(
+        document: gql(verifyMutation),
+        update: ( GraphQLDataProxy cache, QueryResult? result) {
+          return cache;
+        },
+        onCompleted: (resultData) {
+          print(resultData);
+        },
+      ),
+      builder: (RunMutation runMutation, QueryResult? result ) {
+        return mainHome(runMutation);
+      })));
+  }
+
+  Widget mainHome(runMutation) {
+    return SingleChildScrollView(
+      child: Column(children: [
+        const SignupProgressHeader(),
+        const CustomSpacer(size: 40),
+        mailIcon(),
+        const CustomSpacer(size: 28),
+        mailTitle(),
+        const CustomSpacer(size: 26),
+        mailSection(),
+        const CustomSpacer(size: 36),
+        verifyNumberSection(),
+        flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
+        subSection(),
+        verifyButton(runMutation),
+      ]));
   }
 
   Widget mailIcon() {
@@ -88,24 +124,16 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   }
 
   Widget mailSection() {
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(
-          fontSize: fSize(14),
-          color: const Color(0xff515151),
-        ),
-        children: const [
-          TextSpan(text: 'We have sent an OTP to '),
-          TextSpan(
-              text: 'jasmine@gmail.com',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('We have sent an OTP to ', style: TextStyle(fontSize: fSize(14), color: Color(0xFF515151))),
+        Text(infoStorage.getItem('companyEmail'), style: TextStyle(fontSize: fSize(14), color: Color(0xFF000000), fontWeight: FontWeight.bold)),
+      ],
     );
   }
 
-  Widget verifyButton() {
+  Widget verifyButton(runMutation) {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -117,7 +145,7 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleVerify();
+            handleVerify(runMutation);
           },
           child: Text("Verify",
               style: TextStyle(
@@ -129,10 +157,12 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
 
   Widget verifyNumber(num) {
     return Container(
-      width: wScale(50),
-      height: wScale(50),
+      width: hScale(50),
+      height: hScale(50),
       margin: EdgeInsets.only(right: wScale(4), left: wScale(4)),
       child: TextField(
+        textInputAction: num != 6 ? TextInputAction.next : TextInputAction.done,
+        onChanged: (_) => num != 6 ? FocusScope.of(context).nextFocus() : FocusScope.of(context).unfocus(),
         textAlign: TextAlign.center,
         controller: num == 1
             ? numCtl1
@@ -225,7 +255,7 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
       onPressed: () {
         resendEmail();
       },
-      child: const Text('Resend OTP to jasmine@gmail.com'),
+      child: Text('Resend OTP to ${infoStorage.getItem("companyEmail")}'),
     );
   }
 }

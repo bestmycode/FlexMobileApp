@@ -1,18 +1,25 @@
-import 'dart:io';
-import 'package:co/ui/main/home/receipt_details.dart';
-import 'package:co/ui/main/home/receipt_file.dart';
-import 'package:co/ui/main/home/receipt_remarks.dart';
+import 'package:camera/camera.dart';
+import 'package:co/ui/main/home/receipt_transaction_type.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/queries.dart';
 import 'package:co/utils/scale.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class ReceiptScreen extends StatefulWidget {
-  final File? imageFile;
-  const ReceiptScreen({Key? key, this.imageFile}) : super(key: key);
+  final XFile? imageFile;
+  final String? accountID;
+  final String? transactionID;
+  const ReceiptScreen(
+      {Key? key, this.imageFile, this.accountID, this.transactionID})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -33,6 +40,9 @@ class _ReceiptScreen extends State<ReceiptScreen> {
     return Scale().fSize(context, size);
   }
 
+  final LocalStorage storage = LocalStorage('token');
+  String getTransactionDetail = Queries.QUERY_GET_TRANSACTION_DETAIL;
+
   int transactionType = 1;
   handleTransactionType(type) {
     setState(() {
@@ -47,83 +57,59 @@ class _ReceiptScreen extends State<ReceiptScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Material(
         child: Scaffold(
-            body: Stack(children: [
-      SingleChildScrollView(
-          child: Align(
-              child: Column(
-        children: [
-          const CustomSpacer(size: 50),
-          const CustomMainHeader(title: 'Transaction 123456...'),
-          const CustomSpacer(size: 39),
-          Padding(
-              padding: EdgeInsets.symmetric(horizontal: wScale(24)),
-              child: Column(
-                children: [
-                  transactionTypeField(),
-                  transactionType == 1
-                      ? const ReceiptFile()
-                      : transactionType == 2
-                          ? const ReceiptDetails()
-                          : const ReceiptRemarks(),
-                  const CustomSpacer(size: 15),
-                  const CustomSpacer(size: 88),
-                ],
-              ))
-        ],
-      ))),
-      const Positioned(
-        bottom: 0,
-        left: 0,
-        child: CustomBottomBar(active: 0),
-      )
-    ])));
+            body: Query(
+                options: QueryOptions(
+                  document: gql(getTransactionDetail),
+                  variables: {
+                    "financeAccountId": widget.accountID,
+                    "sourceTransactionId": widget.transactionID
+                  },
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult result,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (result.hasException) {
+                    return Text(result.exception.toString());
+                  }
+
+                  if (result.isLoading) {
+                    return CustomLoading();
+                  }
+
+                  return mainHome(result.data!['getTransactionDetails']
+                      ['getTransactionData']);
+                })));
   }
 
-  Widget transactionTypeField() {
-    return Container(
-      alignment: Alignment.topCenter,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        activeButton('Receipt File', 1),
-        activeButton('Details', 2),
-        activeButton('Remarks', 3),
-      ]),
-    );
-  }
-
-  Widget activeButton(title, type) {
-    return Container(
-      width: wScale(102),
-      height: hScale(36),
-      // padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  color: type == transactionType
-                      ? const Color(0xFF29C490)
-                      : const Color(0xFFEEEEEE),
-                  width: type == transactionType ? hScale(2) : hScale(1)))),
-      alignment: Alignment.center,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xff70828D),
-          padding: const EdgeInsets.all(0),
-        ),
-        onPressed: () {
-          handleTransactionType(type);
-        },
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(12),
-              fontWeight: FontWeight.w600,
-              color: type == transactionType
-                  ? const Color(0xff1A2831)
-                  : const Color(0xFF70828D)),
-        ),
-      ),
-    );
+  Widget mainHome(data) {
+    return Material(
+        child: Scaffold(
+            body: Container(
+                height: hScale(812),
+                child: Stack(children: [
+                  SingleChildScrollView(
+                      child: Align(
+                          child: Column(
+                    children: [
+                      const CustomSpacer(size: 50),
+                      CustomMainHeader(
+                          title: "Transaction ${data['sourceTransactionId']}"),
+                      const CustomSpacer(size: 39),
+                      ReceiptTransactionType(data: data)
+                    ],
+                  ))),
+                  const Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: CustomBottomBar(active: 0),
+                  )
+                ]))));
   }
 }

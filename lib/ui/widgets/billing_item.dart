@@ -5,14 +5,15 @@ class BillingItem extends StatefulWidget {
   final String statementDate;
   final String totalAmount;
   final String dueDate;
-  final int status; // 0: unpaid, 1: overdue, 2: paid
-
+  final String status; // 0: unpaid, 1: overdue, 2: paid
+  final String documentLink;
   const BillingItem({
     Key? key,
     this.statementDate = '30 Jan 2021',
     this.totalAmount = '0.00',
     this.dueDate = '05 Mar 2021',
-    this.status = 0,
+    this.status = '',
+    this.documentLink = ""
   }) : super(key: key);
   @override
   BillingItemState createState() => BillingItemState();
@@ -61,20 +62,20 @@ class BillingItemState extends State<BillingItem> {
         amountDetailField(
             'Total Amount',
             widget.totalAmount,
-            widget.status == 1
+            widget.status != "PAID"
                 ? const Color(0xFFEB5757)
                 : const Color(0xFF1A2831)),
         Container(height: 1, color: const Color(0xFFF1F1F1)),
         detailField(
             'Due Date',
             widget.dueDate,
-            widget.status == 1
+            widget.status != "PAID"
                 ? const Color(0xFFEB5757)
                 : const Color(0xFF1A2831)),
         Container(height: 1, color: const Color(0xFFF1F1F1)),
         statusField(widget.status),
         Container(height: 1, color: const Color(0xFFF1F1F1)),
-        downloadField()
+        widget.documentLink != '' ? downloadField() : SizedBox()
       ]),
     );
   }
@@ -158,9 +159,9 @@ class BillingItemState extends State<BillingItem> {
                 vertical: hScale(4), horizontal: wScale(11)),
             // color: status == 0 ? const Color(0xFFC9E8FB) : status == 1 ? const Color(0xFFFFDFD4): const Color(0xFFE1FFEF),
             decoration: BoxDecoration(
-              color: status == 0
+              color: status == "PAID"
                   ? const Color(0xFFC9E8FB)
-                  : status == 1
+                  : status == "UNPAID"
                       ? const Color(0xFFFFDFD4)
                       : const Color(0xFFE1FFEF),
               borderRadius: BorderRadius.only(
@@ -171,17 +172,17 @@ class BillingItemState extends State<BillingItem> {
               ),
             ),
             child: Text(
-              status == 0
+              status == "UNPAID"
                   ? 'Unpaid'
-                  : status == 1
-                      ? 'Overdue'
-                      : 'Paid',
+                  : status == "PAID"
+                      ? 'Paid'
+                      : 'Overdue',
               style: TextStyle(
                 fontSize: fSize(12),
                 fontWeight: FontWeight.w500,
-                color: status == 0
+                color: status == 'PAID'
                     ? const Color(0xFF2F7BFA)
-                    : status == 1
+                    : status == "UNPAID"
                         ? const Color(0xFFEB5757)
                         : const Color(0xFF2ED47A),
               ),

@@ -1,10 +1,15 @@
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
+import 'package:co/ui/widgets/virtual_my_transaction_search_filed%20copy.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
+import 'package:localstorage/localstorage.dart';
 
 class VirtualMyTransactions extends StatefulWidget {
   const VirtualMyTransactions({Key? key}) : super(key: key);
@@ -26,79 +31,17 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     return Scale().fSize(context, size);
   }
 
-  var transactionArr = [
-    {
-      'date': '21 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage1',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '22 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage2',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '23 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage3',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '24 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage4',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '25 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage5',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '26 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage6',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '27 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage7',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    }
-  ];
-
   int activeType = 1;
-  int dateType = 1;
+  int dateType = 0;
   bool showDateRange = false;
-  bool showCalendarModal = false;
+  String searchText = "";
   final searchCtl = TextEditingController();
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String myVirtualCardTransactionsQuery =
+      Queries.QUERY_MY_VIRTUAL_CARD_TRANSACTION;
 
   handleCardType(type) {
     setState(() {
@@ -110,12 +53,10 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     if (type == 4) {
       setState(() {
         showDateRange = !showDateRange;
-        showCalendarModal = false;
         dateType = type;
       });
     } else {
       setState(() {
-        showCalendarModal = false;
         showDateRange = false;
         dateType = type;
       });
@@ -124,11 +65,9 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
 
   handleExport() {}
 
-  handleSearch() {}
-
-  handleCalendar() {
+  handleSearch() {
     setState(() {
-      showCalendarModal = !showCalendarModal;
+      searchText = searchCtl.text;
     });
   }
 
@@ -143,25 +82,79 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      headerStatusField(),
-      // const CustomSpacer(size: 17),
-      // searchRow(),
-      Indexer(children: [
-        Indexed(index: 100, child: searchRowField()),
-        Indexed(
-            index: 50,
-            child: Column(
-              children: [
-                const CustomSpacer(size: 36),
-                showDateRange ? const CustomSpacer(size: 15) : const SizedBox(),
-                showDateRange ? dateRangeField() : const SizedBox(),
-                showDateRange ? const SizedBox() : const CustomSpacer(size: 15),
-                getTransactionArrWidgets(transactionArr),
-              ],
-            )),
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken), child: mainHome());
+  }
+
+  Widget mainHome() {
+    var orgId = userStorage.getItem('orgId');
+    var userId = userStorage.getItem('userId');
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: wScale(24)),
+      child: Column(children: [
+        headerStatusField(),
+        Indexer(children: [
+          Indexed(
+              index: 100,
+              child: VirtualMyTransactionSearchField(
+                searchCtl: searchCtl,
+                dateType: dateType,
+                handleExport: handleExport,
+                handleSearch: handleSearch,
+                setDateType: setDateType,
+              )),
+          Indexed(
+              index: 50,
+              child: Column(
+                children: [
+                  const CustomSpacer(size: 36),
+                  showDateRange
+                      ? const CustomSpacer(size: 15)
+                      : const SizedBox(),
+                  showDateRange ? dateRangeField() : const SizedBox(),
+                  showDateRange
+                      ? const SizedBox()
+                      : const CustomSpacer(size: 15),
+                  Query(
+                      options: QueryOptions(
+                        document: gql(myVirtualCardTransactionsQuery),
+                        variables: {
+                          'filterArgs': "payment_method=VIRTUAL",
+                          'limit': 11,
+                          'offset': 0,
+                          'orgId': orgId,
+                          'userId': userId,
+                          'status': activeType == 1
+                              ? "COMPLETED"
+                              : activeType == 2
+                                  ? "APPROVED"
+                                  : "DECLINED",
+                        },
+                        // pollInterval: const Duration(seconds: 10),
+                      ),
+                      builder: (QueryResult result,
+                          {VoidCallback? refetch, FetchMore? fetchMore}) {
+                        if (result.hasException) {
+                          return Text(result.exception.toString());
+                        }
+
+                        if (result.isLoading) {
+                          return Container(
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Color(0xFF60C094))));
+                        }
+                        var listTransactions = result.data!['listTransactions'];
+                        return getTransactionArrWidgets(
+                            listTransactions['financeAccountTransactions']);
+                      })
+                ],
+              )),
+        ]),
       ]),
-    ]);
+    );
   }
 
   Widget headerStatusField() {
@@ -218,136 +211,79 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
     );
   }
 
-  Widget searchField() {
-    return Container(
-        width: wScale(212),
-        height: hScale(36),
-        padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFFFFF),
-          border: Border.all(
-              color: const Color(0xff040415).withOpacity(0.1),
-              width: hScale(1)),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-                width: wScale(150),
-                height: hScale(36),
-                child: TextField(
-                  textAlignVertical: TextAlignVertical.center,
-                  controller: searchCtl,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.all(0),
-                    enabledBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent)),
-                    hintText: 'Type your search here',
-                    hintStyle: TextStyle(
-                        color: const Color(0xff040415).withOpacity(0.5),
-                        fontSize: fSize(12),
-                        fontWeight: FontWeight.w500),
-                    focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent)),
-                  ),
-                  style: TextStyle(
-                      fontSize: fSize(12), fontWeight: FontWeight.w500),
-                )),
-            SizedBox(
-              width: wScale(20),
-              child: TextButton(
-                  style: TextButton.styleFrom(
-                    primary: const Color(0xff70828D),
-                    padding: const EdgeInsets.all(0),
-                    textStyle: TextStyle(
-                        fontSize: fSize(14), color: const Color(0xff70828D)),
-                  ),
-                  onPressed: () {
-                    handleSearch();
-                  },
-                  // child: const Icon( Icons.search_rounded, color: Color(0xFFBFBFBF), size: 20 ),
-                  child: Image.asset(
-                    'assets/search_icon.png',
-                    fit: BoxFit.contain,
-                    width: wScale(13),
-                  )),
-            ),
-          ],
-        ));
-  }
-
-  Widget searchRowField() {
-    return Stack(overflow: Overflow.visible, children: [
-      searchRow(),
-      showCalendarModal
-          ? Positioned(top: hScale(50), right: 0, child: calendarModalField())
-          : const SizedBox()
-    ]);
-  }
-
-  Widget searchRow() {
-    return Container(
-        width: wScale(327),
-        height: hScale(500),
-        alignment: Alignment.topCenter,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            searchField(),
-            Container(
-              width: wScale(43),
-              height: wScale(36),
-              decoration: BoxDecoration(
-                color: const Color(0xFFA3A3A3).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: wScale(12))),
-                child: Image.asset('assets/calendar.png',
-                    fit: BoxFit.contain, width: wScale(24)),
-                onPressed: () {
-                  handleCalendar();
-                },
-              ),
-            ),
-            SizedBox(
-              width: wScale(40),
-              height: hScale(36),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff29C490),
-                  padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(
-                      fontSize: fSize(12),
-                      color: const Color(0xff29C490),
-                      decoration: TextDecoration.underline),
-                ),
-                onPressed: () {
-                  handleExport();
-                },
-                child: const Text('Export'),
-              ),
-            )
-          ],
-        ));
-  }
-
   Widget getTransactionArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return TransactionItem(
-        date: item['date'],
-        time: item['time'],
-        transactionName: item['transactionName'],
-        userName: item['userName'],
-        cardNum: item['cardNum'],
-        value: item['value'],
-        status: item['status'],
-      );
-    }).toList());
+    var tempArr = [];
+    if (dateType == 0) {
+      tempArr = arr;
+    } else if (dateType == 1) {
+      arr.forEach((item) {
+        if (item['transactionDate'] + 7 * 24 * 3600 * 1000 >=
+            DateTime.now().millisecondsSinceEpoch) tempArr.add(item);
+      });
+    } else if (dateType == 2) {
+      arr.forEach((item) {
+        if (item['transactionDate'] + 30 * 24 * 3600 * 1000 >=
+            DateTime.now().millisecondsSinceEpoch) tempArr.add(item);
+      });
+    } else if (dateType == 3) {
+      arr.forEach((item) {
+        if (item['transactionDate'] + 90 * 24 * 3600 * 1000 >=
+            DateTime.now().millisecondsSinceEpoch) tempArr.add(item);
+      });
+    } else {
+      var start = 0;
+      var end = 0;
+      start = startDateCtl.text == ""
+          ? 0
+          : DateTime(
+                  int.parse(startDateCtl.text.split("/")[2]),
+                  int.parse(startDateCtl.text.split("/")[1]),
+                  int.parse(startDateCtl.text.split("/")[0]))
+              .millisecondsSinceEpoch;
+      end = endDateCtl.text == ""
+          ? DateTime.now().millisecondsSinceEpoch
+          : DateTime(
+                  int.parse(endDateCtl.text.split("/")[2]),
+                  int.parse(endDateCtl.text.split("/")[1]),
+                  int.parse(endDateCtl.text.split("/")[0]))
+              .millisecondsSinceEpoch;
+      arr.forEach((item) {
+        print(item['transactionDate']);
+        if (item['transactionDate'] >= start && item['transactionDate'] <= end)
+          tempArr.add(item);
+      });
+    }
+    var resultArr = [];
+    tempArr.forEach((item) {
+      if (item['merchantName']
+                  .toLowerCase()
+                  .indexOf(searchText.toLowerCase()) >=
+              0 ||
+          item['cardName'].toLowerCase().indexOf(searchText.toLowerCase()) >= 0)
+        resultArr.add(item);
+    });
+
+    return resultArr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: resultArr.map<Widget>((item) {
+            return TransactionItem(
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                transactionName: item['merchantName'],
+                userName: item['cardName'],
+                cardNum: item['pan'],
+                value: item['fxrBillAmount'].toStringAsFixed(2),
+                status: item['status'],
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
+          }).toList());
   }
 
   Widget dateRangeField() {
@@ -495,61 +431,5 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
                   fontSize: fSize(16),
                   fontWeight: FontWeight.w700)),
         ));
-  }
-
-  Widget calendarModalField() {
-    return Container(
-      width: wScale(177),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          modalButton('Last 7 Days', 1),
-          modalButton('Last 30 Days', 2),
-          modalButton('Last 90 Days', 3),
-          modalButton('Date Range', 4),
-        ],
-      ),
-    );
-  }
-
-  Widget modalButton(title, type) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: dateType == type ? const Color(0xFF29C490) : Colors.black,
-        // padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
-        textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
-      ),
-      onPressed: () {
-        setDateType(type);
-      },
-      child: Container(
-        width: wScale(177),
-        // padding: EdgeInsets.only(top:hScale(6), bottom: hScale(6)),
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          textAlign: TextAlign.start,
-          style: TextStyle(fontSize: fSize(12)),
-        ),
-      ),
-    );
   }
 }

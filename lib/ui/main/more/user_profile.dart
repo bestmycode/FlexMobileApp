@@ -1,11 +1,17 @@
 import 'package:co/ui/main/more/user_profile_edit.dart';
+import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({Key? key}) : super(key: key);
+  final userData;
+  const UserProfile({Key? key, this.userData}) : super(key: key);
   @override
   UserProfileState createState() => UserProfileState();
 }
@@ -23,9 +29,14 @@ class UserProfileState extends State<UserProfile> {
     return Scale().fSize(context, size);
   }
 
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String phoneVerificationMutation = FXRMutations.MUTATION_PHONE_VERIFICATION;
+
   handleEditProfile() {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const UserProfileEdit()),
+      CupertinoPageRoute(
+          builder: (context) => UserProfileEdit(userData: widget.userData)),
     );
   }
 
@@ -63,6 +74,8 @@ class UserProfileState extends State<UserProfile> {
           ],
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: wScale(60),
@@ -87,32 +100,50 @@ class UserProfileState extends State<UserProfile> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Terry Herwit',
+                Text(
+                    "${widget.userData['firstName']} ${widget.userData['lastName']}",
                     style: TextStyle(
                         fontSize: fSize(16),
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF040415))),
                 const CustomSpacer(size: 9),
-                Text('terryherwit@green.com',
+                Text(widget.userData['email'],
                     style: TextStyle(
                         fontSize: fSize(14), color: const Color(0xFF70828D))),
-                const CustomSpacer(size: 28),
+                const CustomSpacer(size: 10),
                 Row(
                   children: [
-                    Text('+6513455666',
+                    Text(widget.userData['mobile'],
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
-                            color: const Color(0xFF040415))),
+                            color: widget.userData['mobileVerified'] == true
+                                ? const Color(0xFF040415)
+                                : const Color(0xFFEB5757))),
                     SizedBox(width: wScale(10)),
-                    Text('Verified',
+                    Text(
+                        widget.userData['mobileVerified'] == true
+                            ? 'Verified'
+                            : '',
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
-                            color: const Color(0xFF30E7A9))),
+                            color: widget.userData['mobileVerified'] == true
+                                ? const Color(0xFF30E7A9)
+                                : const Color(0xFFEB5757))),
                     SizedBox(width: wScale(5)),
-                    Icon(Icons.check_circle,
-                        color: const Color(0xff30E7A9), size: hScale(14)),
+                    Icon(
+                        widget.userData['mobileVerified'] == true
+                            ? Icons.check_circle
+                            : Icons.info,
+                        color: widget.userData['mobileVerified'] == true
+                            ? const Color(0xff30E7A9)
+                            : const Color(0xFFEB5757),
+                        size: hScale(14)),
+                    SizedBox(width: wScale(10)),
+                    widget.userData['mobileVerified'] != true
+                        ? mutationButton()
+                        : SizedBox()
                   ],
                 ),
                 const CustomSpacer(size: 19),
@@ -123,7 +154,10 @@ class UserProfileState extends State<UserProfile> {
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
                             color: const Color(0xFF70828D))),
-                    Text('English (US)',
+                    Text(
+                        widget.userData['language'] == 'en'
+                            ? 'English (US)'
+                            : 'English (UK)',
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
@@ -156,5 +190,73 @@ class UserProfileState extends State<UserProfile> {
                   fontSize: fSize(16),
                   fontWeight: FontWeight.bold)),
         ));
+  }
+
+  Widget mutationButton() {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(phoneVerificationMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                if (resultData['sendVerificationMessage'] != null) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "SMS verification link sent",
+                                    message:
+                                        "An SMS verification link has been sent to your mobile number.")));
+                      });
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "SMS verification Failed",
+                                    message: "An SMS verification link can't send to your mobile number.")));
+                      });
+                }
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return TextButton(
+                  style: TextButton.styleFrom(
+                    primary: const Color(0xffF5F5F5).withOpacity(0.4),
+                    padding: const EdgeInsets.all(0),
+                  ),
+                  child: Text('Send SMS Link',
+                      style: TextStyle(
+                          fontSize: fSize(12),
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF29C490),
+                          decoration: TextDecoration.underline)),
+                  onPressed: () {
+                    runMutation({
+                      "country": "SG",
+                      "language": widget.userData['language'],
+                      "mobile": widget.userData['mobile'],
+                      "verificationType": "SMS",
+                    });
+                  });
+            }));
   }
 }

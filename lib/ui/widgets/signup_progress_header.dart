@@ -119,7 +119,9 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
               size: 12,
             ),
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed(prev);
+              // Navigator.of(context).pushReplacementNamed(prev);
+              
+              Navigator.of(context).pop();
             },
           ),
         ));

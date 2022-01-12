@@ -277,7 +277,7 @@ class MyCardsState extends State<MyCards> {
           ),
           iconSize: hScale(17),
           onPressed: () {
-            print("ksksk");
+            
           },
         ));
   }

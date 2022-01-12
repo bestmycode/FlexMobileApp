@@ -1,10 +1,14 @@
+import 'package:co/ui/auth/signup/two_step_verification.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 
 class MainContactPersonScreen extends StatefulWidget {
@@ -27,21 +31,55 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
     return Scale().fSize(context, size);
   }
 
-  final LocalStorage storage = LocalStorage('sign_up_info4');
-
+  final LocalStorage storage = LocalStorage('sign_up_info2');
+  final LocalStorage tokenStorage = LocalStorage('token');
   final fullNameCtl = TextEditingController();
   final mobileNumCtl = TextEditingController();
   bool flagMainContact = false;
+  String createOrganizationMutation = FXRMutations.MUTATION_CREATE_ORGANIZATION;
 
   handleBack() {
-    Navigator.of(context).pushReplacementNamed(REGISTERED_ADDRESS);
+    Navigator.of(context).pop();
   }
 
-  handleContinue() {
-    storage.setItem('fullName', fullNameCtl.text);
-    storage.setItem('mobileNum', mobileNumCtl.text);
+  handleContinue(runMutation) {
+    // storage.setItem('mainContactFullName', fullNameCtl.text);
+    // storage.setItem('mainContactMobileNum', mobileNumCtl.text);
     storage.setItem('flagMainContact', flagMainContact);
-    Navigator.of(context).pushReplacementNamed(TWO_STEP_VERIFICATION);
+    runMutation({
+      "baseCurrency": storage.getItem("currencyCode"),
+      "businessDescription": "",
+      "city": storage.getItem("cityId"),
+      "companyType": "LC",
+      "contactName": fullNameCtl.text,
+      "contactNumber": mobileNumCtl.text,
+      "country": storage.getItem("country"),
+      "crn": "gb",
+      "industries": [264,2039, 1637],
+      "name": storage.getItem("companyName"),
+      "operatingAddress": {
+          "addressLine1": storage.getItem("operatingAddress"),
+          "addressLine2": "",
+          "addressLine3": "",
+          "addressLine4": "",
+          "zipCode": storage.getItem("operatingAddressPostalCode"),
+      },
+      "phone": storage.getItem("companyPhoneNumber"),
+      "primaryAddress": {
+          "addressLine1": storage.getItem("operatingAddress"),
+          "addressLine2": "",
+          "addressLine3": "",
+          "addressLine4": "",
+          "zipCode": "123123",
+      },
+      "proprietorPartner": false,
+      "revenueGenerationDetail": "",
+      "signupToken": null,
+    });
+
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => TwoStepVerificationScreen()),
+    );
   }
 
   @override
@@ -54,6 +92,29 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    return Material(
+        child: Scaffold(
+            body: Mutation(
+      options: MutationOptions(
+        document: gql(createOrganizationMutation),
+        update: ( GraphQLDataProxy cache, QueryResult? result) {
+          return cache;
+        },
+        onCompleted: (resultData) {
+          print(resultData);
+        },
+      ),
+      builder: (RunMutation runMutation, QueryResult? result ) {
+        return mainHome(runMutation);
+      })));
+  }
+  
+  Widget mainHome(runMutation) {
     return Material(
         child: Scaffold(
             body: SingleChildScrollView(
@@ -70,7 +131,7 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
       const CustomSpacer(size: 36),
       mainContactPersonField(),
       const CustomSpacer(size: 30),
-      buttonField(),
+      buttonField(runMutation),
     ]))));
   }
 
@@ -152,10 +213,10 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
     );
   }
 
-  Widget buttonField() {
+  Widget buttonField(runMutation) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [backButton(), continueButton()],
+      children: [backButton(), continueButton(runMutation)],
     );
   }
 
@@ -182,7 +243,7 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
         ));
   }
 
-  Widget continueButton() {
+  Widget continueButton(runMutation) {
     return Container(
         width: wScale(156),
         height: hScale(56),
@@ -195,7 +256,7 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleContinue();
+            handleContinue(runMutation);
           },
           child: Text("Continue",
               style: TextStyle(
@@ -232,6 +293,11 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
             onChanged: (value) {
               setState(() {
                 flagMainContact = value!;
+                if(flagMainContact) {
+                  LocalStorage info1_storage = LocalStorage('sign_up_info1');
+                  fullNameCtl.text = "${info1_storage.getItem('firstName')} ${info1_storage.getItem('lastName')}";
+                  mobileNumCtl.text = info1_storage.getItem("mobileNumber");
+                }                
               });
             },
           ),

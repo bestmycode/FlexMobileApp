@@ -1,13 +1,20 @@
 import 'dart:ui';
+import 'package:co/constants/constants.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/token.dart';
 import 'package:expandable/expandable.dart';
 import 'package:co/ui/main/more/new_subsidiary.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class MySubsibiaries extends StatefulWidget {
-  const MySubsibiaries({Key? key}) : super(key: key);
+  final roles;
+  final userInvitations;
+  const MySubsibiaries({Key? key, this.roles, this.userInvitations}) : super(key: key);
   @override
   MySubsibiariesState createState() => MySubsibiariesState();
 }
@@ -25,82 +32,19 @@ class MySubsibiariesState extends State<MySubsibiaries> {
     return Scale().fSize(context, size);
   }
 
-  var subsidiariesArr = [
-    // type=> 0: Admin, 1: User
-    {
-      'id': 0,
-      'userName': 'Sushi Tei Paragon',
-      'type': 0,
-    },
-    {
-      'id': 1,
-      'userName': 'Green Grocer Pte Ltd',
-      'type': 1,
-    },
-    {
-      'id': 2,
-      'userName': 'Sushi Tei Paragon',
-      'type': 1,
-    },
-    {
-      'id': 3,
-      'userName': 'Green Grocer Pte Ltd',
-      'type': 0,
-    },
-    {
-      'id': 4,
-      'userName': 'Natural Packaging Pte Ltd',
-      'type': 0,
-    },
-    {
-      'id': 5,
-      'userName': 'Sushi Tei Toa Payoh',
-      'type': 1,
-    },
-    {
-      'id': 6,
-      'userName': 'Green Grocer Pte Ltd',
-      'type': 0,
-    },
-    {
-      'id': 7,
-      'userName': 'Natural Packaging Pte Ltd',
-      'type': 0,
-    },
-    {
-      'id': 8,
-      'userName': 'Sushi Tei Toa Payoh',
-      'type': 1,
-    },
-  ];
-  var invitationArr = [
-    // type=> 0: Admin, 1: User
-    {'id': 0, 'name': 'Arthur Simon1'},
-    {
-      'id': 1,
-      'name': 'Arthur Simon2',
-    },
-    {
-      'id': 2,
-      'name': 'Arthur Simon3',
-    },
-    {
-      'id': 3,
-      'name': 'Arthur Simon4',
-    },
-    {
-      'id': 4,
-      'name': 'Arthur Simon5',
-    },
-  ];
-
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String updateMutation = FXRMutations.MUTATION_UPDATE_LAST_ORG_SESSION;
+  
   handleNewSubsidiay() {
     Navigator.of(context).push(
       CupertinoPageRoute(builder: (context) => const NewSubsidiary()),
     );
   }
 
-  handleSwitchSubsidiary(data) {}
+  handleSwitchSubsidiary(data, runMutation) {
+    runMutation({'orgId': data['orgId']});
+  }
 
   handleAccept() {}
 
@@ -111,6 +55,27 @@ class MySubsibiariesState extends State<MySubsibiaries> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    return Mutation(
+      options: MutationOptions(
+        document: gql(updateMutation),
+        update: ( GraphQLDataProxy cache, QueryResult? result) {
+          return cache;
+        },
+        onCompleted: (resultData) {
+          Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
+        },
+      ),
+      builder: (RunMutation runMutation, QueryResult? result ) {
+        return mainHome(runMutation);
+      });
+  }
+
+  Widget mainHome(runMutation) {
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: wScale(24)),
         child: Column(
@@ -123,11 +88,11 @@ class MySubsibiariesState extends State<MySubsibiaries> {
               informationField(),
               const CustomSpacer(size: 33),
               titleSubsidiariesField(),
-              getSubsidiariesArrWidgets(subsidiariesArr),
+              getSubsidiariesArrWidgets(widget.roles, runMutation),
               const CustomSpacer(size: 24),
               titleInvitationField(),
               const CustomSpacer(size: 18),
-              getInvitationArrWidgets(invitationArr),
+              getInvitationArrWidgets(widget.userInvitations),
             ]));
   }
 
@@ -138,6 +103,14 @@ class MySubsibiariesState extends State<MySubsibiaries> {
         padding: EdgeInsets.symmetric(horizontal: wScale(24)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.25),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1), // changes position of shadow
+            ),
+          ],
           image: const DecorationImage(
             image: AssetImage("assets/dashboard_header.png"),
             fit: BoxFit.cover,
@@ -166,7 +139,7 @@ class MySubsibiariesState extends State<MySubsibiaries> {
           borderRadius: BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.grey.withOpacity(0.25),
               spreadRadius: 4,
               blurRadius: 20,
               offset: const Offset(0, 1), // changes position of shadow
@@ -232,16 +205,16 @@ class MySubsibiariesState extends State<MySubsibiaries> {
     );
   }
 
-  Widget getSubsidiariesArrWidgets(arr) {
+  Widget getSubsidiariesArrWidgets(arr, runMutation) {
     return Column(
-        children: arr.map<Widget>((item) {
-      return collapseField(item);
+      children: arr.map<Widget>((item) {
+        return collapseField(arr.indexOf(item), item, runMutation);
     }).toList());
   }
 
-  Widget collapseField(data) {
+  Widget collapseField(index, data, runMutation) {
     return ExpandableNotifier(
-      initialExpanded: data['id'] == 0 ? true : false,
+      initialExpanded: index == 0 ? true : false,
       child: Container(
         margin: EdgeInsets.only(bottom: hScale(5)),
         decoration: BoxDecoration(
@@ -263,7 +236,7 @@ class MySubsibiariesState extends State<MySubsibiaries> {
                 theme: const ExpandableThemeData(
                     tapBodyToCollapse: true, tapBodyToExpand: true),
                 expanded: Column(
-                  children: [cardHeader(data), cardBody(data)],
+                  children: [cardHeader(data), cardBody(data, runMutation)],
                 ),
                 collapsed: cardHeader(data),
                 builder: (_, collapsed, expanded) {
@@ -303,15 +276,15 @@ class MySubsibiariesState extends State<MySubsibiaries> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(data['userName'],
+            Text(data['orgName'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text(data["type"] == 0 ? 'Admin' : 'User',
+            Text(data['roleName'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
         ));
   }
 
-  Widget cardBody(data) {
+  Widget cardBody(data, runMutation) {
     return Container(
         width: wScale(327),
         decoration: BoxDecoration(
@@ -331,7 +304,7 @@ class MySubsibiariesState extends State<MySubsibiaries> {
                     color: const Color(0xff1da7ff)),
               ),
               onPressed: () {
-                handleSwitchSubsidiary(data);
+                handleSwitchSubsidiary(data, runMutation);
               },
               child: const Text('Switch to this Subsidiary'),
             ),
@@ -348,15 +321,17 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   }
 
   Widget getInvitationArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return Column(
-        children: [
-          invitationField(item),
-          const CustomSpacer(size: 10),
-        ],
-      );
-    }).toList());
+    return arr.length == 0?
+      SizedBox():
+      Column(
+          children: arr.map<Widget>((item) {
+        return Column(
+          children: [
+            invitationField(item),
+            const CustomSpacer(size: 10),
+          ],
+        );
+      }).toList());
   }
 
   Widget invitationField(data) {

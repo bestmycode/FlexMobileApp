@@ -1,7 +1,13 @@
+import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class CompanyProfile extends StatefulWidget {
   const CompanyProfile({Key? key}) : super(key: key);
@@ -23,7 +29,15 @@ class CompanyProfileState extends State<CompanyProfile> {
   }
 
   bool flagEditable = false;
-  final companyNameCtl = TextEditingController();
+  final companyPhoneNumberCtl = TextEditingController();
+  final contactPersonCtl = TextEditingController();
+  final operatingAddressCtl = TextEditingController();
+  final operatingPostalCodeCtl = TextEditingController();
+  final operatingCityCtl = TextEditingController();
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String getCompanySettingQuery = Queries.QUERY_GET_COMPANY_SETTING;
+  String updateOrganizationMutation = FXRMutations.MUTATION_UPDATE_ORGANIZATION;
 
   handleEditProfile() {
     setState(() {
@@ -31,7 +45,25 @@ class CompanyProfileState extends State<CompanyProfile> {
     });
   }
 
-  handleConfirmChange() {
+  handleConfirmChange(companyProfile, runMutation) {
+    runMutation({
+      "city": companyProfile['city'].toString(),
+      "country": companyProfile['country'].toString(),
+      "crn": companyProfile['crn'].toString(),
+      "name": contactPersonCtl.text,
+      "orgId": userStorage.getItem('orgId'),
+      "phone": companyPhoneNumberCtl.text,
+      "proprietorPartner": true,
+      "zipCode": companyProfile['zipCode'].toString(),
+      "operatingAddress": {
+        "addressLine1": operatingAddressCtl.text,
+        "addressLine2": "",
+        "addressLine3": "",
+        "addressLine4": "",
+        "city": operatingCityCtl.text,
+        "zipCode": operatingPostalCodeCtl.text
+      },
+    });
     setState(() {
       flagEditable = false;
     });
@@ -44,16 +76,53 @@ class CompanyProfileState extends State<CompanyProfile> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    var orgId = userStorage.getItem('orgId');
+    return Query(
+        options: QueryOptions(
+          document: gql(getCompanySettingQuery),
+          variables: {'orgId': orgId},
+          // pollInterval: const Duration(seconds: 10),
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Text(result.exception.toString());
+          }
+
+          if (result.isLoading) {
+            return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+          }
+          var companyProfile = result.data!['organization'];
+          companyPhoneNumberCtl.text = companyProfile['phone'];
+          contactPersonCtl.text = companyProfile['name'];
+          operatingAddressCtl.text =
+              companyProfile['orgOperatingAddress']['addressLine1'];
+          operatingPostalCodeCtl.text =
+              companyProfile['orgOperatingAddress']['postalCode'];
+          operatingCityCtl.text =
+              companyProfile['orgOperatingAddress']['country'];
+          return mainHome(companyProfile);
+        });
+  }
+
+  Widget mainHome(companyProfile) {
     return Column(children: [
       const CustomSpacer(size: 15),
-      userProfileField(),
+      userProfileField(companyProfile),
       flagEditable ? const CustomSpacer(size: 30) : const SizedBox(),
-      flagEditable ? confirmChangeButton() : const SizedBox(),
+      flagEditable ? mutationButton(companyProfile) : const SizedBox(),
       const CustomSpacer(size: 46)
     ]);
   }
 
-  Widget userProfileField() {
+  Widget userProfileField(companyProfile) {
     return Container(
         width: wScale(327),
         // height: hScale(40),
@@ -77,7 +146,9 @@ class CompanyProfileState extends State<CompanyProfile> {
           children: [
             titleField(),
             const CustomSpacer(size: 6),
-            flagEditable ? editableField() : nonEditableField()
+            flagEditable
+                ? editableField(companyProfile)
+                : nonEditableField(companyProfile)
           ],
         ));
   }
@@ -132,7 +203,7 @@ class CompanyProfileState extends State<CompanyProfile> {
   Widget customEditField(hint, label, editable) {
     return Container(
         width: wScale(295),
-        height: hScale(56),
+        height: hScale(64),
         alignment: Alignment.center,
         child: TextField(
           readOnly: !editable,
@@ -141,7 +212,18 @@ class CompanyProfileState extends State<CompanyProfile> {
               fontWeight: FontWeight.w500,
               color:
                   editable ? const Color(0xFF040415) : const Color(0xFF7D7E80)),
-          controller: TextEditingController()..text = label,
+          controller: hint == 'Company Phone Number'
+              ? companyPhoneNumberCtl
+              : hint == 'Contact Person'
+                  ? contactPersonCtl
+                  : hint == "Operating Address"
+                      ? operatingAddressCtl
+                      : hint == "Operating Postal Code"
+                          ? operatingPostalCodeCtl
+                          : hint == "Operating City"
+                              ? operatingCityCtl
+                              : TextEditingController()
+            ..text = label,
           decoration: InputDecoration(
             filled: true,
             fillColor: editable
@@ -196,7 +278,7 @@ class CompanyProfileState extends State<CompanyProfile> {
         ));
   }
 
-  Widget confirmChangeButton() {
+  Widget confirmChangeButton(companyProfile, runMutation) {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -208,7 +290,7 @@ class CompanyProfileState extends State<CompanyProfile> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleConfirmChange();
+            handleConfirmChange(companyProfile, runMutation);
           },
           child: Text("Confirm Changes",
               style: TextStyle(
@@ -218,93 +300,181 @@ class CompanyProfileState extends State<CompanyProfile> {
         ));
   }
 
-  Widget nonEditableField() {
+  Widget mutationButton(companyProfile) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(updateOrganizationMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                print(resultData['updateOrganization']['id']);
+                print(userStorage.getItem('orgId'));
+                if (resultData['updateOrganization']['id'] ==
+                    userStorage.getItem("orgId")) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "Success",
+                                    message: "Company Profile Updated!!!")));
+                      });
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "Failed",
+                                    message:
+                                        "Company Profile Don't Updated!!!")));
+                      });
+                }
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return confirmChangeButton(companyProfile, runMutation);
+            }));
+  }
+
+  Widget nonEditableField(companyProfile) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const CustomSpacer(size: 14),
-        customDataField('Company Name', 'Global Ptv.Ltd'),
+        customDataField('Company Name',
+            companyProfile['name'] == null ? "" : companyProfile['name']),
         const CustomSpacer(size: 16),
-        customDataField('Company Registration Number', '234878'),
+        customDataField('Company Registration Number',
+            companyProfile['crn'] == null ? "" : companyProfile['crn']),
         const CustomSpacer(size: 16),
-        customDataField('Country', 'Singapore'),
+        customDataField('Country',
+            companyProfile['country'] == null ? "" : companyProfile['country']),
         const CustomSpacer(size: 16),
-        customDataField('Base Currency', 'SGD'),
+        customDataField(
+            'Base Currency',
+            companyProfile['baseCurrency'] == null
+                ? ""
+                : companyProfile['baseCurrency']),
         const CustomSpacer(size: 16),
-        customDataField('Company Phone Number', '+65 9112 3950'),
+        customDataField('Company Phone Number', companyPhoneNumberCtl.text),
         const CustomSpacer(size: 16),
-        customDataField('Company Type', 'Retail'),
+        customDataField(
+            'Company Type',
+            companyProfile['companyType'] == null
+                ? ""
+                : companyProfile['companyType']),
         const CustomSpacer(size: 16),
-        customDataField('Contact Person', 'Terry Herwit'),
-        const CustomSpacer(size: 16),
-        customDataField('Company Email Address', 'terry@abc.co'),
+        customDataField('Contact Person', contactPersonCtl.text),
+        // const CustomSpacer(size: 16),
+        // customDataField('Company Email Address', 'terry@abc.co'),
         const CustomSpacer(size: 16),
 
-        customDataField('Industry', '122-abchd'),
+        customDataField(
+            'Industry',
+            companyProfile['industries'][0]['name'] == null
+                ? ""
+                : companyProfile['industries'][0]['name']),
         const CustomSpacer(size: 16),
 
-        customDataField('',
-            '340 - Manufacture of derivatives and intermediates produced from basic building blocks (eg acetyls, acrylics, oxochemicals.'),
+        customDataField(
+            '',
+            companyProfile['industries'][0]['level5CodesAndNames'] == null
+                ? ""
+                : companyProfile['industries'][0]['level5CodesAndNames']),
 
         const CustomSpacer(size: 16),
-        customDataField('Company Address', '123 Tagore Lane'),
+        customDataField(
+            'Company Address',
+            companyProfile['orgAddress']['addressLine1'] == null
+                ? ""
+                : companyProfile['orgAddress']['addressLine1']),
         const CustomSpacer(size: 16),
-        customDataField('Postal Code', '121145'),
+        customDataField(
+            'Postal Code',
+            companyProfile['orgAddress']['postalCode'] == null
+                ? ""
+                : companyProfile['orgAddress']['postalCode']),
         const CustomSpacer(size: 16),
-        customDataField('City', 'Singapore'),
+        customDataField(
+            'City',
+            companyProfile['orgAddress']['country'] == null
+                ? ""
+                : companyProfile['orgAddress']['country']),
         const CustomSpacer(size: 16),
-        customDataField('Operating Address', '192 Sengkang Ave 3'),
+        customDataField('Operating Address', operatingAddressCtl.text),
         const CustomSpacer(size: 16),
-        customDataField('Postal Code', '959122'),
+        customDataField('Operating Postal Code', operatingPostalCodeCtl.text),
         const CustomSpacer(size: 16),
-        customDataField('City', 'Singapore'),
+        customDataField('Operating City', operatingCityCtl.text),
         // customEditField(companyNameCtl, const Color(0xFFBDBDBD).withOpacity(0.1), 'Global Ptv.Ltd', 'Company Name')
       ],
     );
   }
 
-  Widget editableField() {
+  Widget editableField(companyProfile) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const CustomSpacer(size: 14),
-        customEditField('Company Name', 'Global Ptv.Ltd', false),
+        customEditField('Company Name', companyProfile['name'], false),
         const CustomSpacer(size: 16),
-        customEditField('Company Registration Number', '234878', false),
+        customEditField(
+            'Company Registration Number', companyProfile['crn'], false),
         const CustomSpacer(size: 16),
-        customEditField('Country', 'Singapore', false),
+        customEditField('Country', companyProfile['country'], false),
         const CustomSpacer(size: 16),
-        customEditField('Base Currency', 'SGD', false),
+        customEditField('Base Currency', companyProfile['baseCurrency'], false),
         const CustomSpacer(size: 16),
-        customEditField('Company Phone Number', '+65 9112 3950', true),
+        customEditField(
+            'Company Phone Number', companyPhoneNumberCtl.text, false),
         const CustomSpacer(size: 16),
-        customEditField('Company Type', 'Retail', false),
+        customEditField('Company Type', companyProfile['companyType'], false),
         const CustomSpacer(size: 16),
-        customEditField('Contact Person', 'Terry Herwit', true),
-        const CustomSpacer(size: 16),
-        customEditField('Company Email Address', 'terry@abc.co', true),
+        customEditField('Contact Person', contactPersonCtl.text, false),
+        // const CustomSpacer(size: 16),
+        // customEditField('Company Email Address', 'terry@abc.co', true),
         const CustomSpacer(size: 16),
 
-        customEditField('Industry', '122-abchd', false),
+        customEditField(
+            'Industry', companyProfile['industries'][0]['name'], false),
         const CustomSpacer(size: 16),
 
         customMultiEditField(
-            '340 - Manufacture of derivatives and \nintermediates produced from basic \nbuilding blocks (eg acetyls, acrylics, \noxochemicals.'),
+            companyProfile['industries'][0]['level5CodesAndNames']),
 
         const CustomSpacer(size: 16),
-        customEditField('Company Address', '123 Tagore Lane', false),
+        customEditField('Company Address',
+            companyProfile['orgAddress']['addressLine1'], false),
         const CustomSpacer(size: 16),
-        customEditField('Postal Code', '121145', false),
+        customEditField(
+            'Postal Code', companyProfile['orgAddress']['postalCode'], false),
         const CustomSpacer(size: 16),
-        customEditField('City', 'Singapore', false),
+        customEditField('City', companyProfile['orgAddress']['country'], false),
         const CustomSpacer(size: 16),
-        customEditField('Operating Address', '192 Sengkang Ave 3', true),
+        customEditField('Operating Address', operatingAddressCtl.text, true),
         const CustomSpacer(size: 16),
-        customEditField('Postal Code', '959122', true),
+        customEditField('Postal Code', operatingPostalCodeCtl.text, true),
         const CustomSpacer(size: 16),
-        customEditField('City', 'Singapore', true),
+        customEditField('City', operatingCityCtl.text, true),
         // customEditField(companyNameCtl, const Color(0xFFBDBDBD).withOpacity(0.1), 'Global Ptv.Ltd', 'Company Name')
       ],
     );

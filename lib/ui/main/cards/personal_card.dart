@@ -283,7 +283,7 @@ class PersonalCardState extends State<PersonalCard> {
           ),
           iconSize: hScale(17),
           onPressed: () {
-            print("ksksk");
+            
           },
         ));
   }

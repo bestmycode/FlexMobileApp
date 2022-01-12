@@ -1,3 +1,7 @@
+import 'package:co/ui/auth/signup/registered_address.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_picker_dialog.dart';
 import 'package:country_pickers/utils/utils.dart';
@@ -9,6 +13,7 @@ import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 
 class CompanyDetailScreen extends StatefulWidget {
@@ -32,31 +37,33 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
   }
 
   final LocalStorage storage = LocalStorage('sign_up_info2');
+  final LocalStorage tokenStorage = LocalStorage('token');
   Country _selectedDialogCountry =
       CountryPickerUtils.getCountryByPhoneCode('65');
+  String industryFilteredQuery = Queries.QUERY_INDUSTRY_FILTERD;
+  String listCompanyTypeQuery = Queries.QUERY_LIST_COMPANY_TYPE;
+
   final companyNameCtl = TextEditingController();
   final companyNumberCtl = TextEditingController();
   final countryCtl = TextEditingController();
   final companyTypeCtl = TextEditingController();
   final companyIndustryCtl = TextEditingController();
   final companyPhoneNumberCtl = TextEditingController();
-  var companyTypes = [
-    'company type1',
-    'company type2',
-    'company type3',
-    'company type4',
-    'company type5'
-  ];
+  int selectedListCompany = 0;
+  int selectedIndustry = 0;
 
   handleContinue() {
     storage.setItem('companyName', companyNameCtl.text);
     storage.setItem('companyNumber', companyNumberCtl.text);
-    storage.setItem('country', countryCtl.text);
+    // storage.setItem('country', countryCtl.text);
     storage.setItem('companyType', companyTypeCtl.text);
     storage.setItem('companyIndustry', companyIndustryCtl.text);
     storage.setItem('companyPhoneNumber', companyPhoneNumberCtl.text);
 
-    Navigator.of(context).pushReplacementNamed(REGISTERED_ADDRESS);
+    // Navigator.of(context).pushReplacementNamed(REGISTERED_ADDRESS);
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => RegisteredAddressScreen()),
+    );
   }
 
   @override
@@ -72,10 +79,65 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
-                child: Column(children: [
+            body: Query(
+                options: QueryOptions(
+                  document: gql(industryFilteredQuery),
+                  variables: {"industryTerm": ""},
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult industryResult,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (industryResult.hasException) {
+                    return Text(industryResult.exception.toString());
+                  }
+
+                  if (industryResult.isLoading) {
+                    return CustomLoading();
+                  }
+                  var industry = industryResult.data!['industriesFiltered'];
+                  return Query(
+                      options: QueryOptions(
+                        document: gql(listCompanyTypeQuery),
+                        variables: {},
+                        // pollInterval: const Duration(seconds: 10),
+                      ),
+                      builder: (QueryResult listCompanyResult,
+                          {VoidCallback? refetch, FetchMore? fetchMore}) {
+                        if (listCompanyResult.hasException) {
+                          return Text(listCompanyResult.exception.toString());
+                        }
+
+                        if (listCompanyResult.isLoading) {
+                          return CustomLoading();
+                        }
+                        var listCompany =
+                            listCompanyResult.data!['LIST_COMPANY_TYPES'];
+
+                        List<String> listCompanyArr = [];
+                        listCompany.forEach((item) {
+                          listCompanyArr.add(item['name']);
+                        });
+
+                        List<String> industryArr = [];
+                        industry.forEach((item) {
+                          industryArr.add(item['level5CodesAndNames']);
+                        });
+
+                        return mainHome(industryArr, listCompanyArr);
+                      });
+                })));
+  }
+
+  Widget mainHome(industry, listCompany) {
+    return SingleChildScrollView(
+        child: Column(children: [
       const SignupProgressHeader(
         title: 'Company Detail',
         progress: 2,
@@ -86,11 +148,11 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
       const CustomSpacer(size: 15),
       groupTitle(),
       const CustomSpacer(size: 36),
-      companyDetailSection(),
+      companyDetailSection(industry, listCompany),
       const CustomSpacer(size: 50),
       verifyButton(),
       const CustomSpacer(size: 35),
-    ]))));
+    ]));
   }
 
   Widget groupIcon() {
@@ -104,7 +166,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
         style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600));
   }
 
-  Widget companyDetailSection() {
+  Widget companyDetailSection(industry, listCompany) {
     return Container(
       padding: EdgeInsets.only(
           left: wScale(16),
@@ -146,10 +208,10 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
           countryField(),
           const CustomSpacer(size: 32),
           // CustomTextField(ctl: companyTypeCtl, hint: 'Select Company Type', label: 'Company Type'),
-          companyTypeField(),
+          companyTypeField(listCompany),
           const CustomSpacer(size: 32),
           // CustomTextField(ctl: companyIndustryCtl, hint: 'Select Company Type', label: 'Industry'),
-          industryTypeField(),
+          industryTypeField(industry),
           const CustomSpacer(size: 32),
           // CustomTextField(ctl: companyPhoneNumberCtl, hint: 'Enter Company Phone Number', label: 'Company Phone Number'),
           CustomMobileTextField(
@@ -261,8 +323,10 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
                 )
               ],
             ),
-            onValuePicked: (Country country) =>
-                setState(() => _selectedDialogCountry = country),
+            onValuePicked: ((Country country) {
+                storage.setItem('country', country.isoCode);
+                setState(() => _selectedDialogCountry = country);
+            }),                
             itemBuilder: _showCountryDialogItem,
           ),
         ),
@@ -337,7 +401,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
     );
   }
 
-  Widget companyTypeField() {
+  Widget companyTypeField(listCompanyArr) {
     return Stack(
       children: [
         Container(
@@ -377,7 +441,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
                   companyTypeCtl.text = value;
                 },
                 itemBuilder: (BuildContext context) {
-                  return companyTypes
+                  return listCompanyArr
                       .map<PopupMenuItem<String>>((String value) {
                     return PopupMenuItem(
                       child: Text(value),
@@ -410,12 +474,12 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
     );
   }
 
-  Widget industryTypeField() {
+  Widget industryTypeField(industryArr) {
     return Stack(
       children: [
         Container(
           width: wScale(295),
-          height: hScale(56),
+          // height: hScale(56),
           alignment: Alignment.center,
           margin: EdgeInsets.only(top: hScale(8)),
           decoration: BoxDecoration(
@@ -426,6 +490,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
             children: <Widget>[
               Expanded(
                   child: TextField(
+                readOnly: true,
                 style: TextStyle(
                     fontSize: fSize(16),
                     fontWeight: FontWeight.w500,
@@ -450,8 +515,7 @@ class CompanyDetailScreenState extends State<CompanyDetailScreen> {
                   companyIndustryCtl.text = value;
                 },
                 itemBuilder: (BuildContext context) {
-                  return companyTypes
-                      .map<PopupMenuItem<String>>((String value) {
+                  return industryArr.map<PopupMenuItem<String>>((String value) {
                     return PopupMenuItem(
                       child: Text(value),
                       value: value,

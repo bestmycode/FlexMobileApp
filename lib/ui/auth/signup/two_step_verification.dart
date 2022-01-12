@@ -1,3 +1,8 @@
+import 'package:co/ui/auth/signup/two_step_final.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_picker_dialog.dart';
 import 'package:country_pickers/utils/utils.dart';
@@ -8,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:intl/intl.dart';
 
@@ -33,6 +39,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   }
 
   final LocalStorage storage = LocalStorage('two_step_info1');
+  final LocalStorage tokenStorage = LocalStorage('token');
   Country _selectedDialogCountry =
       CountryPickerUtils.getCountryByPhoneCode('65');
   var cityArr = ['city1', 'city2', 'city3', 'city4', 'city5'];
@@ -46,9 +53,11 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
   final streetCtl = TextEditingController();
   final cityCtl = TextEditingController();
   final jobTitleCtl = TextEditingController();
-  final companyEmailCtl = TextEditingController(text: 'james.tan@flex.com');
+  final companyEmailCtl = TextEditingController(text: LocalStorage('sign_up_info1').getItem('companyEmail'));
+  String getCountryQuery = Queries.QUERY_GET_COUNTRY;
+  String createKycDetailMutation = FXRMutations.MUTATION_CREATE_KYC_DETAIL;
 
-  handleContinue() {
+  handleContinue(runMutation) {
     storage.setItem('firstName', firstNameCtl);
     storage.setItem('lastName', lastNameCtl);
     storage.setItem('birthday', birthdayCtl);
@@ -61,7 +70,25 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
     storage.setItem('jobTitle', jobTitleCtl);
     storage.setItem('companyEmail', companyEmailCtl);
 
-    Navigator.of(context).pushReplacementNamed(TWO_STEP_FINAL);
+    // Navigator.of(context).pushReplacementNamed(TWO_STEP_FINAL);
+    runMutation({
+      "addressLine1": addressCtl.text,
+      "addressLine2": "",
+      "addressLine3": "",
+      "city": cityCtl.text,
+      "country": _selectedDialogCountry.isoCode,
+      "dateOfBirth": birthdayCtl.text,
+      "designation": "wse",
+      "email": LocalStorage('sign_up_info1').getItem('companyEmail'),
+      "firstName": firstNameCtl.text,
+      "lastName": lastNameCtl.text,
+      "mobile": LocalStorage('sign_up_info1').getItem('mobileNumber'),
+      "orgId": 6969,
+      "zipCode": postalCodeCtl.text,
+    });
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => TwoStepFinalScreen()),
+    );
   }
 
   @override
@@ -82,9 +109,57 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
+            body: Query(
+                options: QueryOptions(
+                  document: gql(getCountryQuery),
+                  variables: {"countryId": storage.getItem("country")},
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult countryResult,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (countryResult.hasException) {
+                    return Text(countryResult.exception.toString());
+                  }
+
+                  if (countryResult.isLoading) {
+                    return CustomLoading();
+                  }
+                  var getCountry = countryResult.data!['country'];
+                  List<String> cities = [];
+                  getCountry['cities'].forEach((item) {
+                    cities.add(item['name']);
+                  });
+                  storage.setItem("currencyCode", getCountry['currencyCode']);
+                  storage.setItem("cityId", getCountry['cities'][0]['id']);
+                  return mutationHome(cities);
+                })));
+  }
+
+  Widget mutationHome(cities) {
+    return Mutation(
+      options: MutationOptions(
+        document: gql(createKycDetailMutation),
+        update: ( GraphQLDataProxy cache, QueryResult? result) {
+          return cache;
+        },
+        onCompleted: (resultData) {
+          print(resultData);
+        },
+      ),
+      builder: (RunMutation runMutation, QueryResult? result ) {
+        return mainHome(cities, runMutation);
+      });
+  }
+
+  Widget mainHome(cities, runMutation) {
+    return SingleChildScrollView(
                 child: Column(children: [
       const SignupProgressHeader(
         title: '2-step verification process',
@@ -98,11 +173,11 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
       const CustomSpacer(size: 26),
       twoStepSubTitle(),
       const CustomSpacer(size: 33),
-      personalDetailField(),
+      personalDetailField(cities),
       const CustomSpacer(size: 30),
-      continueButton(),
+      continueButton(runMutation),
       const CustomSpacer(size: 34),
-    ]))));
+    ]));
   }
 
   Widget securityIcon() {
@@ -126,7 +201,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
             height: 1.7));
   }
 
-  Widget personalDetailField() {
+  Widget personalDetailField(cities) {
     return Container(
       padding: EdgeInsets.only(
           left: wScale(16),
@@ -185,7 +260,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
               ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
           // CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
-          cityTypeField(),
+          cityTypeField(cities),
           const CustomSpacer(size: 32),
           CustomTextField(
               ctl: jobTitleCtl, hint: 'Enter Job Title', label: 'Job Title'),
@@ -208,7 +283,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
     );
   }
 
-  Widget continueButton() {
+  Widget continueButton(runMutation) {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -220,7 +295,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleContinue();
+            handleContinue(runMutation);
           },
           child: Text("Continue",
               style: TextStyle(
@@ -477,7 +552,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
         ],
       );
 
-  Widget cityTypeField() {
+  Widget cityTypeField(cities) {
     return Stack(
       children: [
         Container(
@@ -517,7 +592,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
                   cityCtl.text = value;
                 },
                 itemBuilder: (BuildContext context) {
-                  return cityArr.map<PopupMenuItem<String>>((String value) {
+                  return cities.map<PopupMenuItem<String>>((String value) {
                     return PopupMenuItem(
                       child: Text(value),
                       value: value,

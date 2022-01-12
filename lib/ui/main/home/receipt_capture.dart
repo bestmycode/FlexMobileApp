@@ -1,16 +1,27 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:co/ui/main/home/receipt_screen.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/mutations.dart';
 import 'package:co/utils/scale.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:http/http.dart' as http;
 
 class ReceiptCapture extends StatefulWidget {
-  const ReceiptCapture({Key? key}) : super(key: key);
+  final String? accountID;
+  final String? transactionID;
+  const ReceiptCapture({Key? key, this.accountID, this.transactionID})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -19,7 +30,7 @@ class ReceiptCapture extends StatefulWidget {
 }
 
 class _ReceiptCapture extends State<ReceiptCapture> {
-  File? imageFile;
+  XFile? imageFile;
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -33,9 +44,53 @@ class _ReceiptCapture extends State<ReceiptCapture> {
   }
 
   bool takeFlag = false;
-  handleUpload() {
+  final LocalStorage storage = LocalStorage('token');
+  String docUploadMutation = FXRMutations.MUTATION_DOC_UPLOAD;
+
+  handleUpload(runMutation) async {    
+    // Uri upload_base_url = Uri.parse("https://gql.staging.fxr.one/v1/file/document_files?v4=true");
+    // var upload_result = await http.post(upload_base_url,
+    //       headers: {"Content-Type": "application/json"},
+    //       body: json.encode(data));
+
+    // Uri upload_amazon_url = Uri.parse("https://fxrassetsstaging.s3-accelerate.amazonaws.com");
+    // var upload_amazon_result = await http.post(upload_amazon_url,
+    //       headers: {"Content-Type": "application/json"},
+    //       body: json.encode(data));
+    // var uploadResult = json.decode(upload_amazon_result.body);
+
+    // runMutation({
+    //   'financeAccountId': widget.accountID,
+    //   'id': 109293,
+    //   'isDelivered': 1,
+    //   'isInvoice': false,
+    //   'orgId': uploadResult['fields']['x-amz-meta-orgid'],
+    //   'orgIntegrationId': 1,
+    //   'secondaryDocumentId': uploadResult['fields']['key'],
+    // });
+    print(widget.accountID);
+    print(widget.transactionID);
     Navigator.of(context).push(CupertinoPageRoute(
-        builder: (context) => ReceiptScreen(imageFile: imageFile)));
+      builder: (context) => ReceiptScreen(
+          imageFile: new XFile(imageFile!.path),
+          accountID: widget.accountID,
+          transactionID: widget.transactionID)));
+  }
+
+  void _onImageButtonPressed(ImageSource source,
+      {BuildContext? context}) async {
+    try {
+      final pickedFile = await ImagePicker().pickImage(
+        source: source,
+      );
+      setState(() {
+        imageFile = pickedFile;
+        takeFlag = true;
+      });
+      Navigator.pop(context!);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -45,36 +100,102 @@ class _ReceiptCapture extends State<ReceiptCapture> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: Scaffold(
-            body: Column(
-      children: [
-        const CustomSpacer(size: 51),
-        const CustomMainHeader(title: 'Capture your receipt'),
-        const CustomSpacer(size: 28),
-        Container(
-            width: wScale(375),
-            height: hScale(580),
-            padding: EdgeInsets.symmetric(
-                horizontal: wScale(50), vertical: hScale(50)),
-            decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
-                image: imageFile == null
-                    ? const DecorationImage(
-                        image: AssetImage('assets/empty_transaction.png'),
-                        fit: BoxFit.contain)
-                    : DecorationImage(
-                        image: FileImage(imageFile!), fit: BoxFit.contain))),
-        const CustomSpacer(size: 31),
-        takeFlag == false ? takeButton() : buttonField()
-      ],
-    )));
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
   }
 
-  Widget buttonField() {
+  Widget home() {
+    return Mutation(
+        options: MutationOptions(
+          document: gql(docUploadMutation),
+          update: (GraphQLDataProxy cache, QueryResult? result) {
+            return cache;
+          },
+          onCompleted: (resultData) {
+            if (resultData.data['uploadReceipt']['isDuplicate'] == false) {
+              Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => ReceiptScreen(
+                      imageFile: new XFile(imageFile!.path),
+                      accountID: widget.accountID,
+                      transactionID: widget.transactionID)));
+            } else {
+              print("Upload Error");
+            }
+          },
+        ),
+        builder: (RunMutation runMutation, QueryResult? result) {
+          return mainHome(runMutation);
+        });
+  }
+
+  Widget mainHome(runMutation) {
+    return Material(
+        child: Scaffold(
+            body: Container(
+                height: hScale(812),
+                child: SingleChildScrollView(
+                    child: Column(
+                  children: [
+                    const CustomSpacer(size: 51),
+                    const CustomMainHeader(title: 'Capture your receipt'),
+                    const CustomSpacer(size: 28),
+                    defaultTargetPlatform == TargetPlatform.android
+                        ? FutureBuilder<void>(
+                            future: retrieveLostData(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<void> snapshot) {
+                              switch (snapshot.connectionState) {
+                                case ConnectionState.none:
+                                case ConnectionState.waiting:
+                                  return Container(
+                                      width: wScale(375),
+                                      height: hScale(580),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: wScale(50),
+                                          vertical: hScale(50)),
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xFFF9F9F9),
+                                          image: const DecorationImage(
+                                              image: AssetImage(
+                                                  'assets/empty_transaction.png'),
+                                              fit: BoxFit.contain)));
+                                case ConnectionState.done:
+                                  return _previewImages();
+                                default:
+                                  if (snapshot.hasError) {
+                                    return Text(
+                                      'Pick image/video error: ${snapshot.error}}',
+                                      textAlign: TextAlign.center,
+                                    );
+                                  } else {
+                                    return Container(
+                                        width: wScale(375),
+                                        height: hScale(580),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: wScale(50),
+                                            vertical: hScale(50)),
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xFFF9F9F9),
+                                            image: const DecorationImage(
+                                                image: AssetImage(
+                                                    'assets/empty_transaction.png'),
+                                                fit: BoxFit.contain)));
+                                  }
+                              }
+                            },
+                          )
+                        : _previewImages(),
+                    const CustomSpacer(size: 31),
+                    takeFlag == false ? takeButton() : buttonField(runMutation),
+                    const CustomSpacer(size: 30),
+                  ],
+                )))));
+  }
+
+  Widget buttonField(runMutation) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: [retakeButton(), uploadButton()],
+      children: [retakeButton(), uploadButton(runMutation)],
     );
   }
 
@@ -123,7 +244,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
         ));
   }
 
-  Widget uploadButton() {
+  Widget uploadButton(runMutation) {
     return Container(
         width: wScale(156),
         height: hScale(56),
@@ -136,7 +257,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleUpload();
+            handleUpload(runMutation);
           },
           child: Text("Upload",
               style: TextStyle(
@@ -144,32 +265,6 @@ class _ReceiptCapture extends State<ReceiptCapture> {
                   fontSize: fSize(16),
                   fontWeight: FontWeight.w700)),
         ));
-  }
-
-  //********************** IMAGE PICKER
-  Future imageSelector(BuildContext context, String pickerType) async {
-    switch (pickerType) {
-      case "gallery":
-
-        /// GALLERY IMAGE PICKER
-        imageFile = await ImagePicker.pickImage(
-            source: ImageSource.gallery, imageQuality: 90);
-        break;
-
-      case "camera": // CAMERA CAPTURE CODE
-        imageFile = await ImagePicker.pickImage(
-            source: ImageSource.camera, imageQuality: 90);
-        break;
-    }
-
-    if (imageFile != null) {
-      print("You selected  image : " + imageFile!.path);
-      setState(() {
-        debugPrint("SELECTED IMAGE PICK   $imageFile");
-      });
-    } else {
-      print("You have not taken image");
-    }
   }
 
   // Image picker
@@ -184,22 +279,53 @@ class _ReceiptCapture extends State<ReceiptCapture> {
                 ListTile(
                     title: const Text('Gallery'),
                     onTap: () => {
-                          imageSelector(context, "gallery"),
-                          Navigator.pop(context),
+                          _onImageButtonPressed(ImageSource.gallery,
+                              context: context),
                         }),
                 ListTile(
                   title: const Text('Camera'),
                   onTap: () => {
-                    imageSelector(context, "camera"),
-                    Navigator.pop(context),
-                    setState(() {
-                      takeFlag = true;
-                    }),
+                    _onImageButtonPressed(ImageSource.camera, context: context),
                   },
                 ),
               ],
             ),
           );
         });
+  }
+
+  Future<void> retrieveLostData() async {
+    final LostDataResponse response = await ImagePicker().retrieveLostData();
+    if (response.isEmpty) {
+      return;
+    }
+    if (response.file != null) {
+      setState(() {
+        imageFile = response.file;
+      });
+    } else {
+      // _retrieveDataError = response.exception!.code;
+
+    }
+  }
+
+  Widget _previewImages() {
+    if (imageFile != null) {
+      return Semantics(
+        label: 'image_picker',
+        child: Image.file(File(imageFile!.path)),
+      );
+    } else {
+      return Container(
+          width: wScale(375),
+          height: hScale(580),
+          padding: EdgeInsets.symmetric(
+              horizontal: wScale(50), vertical: hScale(50)),
+          decoration: BoxDecoration(
+              color: const Color(0xFFF9F9F9),
+              image: const DecorationImage(
+                  image: AssetImage('assets/empty_transaction.png'),
+                  fit: BoxFit.contain)));
+    }
   }
 }

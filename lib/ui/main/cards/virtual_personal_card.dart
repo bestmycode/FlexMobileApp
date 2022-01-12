@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class VirtualPersonalCard extends StatefulWidget {
-  const VirtualPersonalCard({Key? key}) : super(key: key);
+  final cardData;
+  const VirtualPersonalCard({Key? key, this.cardData}) : super(key: key);
 
   @override
   VirtualPersonalCardState createState() => VirtualPersonalCardState();
@@ -123,13 +124,14 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.cardData);
     return Material(
         child: Scaffold(
             body: Stack(children: [
       SingleChildScrollView(
           child: Column(children: [
         const CustomSpacer(size: 44),
-        const CustomMainHeader(title: 'My Grab Expenses’ Trans...'),
+        CustomMainHeader(title: '${widget.cardData["accountName"]}’s Card'),
         const CustomSpacer(size: 31),
         cardDetailField(),
         const CustomSpacer(size: 10),
@@ -205,14 +207,16 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Marketing Expenses',
-                      style:
-                          TextStyle(color: Colors.white, fontSize: fSize(16))),
-                  // const CustomSpacer(size: 6),
+                  Text(widget.cardData['accountName'],
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w300,
+                          fontSize: fSize(14))),
+                  const CustomSpacer(size: 6),
                   Row(children: [
                     Text(
                         showCardDetail
-                            ? '2145 4587 4875 1211'
+                            ? widget.cardData['permanentAccountNumber']
                             : '* * * *  * * * *  * * * *  * * * *',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(16))),
@@ -229,7 +233,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                     Text('Valid Thru',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ? '12/20' : 'MM / DD',
+                    Text(showCardDetail ? widget.cardData['expiryDate'] : 'MM / DD',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -243,7 +247,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                     Text('CVV',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ? '214' : '* * *',
+                    Text(showCardDetail ? widget.cardData['cvv'] : '* * *',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -253,9 +257,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                 SizedBox(width: wScale(6)),
                 const Icon(Icons.content_copy,
                     color: Color(0xff30E7A9), size: 14.0)
-              ]),
-              Text('John Tan',
-                  style: TextStyle(color: Colors.white, fontSize: fSize(16))),
+              ])
             ]));
   }
 
@@ -272,28 +274,24 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                 top: hScale(5),
                 bottom: hScale(5)),
             decoration: BoxDecoration(
-                color: const Color(0xFFDEFEE9),
-                borderRadius: BorderRadius.all(Radius.circular(hScale(16)))),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('SGD ',
-                      style: TextStyle(
-                          fontSize: fSize(10),
-                          fontWeight: FontWeight.w600,
-                          height: 1,
-                          color: const Color(0xFF30E7A9))),
-                  Text('3,000.00',
-                      style: TextStyle(
-                          fontSize: fSize(14),
-                          fontWeight: FontWeight.w600,
-                          height: 1,
-                          color: const Color(0xFF30E7A9)))
-                ]))
+              color: const Color(0xFFDEFEE9),
+              borderRadius: BorderRadius.all(
+                Radius.circular(hScale(16)),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.cardData['currencyCode'],
+                  style: TextStyle( fontSize: fSize(8), fontWeight: FontWeight.w500, height: 1,)),
+                Text(widget.cardData['financeAccountLimits'][0]['availableLimit'].toString(),
+                  style: TextStyle( fontSize: fSize(8), fontWeight: FontWeight.w500, height: 1,)),  
+              ]
+          ))
       ],
     );
-  }
+  }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
   Widget eyeIconField() {
     return Container(
@@ -390,7 +388,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
           const CustomSpacer(size: 12),
           Row(
             children: [
-              Image.asset('assets/happy_emoji.png',
+              Image.asset('assets/emoji1.png',
                   fit: BoxFit.contain, width: wScale(18)),
               SizedBox(width: wScale(10)),
               Text('Great job, you are within your allocated limit!',
@@ -453,7 +451,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
       child: Column(
         children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('My Grab Expenses’ Transactions',
+            Text('${widget.cardData["accountName"]}’s Transactions',
                 style: TextStyle(
                     fontSize: fSize(16),
                     fontWeight: FontWeight.w500,

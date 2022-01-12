@@ -1,10 +1,16 @@
+import 'package:co/ui/auth/signup/company_detail.dart';
+import 'package:co/ui/auth/signup/main_contact_person.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 
 class RegisteredAddressScreen extends StatefulWidget {
@@ -27,17 +33,18 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
     return Scale().fSize(context, size);
   }
 
-  final LocalStorage storage = LocalStorage('sign_up_info3');
-  var cityArr = ['city1', 'city2', 'city3', 'city4', 'city5'];
+  final LocalStorage storage = LocalStorage('sign_up_info2');
+  final LocalStorage tokenStorage = LocalStorage('token');
   final postalCodeCtl = TextEditingController();
   final streetCtl = TextEditingController();
   final cityCtl = TextEditingController();
   final operatingAddressCtl = TextEditingController();
   final operatingAddressPostalCodeCtl = TextEditingController();
   bool flagAddress = false;
+  String getCountryQuery = Queries.QUERY_GET_COUNTRY;
 
   handleBack() {
-    Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
+    Navigator.of(context).pop();
   }
 
   handleContinue() {
@@ -49,7 +56,11 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         'operatingAddressPostalCode', operatingAddressPostalCodeCtl.text);
     storage.setItem('flagAddress', flagAddress);
 
-    Navigator.of(context).pushReplacementNamed(MAIN_CONTACT_PERSON);
+    // Navigator.of(context).pushReplacementNamed(MAIN_CONTACT_PERSON);
+
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (context) => MainContactPersonScreen()),
+    );
   }
 
   @override
@@ -66,9 +77,41 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Material(
         child: Scaffold(
-            body: SingleChildScrollView(
+            body: Query(
+                options: QueryOptions(
+                  document: gql(getCountryQuery),
+                  variables: {"countryId": storage.getItem("country")},
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult countryResult,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (countryResult.hasException) {
+                    return Text(countryResult.exception.toString());
+                  }
+
+                  if (countryResult.isLoading) {
+                    return CustomLoading();
+                  }
+                  var getCountry = countryResult.data!['country'];
+                  List<String> cities = [];
+                  getCountry['cities'].forEach((item) {
+                    cities.add(item['name']);
+                  });
+                  storage.setItem("currencyCode", getCountry['currencyCode']);
+                  storage.setItem("cityId", getCountry['cities'][0]['id']);
+                  return mainHome(cities);
+                })));
+  }
+
+  Widget mainHome(cities) {
+    return SingleChildScrollView(
                 child: Column(children: [
       const SignupProgressHeader(
         title: 'Company Detail',
@@ -79,7 +122,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
       const CustomSpacer(size: 15),
       groupTitle(),
       const CustomSpacer(size: 36),
-      registeredAddressField(),
+      registeredAddressField(cities),
       const CustomSpacer(size: 22),
       differentAddressField(),
       flagAddress == true
@@ -91,7 +134,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
       const CustomSpacer(size: 37),
       buttonField(),
       const CustomSpacer(size: 48),
-    ]))));
+    ]));
   }
 
   Widget groupIcon() {
@@ -105,7 +148,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         style: TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w600));
   }
 
-  Widget registeredAddressField() {
+  Widget registeredAddressField(cities) {
     return Container(
       padding: EdgeInsets.only(
           left: wScale(16),
@@ -142,7 +185,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
               ctl: streetCtl, hint: 'Enter Street', label: 'Street'),
           const CustomSpacer(size: 32),
           // CustomTextField(ctl: cityCtl, hint: 'Select City', label: 'City'),
-          cityTypeField()
+          cityTypeField(cities)
         ],
       ),
     );
@@ -289,7 +332,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
     );
   }
 
-  Widget cityTypeField() {
+  Widget cityTypeField(cities) {
     return Stack(
       children: [
         Container(
@@ -329,7 +372,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
                   cityCtl.text = value;
                 },
                 itemBuilder: (BuildContext context) {
-                  return cityArr.map<PopupMenuItem<String>>((String value) {
+                  return cities.map<PopupMenuItem<String>>((String value) {
                     return PopupMenuItem(
                       child: Text(value),
                       value: value,

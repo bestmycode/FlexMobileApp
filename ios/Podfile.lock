@@ -1,59 +1,107 @@
 PODS:
+  - AppAuth (1.4.0):
+    - AppAuth/Core (= 1.4.0)
+    - AppAuth/ExternalUserAgent (= 1.4.0)
+  - AppAuth/Core (1.4.0)
+  - AppAuth/ExternalUserAgent (1.4.0)
   - camera (0.0.1):
     - Flutter
-  - connectivity (0.0.1):
+  - connectivity_plus (0.0.1):
     - Flutter
     - Reachability
   - Flutter (1.0.0)
+  - flutter_appauth (0.0.1):
+    - AppAuth (= 1.4.0)
+    - Flutter
+  - flutter_secure_storage (3.3.1):
+    - Flutter
+  - flutter_webview_plugin (0.0.1):
+    - Flutter
   - image_picker (0.0.1):
     - Flutter
+  - Intercom (10.3.5)
+  - intercom_flutter (5.0.0):
+    - Flutter
+    - Intercom (~> 10.3.4)
   - local_auth (0.0.1):
     - Flutter
   - path_provider (0.0.1):
     - Flutter
   - Reachability (3.2)
+  - shared_preferences (0.0.1):
+    - Flutter
+  - url_launcher (0.0.1):
+    - Flutter
   - video_player (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - camera (from `.symlinks/plugins/camera/ios`)
-  - connectivity (from `.symlinks/plugins/connectivity/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - Flutter (from `Flutter`)
+  - flutter_appauth (from `.symlinks/plugins/flutter_appauth/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - flutter_webview_plugin (from `.symlinks/plugins/flutter_webview_plugin/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
+  - intercom_flutter (from `.symlinks/plugins/intercom_flutter/ios`)
   - local_auth (from `.symlinks/plugins/local_auth/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
 
 SPEC REPOS:
   trunk:
+    - AppAuth
+    - Intercom
     - Reachability
 
 EXTERNAL SOURCES:
   camera:
     :path: ".symlinks/plugins/camera/ios"
-  connectivity:
-    :path: ".symlinks/plugins/connectivity/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   Flutter:
     :path: Flutter
+  flutter_appauth:
+    :path: ".symlinks/plugins/flutter_appauth/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  flutter_webview_plugin:
+    :path: ".symlinks/plugins/flutter_webview_plugin/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
+  intercom_flutter:
+    :path: ".symlinks/plugins/intercom_flutter/ios"
   local_auth:
     :path: ".symlinks/plugins/local_auth/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
   video_player:
     :path: ".symlinks/plugins/video_player/ios"
 
 SPEC CHECKSUMS:
+  AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   camera: 3164201dc344383e62282964016528c4f5a9ad50
-  connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
-  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  image_picker: 9c3312491f862b28d21ecd8fdf0ee14e601b3f09
+  connectivity_plus: 5f0eb61093bec56935f21a1699dd2758bc895587
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  flutter_appauth: 05c3778a1e4ae23364dd2ef37cbae14b244f646b
+  flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  flutter_webview_plugin: ed9e8a6a96baf0c867e90e1bce2673913eeac694
+  image_picker: e06f7a68f000bd36f552c1847e33cda96ed31f1f
+  Intercom: d5d4549e40ca8da9f583edab5080e67ef70a8811
+  intercom_flutter: cce58e785b4dec1cf745eec6fb1a8fbc6cd8e830
   local_auth: 25938960984c3a7f6e3253e3f8d962fdd16852bd
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
+  video_player: 9cc823b1d9da7e8427ee591e8438bfbcde500e6e
 
-PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
 
 COCOAPODS: 1.11.2

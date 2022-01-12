@@ -4,9 +4,11 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:intl/intl.dart';
 
 class ReceiptDetails extends StatefulWidget {
-  const ReceiptDetails({Key? key}) : super(key: key);
+  final data;
+  const ReceiptDetails({Key? key, this.data}) : super(key: key);
 
   @override
   ReceiptDetailsState createState() => ReceiptDetailsState();
@@ -49,9 +51,9 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
         SizedBox(height: hScale(10)),
         detailField(1),
         SizedBox(height: hScale(20)),
-        titleField('assets/paper.png', 'Receipt Details'),
-        SizedBox(height: hScale(10)),
-        detailField(2),
+        widget.data['receiptData']['uploadedAt'] == null ? SizedBox() : titleField('assets/paper.png', 'Receipt Details'),
+        widget.data['receiptData']['uploadedAt'] == null ? SizedBox() : SizedBox(height: hScale(10)),
+        widget.data['receiptData']['uploadedAt'] == null ? SizedBox() : detailField(2),
       ],
     );
   }
@@ -101,16 +103,17 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
   Widget transactionDetailField() {
     return Column(
       children: [
-        detail('Purchased On', '18 Dec 2020'),
+        detail(
+            'Purchased On',
+            DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(
+                widget.data['transactionDate']))),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Description',
-            'Figma Asia Pacific February \nSubscription Account676'),
+        detail('Description', widget.data['description']),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Amount', '-  480.00 SGD'),
+        detail('Amount',
+            "${widget.data['fxrBillAmount'].toStringAsFixed(2)} ${widget.data['billCurrency']}"),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Purchased On', 'Colorvizo'),
-        Container(height: 1, color: Color(0xFFF1F1F1)),
-        statusDetail('Status', 'Completed')
+        statusDetail('Status', widget.data['status'])
       ],
     );
   }
@@ -118,21 +121,23 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
   Widget userDetailField() {
     return Column(
       children: [
-        detail('Name', 'John Tan'),
+        detail('Name', widget.data['userName']),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Payment Method', 'Physical Card'),
+        detail('Payment Method', widget.data['paymentMethod']),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Card Number', '**** **** **** 1234'),
+        detail('Card Number', widget.data['pan']),
       ],
     );
   }
 
   Widget receiptDetailField() {
+    String date = "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(widget.data['receiptData']['uploadedAt']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(widget.data['receiptData']['uploadedAt']))}";
+    String name =  widget.data['receiptData']['uploadedByName'];
     return Column(
       children: [
-        detail('Uploaded by', 'John Tan'),
+        detail('Uploaded by', name),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Uploaded on', '20 Dec 2020 | 4:40 PM'),
+        detail('Uploaded on', date),
       ],
     );
   }

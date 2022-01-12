@@ -5,23 +5,29 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 
 class TransactionItem extends StatefulWidget {
+  final String? accountId;
+  final String? transactionId;
   final String date;
-  final String time;
   final String transactionName;
-  final int status;
+  final String status;
   final String userName;
   final String cardNum;
   final String value;
+  final int receiptStatus;
+  final bool mobileVerified;
 
   const TransactionItem(
       {Key? key,
+      this.accountId,
+      this.transactionId,
       this.date = '9 Nov 2021',
-      this.time = '12:00 AM',
       this.transactionName = 'Flex Transaction Name',
-      this.status = 0,
+      this.status = 'complete',
       this.userName = 'Justin Curtis',
       this.cardNum = '0000',
-      this.value = '0.00'})
+      this.value = '0.00',
+      this.receiptStatus = 0,
+      this.mobileVerified = true})
       : super(key: key);
   @override
   TransactionItemState createState() => TransactionItemState();
@@ -44,8 +50,7 @@ class TransactionItemState extends State<TransactionItem> {
   Widget build(BuildContext context) {
     return Container(
         width: wScale(327),
-        padding:
-            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
+        padding: EdgeInsets.all(hScale(16)),
         margin: EdgeInsets.only(bottom: hScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -63,38 +68,40 @@ class TransactionItemState extends State<TransactionItem> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                transactionTimeField(widget.date, widget.time),
-                transactionStatus(widget.transactionName, widget.status),
-                transactionUser(widget.userName, widget.cardNum),
-                moneyValue(
-                    '',
-                    widget.value,
-                    14.0,
-                    FontWeight.w700,
-                    widget.status != 4
-                        ? const Color(0xff60C094)
-                        : const Color(0xFF1A2831)),
-              ],
-            ),
-            (widget.status == 0 || widget.status == 1)
-                ? SizedBox(
-                    width: wScale(16),
-                    height: hScale(18),
-                    child: widget.status == 0
+            Container(
+                width: wScale(270),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    transactionTimeField(widget.date),
+                    transactionStatus(widget.transactionName, widget.status),
+                    transactionUser(widget.userName, widget.cardNum),
+                    moneyValue(
+                        '',
+                        widget.value,
+                        14.0,
+                        FontWeight.w700,
+                        widget.status != 4
+                            ? const Color(0xff60C094)
+                            : const Color(0xFF1A2831)),
+                  ],
+                )),
+            SizedBox(
+                width: wScale(16),
+                height: hScale(18),
+                child: widget.receiptStatus == 0
+                    ? SizedBox()
+                    : widget.receiptStatus == 1
                         ? TextButton(
                             style: TextButton.styleFrom(
                                 primary: const Color(0xffffffff),
                                 padding: const EdgeInsets.all(0)),
                             onPressed: () {
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                    builder: (context) =>
-                                        const ReceiptCapture()),
-                              );
+                              widget.mobileVerified ? Navigator.of(context).push(CupertinoPageRoute(
+                                  builder: (context) => ReceiptCapture(
+                                      accountID: widget.accountId,
+                                      transactionID: widget.transactionId))): null;
                             },
                             child: Image.asset('assets/add_transaction.png',
                                 fit: BoxFit.contain, width: wScale(16)))
@@ -103,21 +110,19 @@ class TransactionItemState extends State<TransactionItem> {
                                 primary: const Color(0xffffffff),
                                 padding: const EdgeInsets.all(0)),
                             onPressed: () {
-                              Navigator.of(context).push(
-                                CupertinoPageRoute(
-                                    builder: (context) =>
-                                        const ReceiptScreen()),
-                              );
+                              widget.mobileVerified ? Navigator.of(context).push(CupertinoPageRoute(
+                                  builder: (context) => ReceiptScreen(
+                                      accountID: widget.accountId,
+                                      transactionID: widget.transactionId))): null;
                             },
                             child: Image.asset('assets/check_transaction.png',
                                 fit: BoxFit.contain, width: wScale(16))))
-                : SizedBox(width: wScale(16))
           ],
         ));
   }
 
-  Widget transactionTimeField(date, time) {
-    return Text('$date  |  $time',
+  Widget transactionTimeField(date) {
+    return Text(date,
         style: TextStyle(
             fontSize: fSize(10),
             fontWeight: FontWeight.w500,
@@ -135,13 +140,7 @@ class TransactionItemState extends State<TransactionItem> {
         children: [
           TextSpan(text: name),
           TextSpan(
-            text: status == 2
-                ? ' (Deposit)'
-                : status == 3
-                    ? ' (Refund)'
-                    : status == 4
-                        ? ' (Cancelled)'
-                        : '',
+            text: ' ($status)',
             style: TextStyle(
                 fontSize: fSize(12),
                 fontStyle: FontStyle.italic,
@@ -163,7 +162,7 @@ class TransactionItemState extends State<TransactionItem> {
         children: [
           TextSpan(text: name),
           TextSpan(
-            text: ' (**** **** **** $cardNum)',
+            text: cardNum == '' || cardNum == null ? '' : ' ($cardNum) ',
             style: const TextStyle(color: Color(0xff70828D)),
           ),
         ],

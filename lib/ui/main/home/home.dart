@@ -1,11 +1,33 @@
+import 'dart:convert';
+
 import 'package:co/ui/main/home/deposit_funds.dart';
+import 'package:co/ui/main/home/home_card_type.dart';
+import 'package:co/ui/main/home/issue_virtual_card.dart';
 import 'package:co/ui/main/home/notification.dart';
 import 'package:co/ui/main/home/request_card.dart';
+import 'package:co/ui/main/more/account_setting.dart';
+import 'package:co/ui/main/more/company_setting.dart';
+import 'package:co/ui/main/transactions/transaction_admin.dart';
+import 'package:co/ui/main/transactions/transaction_user.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_fca_user_alert.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
+import 'package:co/utils/basedata.dart';
+import 'package:co/utils/defaultLayoutQuery.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intercom_flutter/intercom_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   // final CupertinoTabController controller;
@@ -31,72 +53,18 @@ class HomeScreenState extends State<HomeScreen> {
     return Scale().fSize(context, size);
   }
 
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
   double cardType = 1.0;
-  var transactionArr = [
-    {
-      'date': '21 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage1',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '22 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage2',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '23 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage3',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '24 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage4',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '25 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage5',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '26 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage6',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '27 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage7',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    }
-  ];
+  String getUserInfoQuery = Queries.QUERY_DASHBOARD_LAYOUT;
+  String getOrgIntegration = Queries.QUERY_ORGINTEGRATIONS;
+  String getBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
+  String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
+  String getRecentTransactions = Queries.QUERY_RECENT_TRANSACTIONS;
+
+  int userType = 0; // 0 => "normal user", 1 => "FCA user", 2 => "NON FCA user"
+
+  String token = '';
 
   handleCardType(type) {
     setState(() {
@@ -104,7 +72,14 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  handleViewAllTransaction() {}
+  handleViewAllTransaction(isMobileVerified) {
+    var isAdmin = userStorage.getItem("isAdmin");
+    isMobileVerified ? Navigator.of(context).push(
+      CupertinoPageRoute(
+          builder: (context) =>
+              isAdmin ? const TransactionAdmin() : const TransactionUser()),
+    ): null;
+  }
 
   handleNotification() {
     Navigator.of(context).push(
@@ -112,20 +87,77 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  handleDepositFunds() {
+  handleDepositFunds(businessAccountSummary) {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const DepositFundsScreen()),
+      CupertinoPageRoute(
+          builder: (context) =>
+              DepositFundsScreen(data: businessAccountSummary)),
     );
   }
 
-  handleQuickActions(index) {
-    if (index == 0) {
-    } else if (index == 1) {
-    } else if (index == 2) {
-      Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const RequestCard()),
-      );
+  handleCreditline(title) async {
+    // Intercom.displayMessenger();
+    debugPrint(title);
+
+    String msg = "";
+
+    if (title == "Increase Credit Line") {
+      msg = '''Hello Flex,
+
+I would like to apply for increase in Flex Plus Credit line [SGD 10,000 or 30,000 or 100,000]. 
+
+Please reach out to me to process the application further.
+
+Thanks.''';
+    } else {
+      msg = '''Hello Flex,
+
+I would like to apply for Flex plus credit line [SGD 3000 or 10,000 or 30,000 or 100,000] 
+
+Please reach out to me to process the application further.
+
+Thanks.''';
     }
+
+    Intercom.displayMessageComposer(msg);
+  }
+
+  handleQuickActions(index, isMobileVerified) {
+    if (index == 0) {
+      Navigator.pop(context);
+      Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => CompanySetting(tabIndex: 1)),
+      );
+    } else if (index == 1) {
+      isMobileVerified ? Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => const IssueVirtaulCard()),
+      ) : null;
+    } else if (index == 2) {
+      isMobileVerified ? Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => const RequestCard()),
+      ) : null;
+    }
+  }
+
+  _onBackPressed(context) {
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want to exit an App'),
+        actions: <Widget>[
+          new GestureDetector(
+            onTap: () => Navigator.of(context).pop(false),
+            child: Text("NO"),
+          ),
+          SizedBox(height: 16),
+          new GestureDetector(
+            onTap: () => SystemNavigator.pop(),
+            child: Text("YES"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -135,72 +167,307 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: Scaffold(
-            body: Stack(children: [
-      SingleChildScrollView(
-          padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-          child: Align(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                const CustomSpacer(size: 30),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      welcomeUser(),
-                      IconButton(
-                        icon: customImage('assets/notification.png', 16.00),
-                        iconSize: hScale(10),
-                        onPressed: () {
-                          handleNotification();
-                        },
-                      )
-                    ]),
-                const CustomSpacer(size: 20),
-                cardValanceField(),
-                const CustomSpacer(size: 20),
-                welcomeHandleField(
-                    'assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                const CustomSpacer(size: 10),
-                welcomeHandleField(
-                    'assets/get_credit_line.png', 21.0, "Get Credit Line"),
-                const CustomSpacer(size: 16),
-                quickActionsField(),
-                const CustomSpacer(size: 16),
-                customText('Cards Overview'),
-                const CustomSpacer(size: 16),
-                cardOverviewField(),
-                const CustomSpacer(size: 16),
-                recentTransactionField(),
-                const CustomSpacer(size: 16),
-                getTransactionArrWidgets(transactionArr),
-                const CustomSpacer(size: 88),
-              ]))),
-      const Positioned(
-        bottom: 0,
-        left: 0,
-        child: CustomBottomBar(active: 0),
-      )
-    ])));
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken), child: home(context));
   }
 
-  Widget welcomeUser() {
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(
-          fontSize: fSize(16),
-          color: Colors.black,
-        ),
-        children: const [
-          TextSpan(text: 'Welcome, '),
-          TextSpan(
-              text: 'Terry Herwit',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+  Widget home(context) {
+    return WillPopScope(
+        onWillPop: () => _onBackPressed(context),
+        child: Scaffold(
+            body: Query(
+                options: QueryOptions(
+                  document: gql(getUserInfoQuery),
+                  variables: {},
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult userInfoResult,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (userInfoResult.hasException) {
+                    return Text(userInfoResult.exception.toString());
+                  }
+
+                  if (userInfoResult.isLoading) {
+                    return CustomLoading();
+                  }
+
+                  var userInfo = userInfoResult.data!['user'];
+                  var userRole = userInfo['roles'].firstWhere(
+                      (item) => item['orgId'] == userInfo['currentOrgId']);
+                  var isAdmin = userRole['roleName'] == 'admin' ? true : false;
+
+                  userStorage.setItem("isAdmin", isAdmin);
+                  userStorage.setItem("userId", userInfo['id']);
+                  userStorage.setItem("orgId", userInfo['currentOrgId']);
+
+                  return Query(
+                      options: QueryOptions(
+                        document: gql(isAdmin
+                            ? getBusinessAccountSummary
+                            : getUserAccountSummary),
+                        variables: {
+                          'orgId': userInfo['currentOrgId'],
+                          'isAdmin': isAdmin ? true : false
+                        },
+                      ),
+                      builder: (QueryResult accountSummary,
+                          {VoidCallback? refetch, FetchMore? fetchMore}) {
+                        if (accountSummary.hasException) {
+                          return Text(accountSummary.exception.toString());
+                        }
+
+                        if (accountSummary.isLoading) {
+                          return CustomLoading();
+                        }
+
+                        var businessAccountSummary = isAdmin
+                            ? accountSummary
+                                .data!['readBusinessAcccountSummary']
+                            : accountSummary
+                                .data!['readUserFinanceAccountSummary'];
+                        // var userAccountSummary = accountSummary.data!['readUserFinanceAccountSummary'];
+                        return Query(
+                            options: QueryOptions(
+                              document: gql(getRecentTransactions),
+                              variables: {
+                                'orgId': userInfo['currentOrgId'],
+                                'limit': 10,
+                                'offset': 0,
+                                'status': "PENDING_OR_COMPLETED"
+                              },
+                            ),
+                            builder: (QueryResult recentTransactionResult,
+                                {VoidCallback? refetch, FetchMore? fetchMore}) {
+                              if (recentTransactionResult.hasException) {
+                                return Text(recentTransactionResult.exception
+                                    .toString());
+                              }
+
+                              if (recentTransactionResult.isLoading) {
+                                return CustomLoading();
+                              }
+                              var listTransactions = recentTransactionResult
+                                  .data!['listTransactions'];
+                              return Query(
+                                  options: QueryOptions(
+                                    document: gql(getOrgIntegration),
+                                    variables: {
+                                      "orgId": userInfo['currentOrgId']
+                                    },
+                                  ),
+                                  builder: (QueryResult result,
+                                      {VoidCallback? refetch,
+                                      FetchMore? fetchMore}) {
+                                    if (result.hasException) {
+                                      return Text(result.exception.toString());
+                                    }
+
+                                    if (result.isLoading) {
+                                      return CustomLoading();
+                                    }
+                                    var orgIntegrations =
+                                        result.data!['orgIntegrations'];
+                                    var temp_index = orgIntegrations.indexWhere(
+                                        (item) =>
+                                            item['integrationType'] ==
+                                            "FINANCE");
+
+                                    if (isAdmin) {
+                                      if (temp_index >= 0) {
+                                        if (businessAccountSummary['data'] ==
+                                            null) {
+                                          // Non FCA user
+                                          return noFCAuser(userInfo);
+                                        } else {
+                                          // FCA user
+                                          return mainField(
+                                              userInfo,
+                                              businessAccountSummary['data'],
+                                              listTransactions[
+                                                  'financeAccountTransactions'],
+                                              isAdmin);
+                                        }
+                                      }
+                                      return mainField(
+                                          userInfo,
+                                          businessAccountSummary['data'],
+                                          listTransactions[
+                                              'financeAccountTransactions'],
+                                          isAdmin);
+                                    }
+                                    // Normal User
+                                    return mainField(
+                                        userInfo,
+                                        businessAccountSummary['data'],
+                                        listTransactions[
+                                            'financeAccountTransactions'],
+                                        isAdmin);
+                                  });
+                            });
+                      });
+                })));
+  }
+
+  Widget mainField(
+      userInfo, businessAccountSummary, listTransactions, isAdmin) {
+    bool isMobileVerified = userInfo['mobileVerified'];
+    return Stack(children: [
+      Container(
+        height: hScale(812),
+        child: SingleChildScrollView(
+            padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
+            child: Align(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  CustomSpacer(size: userInfo['mobileVerified'] ? 30 : 50),
+                  userInfo['mobileVerified'] ? SizedBox() : mobileVerified(),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        welcomeUser(
+                            '${userInfo["firstName"]} ${userInfo["lastName"]}'),
+                        IconButton(
+                          icon: customImage('assets/notification.png', 16.00),
+                          iconSize: hScale(10),
+                          onPressed: () {
+                            handleNotification();
+                          },
+                        )
+                      ]),
+                  // const CustomSpacer(size: 20),
+                  CustomFCAUser(),
+                  const CustomSpacer(size: 10),
+                  cardValanceField(businessAccountSummary, isAdmin),
+                  const CustomSpacer(size: 20),
+                  isAdmin
+                      ? welcomeHandleField(
+                          businessAccountSummary,
+                          'assets/deposit_funds.png',
+                          27.0,
+                          AppLocalizations.of(context)!.depositfunds)
+                      : SizedBox(),
+                  isAdmin ? const CustomSpacer(size: 10) : SizedBox(),
+                  isAdmin
+                      ? welcomeHandleField(
+                          businessAccountSummary,
+                          'assets/get_credit_line.png',
+                          21.0,
+                          businessAccountSummary == null
+                              ? AppLocalizations.of(context)!.getcreditline
+                              : businessAccountSummary["totalFplBalance"] == 0
+                                  ? AppLocalizations.of(context)!.getcreditline
+                                  : AppLocalizations.of(context)!
+                                      .increasecreditline)
+                      : SizedBox(),
+                  isAdmin ? const CustomSpacer(size: 16) : SizedBox(),
+                  isAdmin ? quickActionsField(isMobileVerified) : SizedBox(),
+                  isAdmin ? const CustomSpacer(size: 16) : SizedBox(),
+                  customText(isAdmin
+                      ? AppLocalizations.of(context)!.cardsoverview
+                      : AppLocalizations.of(context)!.mycardsoverview),
+                  const CustomSpacer(size: 16),
+                  HomeCardType(mobileVerified: isMobileVerified),
+                  const CustomSpacer(size: 16),
+                  recentTransactionField(isMobileVerified),
+                  const CustomSpacer(size: 16),
+                  listTransactions.length == 0
+                      ? Image.asset('assets/empty_transaction.png',
+                          fit: BoxFit.contain, width: wScale(327))
+                      : getTransactionArrWidgets(listTransactions, isMobileVerified),
+                  const CustomSpacer(size: 88),
+                ]))),
+      ),
+      Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 0, mobileVerified: isMobileVerified),
+      )
+    ]);
+  }
+
+  Widget welcomeUser(fullName) {
+    return Row(
+      children: [
+        Text(AppLocalizations.of(context)!.welcome,
+            style: TextStyle(fontSize: fSize(16), color: Colors.black)),
+        Text(fullName,
+            style: TextStyle(
+                fontSize: fSize(16),
+                color: Colors.black,
+                fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget mobileVerified() {
+    return Container(
+      width: wScale(327),
+      padding:
+          EdgeInsets.symmetric(horizontal: wScale(16), vertical: hScale(16)),
+      margin: EdgeInsets.only(bottom: hScale(16)),
+      decoration: BoxDecoration(
+        color: Color(0xFF30e7a9),
+        borderRadius: BorderRadius.all(Radius.circular(hScale(10))),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.25),
+            spreadRadius: 4,
+            blurRadius: 20,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Image.asset('assets/mobile.png',
+                  fit: BoxFit.contain, width: hScale(30)),
+              SizedBox(width: wScale(16)),
+              Container(
+                width: wScale(248),
+                child: Column(children: [
+                  Text('Verify your mobile number to access your account.',
+                      style: TextStyle(
+                          fontSize: fSize(22), fontWeight: FontWeight.w600)),
+                  Text(
+                      "Click on 'Send SMS Link' and verify mobile number. A SMS notification will be sent to you shortly.")
+                ]),
+              ),
+            ],
+          ),
+          CustomSpacer(size: 20),
+          gotoMySettingButton()
         ],
       ),
     );
+  }
+
+  Widget gotoMySettingButton() {
+    return SizedBox(
+        width: wScale(295),
+        height: hScale(56),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          onPressed: () {
+            Navigator.of(context).push(
+              CupertinoPageRoute(builder: (context) => const AccountSetting()),
+            );
+          },
+          child: Text("Go to My Setting",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
   }
 
   Widget customText(text) {
@@ -215,41 +482,84 @@ class HomeScreenState extends State<HomeScreen> {
     return Image.asset(url, fit: BoxFit.contain, width: wScale(width));
   }
 
-  Widget cardValanceField() {
+  Widget cardValanceField(businessAccountSummary, isAdmin) {
     return Container(
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.all(hScale(24)),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(hScale(10)),
-          image: const DecorationImage(
-            image: AssetImage("assets/dashboard_header.png"),
-            fit: BoxFit.cover,
-          ),
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.all(hScale(24)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(hScale(10)),
+        image: const DecorationImage(
+          image: AssetImage("assets/dashboard_header.png"),
+          fit: BoxFit.cover,
         ),
-        child: Column(children: [
-          moneyValue('Total Funds', '50,000.00', 20.0, FontWeight.bold,
-              const Color(0xff30E7A9)),
-          const CustomSpacer(
-            size: 8,
-          ),
-          moneyValue('Credit Line', '40,000.00', 16.0, FontWeight.w600,
-              const Color(0xffADD2C8)),
-          const CustomSpacer(
-            size: 8,
-          ),
-          moneyValue('Business Account', '10,000.00', 16.0, FontWeight.w600,
-              const Color(0xffADD2C8)),
-        ]));
+      ),
+      child: isAdmin
+          ? Column(children: [
+              moneyValue(
+                  AppLocalizations.of(context)!.totalfunds,
+                  businessAccountSummary == null
+                      ? '-'
+                      : businessAccountSummary['totalBalance']
+                          .toStringAsFixed(2),
+                  20.0,
+                  FontWeight.w600,
+                  const Color(0xff30E7A9),
+                  businessAccountSummary == null
+                      ? ''
+                      : businessAccountSummary['currencyCode']),
+              const CustomSpacer(
+                size: 8,
+              ),
+              moneyValue(
+                  AppLocalizations.of(context)!.creditline,
+                  businessAccountSummary == null
+                      ? '-'
+                      : businessAccountSummary['totalFplBalance']
+                          .toStringAsFixed(2),
+                  20.0,
+                  FontWeight.w600,
+                  const Color(0xffADD2C8),
+                  businessAccountSummary == null
+                      ? ''
+                      : businessAccountSummary['currencyCode']),
+              const CustomSpacer(
+                size: 8,
+              ),
+              moneyValue(
+                  AppLocalizations.of(context)!.businessaccount,
+                  businessAccountSummary == null
+                      ? '-'
+                      : businessAccountSummary['totalFcaBalance']
+                          .toStringAsFixed(2),
+                  20.0,
+                  FontWeight.w600,
+                  const Color(0xffADD2C8),
+                  businessAccountSummary == null
+                      ? ''
+                      : businessAccountSummary['currencyCode']),
+            ])
+          : moneyValue(
+              AppLocalizations.of(context)!.monthtodatespend,
+              businessAccountSummary == null
+                  ? '-'
+                  : businessAccountSummary['totalSpend'].toStringAsFixed(2),
+              20.0,
+              FontWeight.w600,
+              const Color(0xffADD2C8),
+              businessAccountSummary == null
+                  ? ''
+                  : businessAccountSummary['currencyCode']),
+    );
   }
 
-  Widget moneyValue(title, value, size, weight, color) {
+  Widget moneyValue(title, value, size, weight, color, currencyCode) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(title, style: TextStyle(fontSize: fSize(12), color: Colors.white)),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("SGD  ",
+          Text("$currencyCode  ",
               style: TextStyle(
                 fontSize: fSize(12),
                 fontWeight: weight,
@@ -268,7 +578,8 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget welcomeHandleField(imageURL, imageScale, title) {
+  Widget welcomeHandleField(
+      businessAccountSummary, imageURL, imageScale, title) {
     return SizedBox(
         height: hScale(63),
         child: ElevatedButton(
@@ -279,7 +590,10 @@ class HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              handleDepositFunds();
+              // handleDepositFunds(businessAccountSummary);
+              title == AppLocalizations.of(context)!.depositfunds
+                  ? handleDepositFunds(businessAccountSummary)
+                  : handleCreditline(title);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -293,7 +607,7 @@ class HomeScreenState extends State<HomeScreen> {
                   SizedBox(width: wScale(18)),
                   Text(title,
                       style: TextStyle(
-                          fontSize: fSize(12), color: const Color(0xff465158))),
+                          fontSize: fSize(14), color: const Color(0xff465158))),
                 ]),
                 const Icon(Icons.arrow_forward_rounded,
                     color: Color(0xff70828D), size: 24.0),
@@ -301,25 +615,27 @@ class HomeScreenState extends State<HomeScreen> {
             )));
   }
 
-  Widget quickActionsField() {
+  Widget quickActionsField(isMobileVerified) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        customText('Quick Actions'),
+        customText(AppLocalizations.of(context)!.quickactions),
         const CustomSpacer(size: 7),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
             // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              actionButton('assets/invite_user.png', 'Invite\nUser', 0),
-              actionButton(
-                  'assets/issue_virtual_card.png', 'Issue\nVirtual Card', 1),
-              actionButton('assets/green_card.png', 'Request\nPhysical Card', 2)
+              actionButton('assets/invite_user.png',
+                  AppLocalizations.of(context)!.inviteuser, 0, isMobileVerified),
+              actionButton('assets/issue_virtual_card.png',
+                  AppLocalizations.of(context)!.issuevirtualcard, 1, isMobileVerified),
+              actionButton('assets/green_card.png',
+                  AppLocalizations.of(context)!.requestphysicalcard, 2, isMobileVerified)
             ])
       ],
     );
   }
 
-  Widget actionButton(imageUrl, text, index) {
+  Widget actionButton(imageUrl, text, index, isMobileVerified) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
@@ -328,7 +644,7 @@ class HomeScreenState extends State<HomeScreen> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         onPressed: () {
-          handleQuickActions(index);
+          handleQuickActions(index, isMobileVerified);
         },
         child: Container(
             width: wScale(99),
@@ -351,154 +667,7 @@ class HomeScreenState extends State<HomeScreen> {
             )));
   }
 
-  Widget cardOverviewField() {
-    return Container(
-      width: wScale(327),
-      padding: EdgeInsets.all(wScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          cardGroupField(),
-          const CustomSpacer(size: 16),
-          cardTypeField()
-        ],
-      ),
-    );
-  }
-
-  Widget cardGroupField() {
-    return Container(
-      width: wScale(295),
-      height: hScale(34),
-      padding: EdgeInsets.all(hScale(2)),
-      decoration: BoxDecoration(
-        color: const Color(0xfff5f5f6),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(17)),
-          topRight: Radius.circular(hScale(17)),
-          bottomLeft: Radius.circular(hScale(17)),
-          bottomRight: Radius.circular(hScale(17)),
-        ),
-      ),
-      child: Row(children: [
-        cardGroupButton('My Cards', 1.0),
-        cardGroupButton('Company Cards', 2.0),
-      ]),
-    );
-  }
-
-  Widget cardGroupButton(cardName, type) {
-    return type == cardType
-        ? ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(0),
-              primary: const Color(0xff4B5A63),
-              side: const BorderSide(width: 0, color: Color(0xff4B5A63)),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () {
-              handleCardType(type);
-            },
-            child: Container(
-              width: wScale(145),
-              height: hScale(30),
-              alignment: Alignment.center,
-              child: Text(
-                cardName,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: fSize(14),
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              ),
-            ))
-        : TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(
-                  fontSize: fSize(14), color: const Color(0xff70828D)),
-            ),
-            onPressed: () {
-              handleCardType(type);
-            },
-            child: Container(
-              width: wScale(145),
-              height: hScale(30),
-              alignment: Alignment.center,
-              child: Text(
-                cardName,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: fSize(14),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xff70828D)),
-              ),
-            ),
-          );
-  }
-
-  Widget cardTypeField() {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      cardTypeImage(
-          'assets/physical_card.png', 'Physical Cards', 4, 'physical'),
-      cardTypeImage('assets/virtual_card.png', 'Virtual Cards', 16, 'virtual'),
-    ]);
-  }
-
-  Widget cardTypeImage(imageURL, cardName, value, type) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ElevatedButton(
-            style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
-            child:
-                Image.asset(imageURL, fit: BoxFit.contain, width: wScale(142)),
-            onPressed: () async {
-              // widget.navigatorKey.currentState!.pushNamed(type);
-              // widget.controller.index = 1;
-              // await Future.delayed(const Duration(seconds: 0), () {});
-              // widget.navigatorKey.currentState!.pushNamed(type);
-            }),
-        const CustomSpacer(size: 8),
-        Row(
-          children: [
-            Text(cardName,
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xff465158))),
-            Text('  ($value)  ',
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xff30E7A9))),
-            const Icon(Icons.arrow_forward_rounded,
-                color: Color(0xff70828D), size: 12),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget recentTransactionField() {
+  Widget recentTransactionField(isMobileVerified) {
     return SizedBox(
       width: wScale(327),
       child: Column(
@@ -506,8 +675,8 @@ class HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              customText('Recent Transactions'),
-              viewAllTransactionButton()
+              customText(AppLocalizations.of(context)!.recenttransactions),
+              viewAllTransactionButton(isMobileVerified)
             ],
           )
         ],
@@ -515,7 +684,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget viewAllTransactionButton() {
+  Widget viewAllTransactionButton(isMobileVerified) {
     return TextButton(
       style: TextButton.styleFrom(
         primary: const Color(0xff30E7A9),
@@ -526,14 +695,14 @@ class HomeScreenState extends State<HomeScreen> {
             decoration: TextDecoration.underline),
       ),
       onPressed: () {
-        handleViewAllTransaction();
+        handleViewAllTransaction(isMobileVerified);
       },
-      child: const Text('View All'),
+      child: Text(AppLocalizations.of(context)!.viewall),
     );
   }
 
   Widget transactionField(
-      date, time, transactionName, status, userName, cardNum, value) {
+      date, transactionName, status, userName, cardNum, value, currencyCode) {
     return Container(
       width: wScale(327),
       padding: EdgeInsets.only(
@@ -563,17 +732,18 @@ class HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          transactionTimeField(date, time),
+          transactionTimeField(date),
           transactionStatus(transactionName, status),
           transactionUser(userName, cardNum),
-          moneyValue('', value, 14.0, FontWeight.w700, const Color(0xffADD2C8)),
+          moneyValue('', value, 14.0, FontWeight.w700, const Color(0xffADD2C8),
+              currencyCode),
         ],
       ),
     );
   }
 
-  Widget transactionTimeField(date, time) {
-    return Text('$date  |  $time',
+  Widget transactionTimeField(date) {
+    return Text(date,
         style: TextStyle(
             fontSize: fSize(10),
             fontWeight: FontWeight.w500,
@@ -610,7 +780,7 @@ class HomeScreenState extends State<HomeScreen> {
         children: [
           TextSpan(text: name),
           TextSpan(
-            text: ' (**** **** **** $cardNum)',
+            text: ' ($cardNum)',
             style: const TextStyle(color: Color(0xff70828D)),
           ),
         ],
@@ -618,17 +788,115 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget getTransactionArrWidgets(arr) {
+  Widget getTransactionArrWidgets(arr, isMobileVerified) {
+    if (arr == [])
+      return Container(child: Image.asset('assets/empty_transaction'));
     return Column(
         children: arr.map<Widget>((item) {
-      return transactionField(
-          item['date'],
-          item['time'],
-          item['transactionName'],
-          item['status'],
-          item['userName'],
-          item['cardNum'],
-          item['value']);
+      return TransactionItem(
+          accountId: item['txnFinanceAccId'],
+          transactionId: item['sourceTransactionId'],
+          date:
+              '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+          transactionName: item['description'],
+          status: item['status'],
+          userName: item['merchantName'],
+          cardNum: item['pan'],
+          value: item['fxrBillAmount'].toStringAsFixed(2),
+          receiptStatus: item['fxrBillAmount'] >= 0
+              ? 0
+              : item['receiptStatus'] == "PAID"
+                  ? 2
+                  : 1,
+          mobileVerified: isMobileVerified);
     }).toList());
+  }
+
+  Widget noFCAuser(userInfo) {
+    return Stack(children: [
+      Container(
+          height: hScale(812),
+          child: Column(
+            children: [
+              const CustomSpacer(size: 30),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+                  child: welcomeUser(
+                      '${userInfo["firstName"]} ${userInfo["lastName"]}')),
+              const CustomSpacer(size: 30),
+              Container(
+                  width: wScale(327),
+                  // height: hScale(320),
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.all(hScale(24)),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(hScale(10)),
+                      topRight: Radius.circular(hScale(10)),
+                      bottomLeft: Radius.circular(hScale(10)),
+                      bottomRight: Radius.circular(hScale(10)),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.25),
+                        spreadRadius: 4,
+                        blurRadius: 20,
+                        offset:
+                            const Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            AppLocalizations.of(context)!
+                                .noflexbussinessaccount,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: fSize(12),
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF70828D))),
+                        CustomSpacer(size: 18),
+                        Image.asset('assets/empty_transaction.png',
+                            fit: BoxFit.contain, width: wScale(159)),
+                        CustomSpacer(size: 36),
+                        Text(
+                            AppLocalizations.of(context)!.flexmobilesupportflex,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: fSize(12),
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF70828D))),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: () {},
+                              child: Text(
+                                  AppLocalizations.of(context)!.clickhere,
+                                  style: TextStyle(
+                                      fontSize: fSize(12),
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF29C490))),
+                            ),
+                            Text(AppLocalizations.of(context)!.torequestfor,
+                                style: TextStyle(
+                                    fontSize: fSize(12),
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF70828D))),
+                          ],
+                        )
+                      ]))
+            ],
+          )),
+      const Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 0),
+      )
+    ]);
   }
 }

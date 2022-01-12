@@ -1,10 +1,19 @@
+import 'package:co/constants/constants.dart';
+import 'package:co/ui/main/credit/credit_transaction_type.dart';
 import 'package:co/ui/widgets/billing_item.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intercom_flutter/intercom_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:localstorage/localstorage.dart';
 
 import 'credit_payment.dart';
 
@@ -34,110 +43,14 @@ class CreditScreenState extends State<CreditScreen> {
   int FPL_enhancement = 1; // 1: active, 2: suspended, 3: closed
   int transactionType = 1;
   int billedType = 1;
-  var transactionArr = [
-    {
-      'date': '21 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services1',
-      'status': 0,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '22 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services2',
-      'status': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '23 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services3',
-      'status': 2,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '24 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services4',
-      'status': 3,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '25 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services5',
-      'status': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '26 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services6',
-      'status': 0,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '27 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Business Services7',
-      'status': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    }
-  ];
 
-  var billingArr = [
-    {
-      'statementDate': '30 Jan 2021',
-      'totalAmount': '480.00',
-      'dueDate': '05 Mar 2021',
-      'status': 0
-    },
-    {
-      'statementDate': '30 Jan 2021',
-      'totalAmount': '480.00',
-      'dueDate': '05 Mar 2021',
-      'status': 1
-    },
-    {
-      'statementDate': '30 Jan 2021',
-      'totalAmount': '480.00',
-      'dueDate': '05 Mar 2021',
-      'status': 2
-    },
-    {
-      'statementDate': '30 Jan 2021',
-      'totalAmount': '480.00',
-      'dueDate': '05 Mar 2021',
-      'status': 0
-    },
-    {
-      'statementDate': '30 Jan 2021',
-      'totalAmount': '480.00',
-      'dueDate': '05 Mar 2021',
-      'status': 1
-    },
-    {
-      'statementDate': '30 Jan 2021',
-      'totalAmount': '480.00',
-      'dueDate': '05 Mar 2021',
-      'status': 2
-    },
-  ];
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+
+  String readBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
+  String billedUnbilledTransactions =
+      Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
+  String billingStatementsTable = Queries.QUERY_BILLING_STATEMENTTABLE;
 
   handleDepositFunds(flag) {
     if (flag == 'payment') {
@@ -147,16 +60,35 @@ class CreditScreenState extends State<CreditScreen> {
     } else if (flag == 'deposit') {}
   }
 
-  handleTransactionType(type) {
-    setState(() {
-      transactionType = type;
-    });
+  handleCreditline(title) {
+    // Intercom.displayMessenger();
+    debugPrint(title);
+
+    String msg = "";
+
+    if (title == "Increase Credit Line") {
+      msg = '''Hello Flex,
+
+I would like to apply for increase in Flex Plus Credit line [SGD 10,000 or 30,000 or 100,000]. 
+
+Please reach out to me to process the application further.
+
+Thanks.''';
+    } else {
+      msg = '''Hello Flex,
+
+I would like to apply for Flex plus credit line [SGD 3000 or 10,000 or 30,000 or 100,000] 
+
+Please reach out to me to process the application further.
+
+Thanks.''';
+    }
+
+    Intercom.displayMessageComposer(msg);
   }
 
-  handleBilledType(type) {
-    setState(() {
-      billedType = type;
-    });
+  _onBackPressed(context) {
+    Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
   }
 
   @override
@@ -166,68 +98,136 @@ class CreditScreenState extends State<CreditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    String accessToken = storage.getItem("jwt_token");
+    // var orgId = userStorage.getItem('orgId');
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  // @override
+  // Widget build(BuildContext context) {
+  Widget home() {
+    var orgId = userStorage.getItem('orgId');
+    var isAdmin = userStorage.getItem('isAdmin');
+    return Query(
+        options: QueryOptions(
+          document: gql(readBusinessAccountSummary),
+          variables: {
+            "orgId": orgId,
+            "isAdmin": isAdmin,
+          },
+          // pollInterval: const Duration(seconds: 10),
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Text(result.exception.toString());
+          }
+
+          if (result.isLoading) {
+            return CustomLoading();
+          }
+          var listUserFinanceAccounts =
+              result.data!['readBusinessAcccountSummary'];
+          var flaId = listUserFinanceAccounts['data']['creditLine']['id'];
+          return Query(
+              options: QueryOptions(
+                document: gql(billedUnbilledTransactions),
+                variables: {
+                  "orgId": orgId,
+                  "status": billedType == 1 ? "BILLED" : "UNBILLED",
+                  "flaId": flaId
+                },
+                // pollInterval: const Duration(seconds: 10),
+              ),
+              builder: (QueryResult billedResult,
+                  {VoidCallback? refetch, FetchMore? fetchMore}) {
+                if (billedResult.hasException) {
+                  return Text(billedResult.exception.toString());
+                }
+
+                if (billedResult.isLoading) {
+                  return CustomLoading();
+                }
+                var listTransactions = billedResult.data!['listTransactions'];
+
+                return Query(
+                    options: QueryOptions(
+                      document: gql(billingStatementsTable),
+                      variables: {"fplId": flaId},
+                      // pollInterval: const Duration(seconds: 10),
+                    ),
+                    builder: (QueryResult billedResult,
+                        {VoidCallback? refetch, FetchMore? fetchMore}) {
+                      if (billedResult.hasException) {
+                        return Text(billedResult.exception.toString());
+                      }
+
+                      if (billedResult.isLoading) {
+                        return CustomLoading();
+                      }
+                      var listBills = billedResult.data!['listBills'];
+                      return mainHome(listTransactions, listBills);
+                    });
+              });
+        });
+  }
+
+  Widget mainHome(listTransactions, listBills) {
+    return WillPopScope(
+        onWillPop: () => _onBackPressed(context),
         child: Scaffold(
             body: Stack(children: [
-      SingleChildScrollView(
-          child: Column(children: [
-        const CustomSpacer(size: 44),
-        // const CustomHeader(title: 'Flex PLUS Credit'),
-        Row(children: [
-          SizedBox(width: wScale(20)),
-          backButton(),
-          SizedBox(width: wScale(20)),
-          Text('Flex PLUS Credit',
-              style:
-                  TextStyle(fontSize: fSize(20), fontWeight: FontWeight.w600))
-        ]),
-        Container(
-            padding: EdgeInsets.symmetric(horizontal: wScale(24)),
-            child: Column(
-              children: [
-                const CustomSpacer(size: 20),
-                titleField(),
-                FPL_enhancement == 2
-                    ? const CustomSpacer(size: 15)
-                    : const SizedBox(),
-                FPL_enhancement == 2 ? suspendedField() : const SizedBox(),
-                const CustomSpacer(size: 16),
-                cardAvailableValanceField(),
-                const CustomSpacer(size: 10),
-                cardTotalValanceField(),
-                FPL_enhancement == 1
-                    ? const CustomSpacer(size: 30)
-                    : const SizedBox(),
-                FPL_enhancement == 1
-                    ? welcomeHandleField('assets/deposit_funds.png', 27.0,
-                        "Increase Credit Line", 'deposit')
-                    : const SizedBox(),
-                const CustomSpacer(size: 10),
-                welcomeHandleField(
-                    'assets/green_card.png',
-                    21.0,
-                    FPL_enhancement == 3 ? "Get Credit Line" : "Payment",
-                    'payment'),
-                const CustomSpacer(size: 26),
-                transactionTypeField(),
-                transactionType == 1
-                    ? const CustomSpacer(size: 15)
-                    : const SizedBox(),
-                transactionType == 1 ? billedTypeField() : const SizedBox(),
-                const CustomSpacer(size: 15),
-                transactionType == 1
-                    ? getTransactionArrWidgets(transactionArr)
-                    : getBillingArrWidgets(billingArr),
-                const CustomSpacer(size: 88),
-              ],
-            )),
-      ])),
-      const Positioned(
-        bottom: 0,
-        left: 0,
-        child: CustomBottomBar(active: 3),
-      )
-    ])));
+          SingleChildScrollView(
+              child: Column(children: [
+            const CustomSpacer(size: 44),
+            // const CustomHeader(title: 'Flex PLUS Credit'),
+            Row(children: [
+              SizedBox(width: wScale(20)),
+              backButton(),
+              SizedBox(width: wScale(20)),
+              Text('Flex PLUS Credit',
+                  style: TextStyle(
+                      fontSize: fSize(20), fontWeight: FontWeight.w600))
+            ]),
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+                child: Column(
+                  children: [
+                    const CustomSpacer(size: 20),
+                    titleField(),
+                    FPL_enhancement == 2
+                        ? const CustomSpacer(size: 15)
+                        : const SizedBox(),
+                    FPL_enhancement == 2 ? suspendedField() : const SizedBox(),
+                    const CustomSpacer(size: 16),
+                    cardAvailableValanceField(),
+                    const CustomSpacer(size: 10),
+                    cardTotalValanceField(),
+                    FPL_enhancement == 1
+                        ? const CustomSpacer(size: 30)
+                        : const SizedBox(),
+                    FPL_enhancement == 1
+                        ? welcomeHandleField('assets/deposit_funds.png', 27.0,
+                            "Increase Credit Line", 'deposit')
+                        : const SizedBox(),
+                    const CustomSpacer(size: 10),
+                    welcomeHandleField(
+                        'assets/green_card.png',
+                        21.0,
+                        FPL_enhancement == 3 ? "Get Credit Line" : "Payment",
+                        'payment'),
+                    const CustomSpacer(size: 26),
+                    CreditTransactionTypeSection(),
+                    const CustomSpacer(size: 88),
+                  ],
+                )),
+          ])),
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            child: CustomBottomBar(active: 3),
+          )
+        ])));
   }
 
   Widget backButton() {
@@ -263,9 +263,7 @@ class CreditScreenState extends State<CreditScreen> {
             size: 12,
           ),
           onPressed: () async {
-            // widget.controller.index = 0;
-            // // Future.delayed(const Duration(seconds: 1), () {});
-            // widget.navigatorKey.currentState!.popUntil((route) => route.isFirst);
+            Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
           }),
     );
   }
@@ -387,7 +385,9 @@ class CreditScreenState extends State<CreditScreen> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              handleDepositFunds(funcFlag);
+              title == "Payment"
+                  ? handleDepositFunds(funcFlag)
+                  : handleCreditline(title);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -401,161 +401,12 @@ class CreditScreenState extends State<CreditScreen> {
                   SizedBox(width: wScale(18)),
                   Text(title,
                       style: TextStyle(
-                          fontSize: fSize(12), color: const Color(0xff465158))),
+                          fontSize: fSize(14), color: const Color(0xff465158))),
                 ]),
                 const Icon(Icons.arrow_forward_rounded,
                     color: Color(0xff70828D), size: 24.0),
               ],
             )));
-  }
-
-  Widget transactionTypeField() {
-    return Container(
-      alignment: Alignment.topCenter,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        activeButton('Transactions', 1),
-        activeButton('Billing Statements', 2),
-      ]),
-    );
-  }
-
-  Widget activeButton(title, type) {
-    return Container(
-      width: wScale(163),
-      // padding: EdgeInsets.only(left: wScale(6),right: wScale(6)),
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  color: type == transactionType
-                      ? const Color(0xFF29C490)
-                      : const Color(0xFFEEEEEE),
-                  width: type == transactionType ? hScale(2) : hScale(1)))),
-      alignment: Alignment.center,
-      child: TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xff70828D),
-          padding: const EdgeInsets.all(0),
-          textStyle:
-              TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-        ),
-        onPressed: () {
-          handleTransactionType(type);
-        },
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              color: type == transactionType
-                  ? const Color(0xff1A2831)
-                  : const Color(0xFF70828D)),
-        ),
-      ),
-    );
-  }
-
-  Widget billedTypeField() {
-    return Container(
-      width: wScale(327),
-      height: hScale(40),
-      padding: EdgeInsets.all(hScale(2)),
-      decoration: BoxDecoration(
-        color: const Color(0xfff5f5f6),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(20)),
-          topRight: Radius.circular(hScale(20)),
-          bottomLeft: Radius.circular(hScale(20)),
-          bottomRight: Radius.circular(hScale(20)),
-        ),
-      ),
-      child: Row(children: [
-        cardGroupButton('Unbilled', 1),
-        cardGroupButton('Billed', 2),
-      ]),
-    );
-  }
-
-  Widget cardGroupButton(cardName, type) {
-    return type == billedType
-        ? Container(
-            width: wScale(160),
-            height: hScale(35),
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(260),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 4,
-                  blurRadius: 20,
-                  offset: const Offset(0, 1), // changes position of shadow
-                ),
-              ],
-            ),
-            child: TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xFFFFFFFF),
-                  padding: const EdgeInsets.all(0),
-                ),
-                child: Text(
-                  cardName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: fSize(14), color: const Color(0xff1A2831)),
-                ),
-                onPressed: () {
-                  handleBilledType(type);
-                }),
-          )
-        : TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(
-                  fontSize: fSize(14), color: const Color(0xff70828D)),
-            ),
-            onPressed: () {
-              handleBilledType(type);
-            },
-            child: Container(
-              width: wScale(160),
-              height: hScale(35),
-              alignment: Alignment.center,
-              child: Text(
-                cardName,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: fSize(14), color: const Color(0xff70828D)),
-              ),
-            ),
-          );
-  }
-
-  Widget getTransactionArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return TransactionItem(
-        date: item['date'],
-        time: item['time'],
-        transactionName: item['transactionName'],
-        userName: item['userName'],
-        cardNum: item['cardNum'],
-        value: item['value'],
-        status: item['status'],
-      );
-    }).toList());
-  }
-
-  Widget getBillingArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return BillingItem(
-          statementDate: item['statementDate'],
-          totalAmount: item['totalAmount'],
-          dueDate: item['dueDate'],
-          status: item['status']);
-    }).toList());
   }
 
   Widget suspendedField() {

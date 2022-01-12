@@ -1,11 +1,17 @@
 import 'package:co/ui/main/more/my_subsibiaries.dart';
 import 'package:co/ui/main/more/user_profile.dart';
+import 'package:co/ui/splash/loading.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class AccountSetting extends StatefulWidget {
   const AccountSetting({Key? key}) : super(key: key);
@@ -27,6 +33,9 @@ class AccountSettingState extends State<AccountSetting> {
   }
 
   int settingType = 1;
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String getUserInfoSettingQuery = Queries.QUERY_GET_USER_SETTING;
 
   handleSettingType(type) {
     setState(() {
@@ -41,9 +50,36 @@ class AccountSettingState extends State<AccountSetting> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    var orgId = userStorage.getItem('orgId');
     return Material(
         child: Scaffold(
-            body: Stack(children: [
+            body: Query(
+            options: QueryOptions(
+              document: gql(getUserInfoSettingQuery),
+              variables: {},
+              // pollInterval: const Duration(seconds: 10),
+            ),
+            builder: (QueryResult result, {VoidCallback? refetch, FetchMore? fetchMore}) {
+              if (result.hasException) {
+                return Text(result.exception.toString());
+              }
+
+              if (result.isLoading) {
+                return CustomLoading();
+              }
+              var userSettingInfo = result.data!['user'];
+              var userInvitations = result.data!['currentUserInvitations'];
+              return mainHome(userSettingInfo, userInvitations);
+            })));
+  }
+
+  Widget mainHome(userSettingInfo, userInvitations) {
+    return Stack(children: [
       Container(
         color: Colors.white,
         child: SizedBox(
@@ -54,7 +90,7 @@ class AccountSettingState extends State<AccountSetting> {
               const CustomMainHeader(title: 'User Settings'),
               const CustomSpacer(size: 49),
               userSettingTypeField(),
-              settingType == 1 ? const UserProfile() : const MySubsibiaries(),
+              settingType == 1 ? UserProfile(userData: userSettingInfo) : MySubsibiaries(roles: userSettingInfo['roles'], userInvitations: userInvitations),
               const CustomSpacer(size: 88),
             ]))),
       ),
@@ -63,8 +99,9 @@ class AccountSettingState extends State<AccountSetting> {
         left: 0,
         child: CustomBottomBar(active: 14),
       )
-    ])));
+    ]);
   }
+
 
   Widget userSettingTypeField() {
     return Container(

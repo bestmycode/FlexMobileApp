@@ -1,10 +1,18 @@
 import 'package:co/ui/main/cards/virtual_personal_card.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/physical_team_header.dart';
+import 'package:co/ui/widgets/physical_team_subsort.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
+import 'package:intl/date_time_patterns.dart';
+import 'package:localstorage/localstorage.dart';
 
 class VirtualTeamCards extends StatefulWidget {
   const VirtualTeamCards({Key? key}) : super(key: key);
@@ -30,82 +38,13 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   int sortType = -1;
   int subSortType = 0;
   final searchCtl = TextEditingController();
+  String searchText = "";
   bool showSortModal = false;
   bool showSubSortModal = false;
-  var transactionArr = [
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2314',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2315',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2316',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2317',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2318',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2319',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2320',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2321',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-    {
-      'userName': 'G-Suit',
-      'cardNum': '2322',
-      'available': '1,00.00',
-      'monthly': '600.00',
-      'status': 'Active',
-      'type': 'Fixed'
-    },
-  ];
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String listCardNamesQuery = Queries.QUERY_LIST_CARDNAME;
+  String teamVirtualCardsListQuery = Queries.QUERY_TEAM_CARD_LIST;
   var sortArr = [
     {'sortType': 'card holder', 'subType1': 'Fixed', 'subType2': 'Recurring'},
     {
@@ -138,11 +77,18 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
     });
   }
 
-  handleSearch() {}
+  handleSearch() {
+    setState(() {
+      searchText = searchCtl.text;
+    });
+  }
 
   handleCardDetail(data) {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const VirtualPersonalCard()),
+      CupertinoPageRoute(
+          builder: (context) => VirtualPersonalCard(
+                cardData: data,
+              )),
     );
   }
 
@@ -167,10 +113,27 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    var orgId = userStorage.getItem('orgId');
+    return GraphQLProvider(
+        client: Token().getLink(accessToken), child: mainHome(orgId));
+  }
+
+  Widget mainHome(orgId) {
     return Container(
       padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
       child: Indexer(children: [
-        Indexed(index: 100, child: headerField()),
+        Indexed(
+            index: 100,
+            child: PhysicalTeamHeader(
+              activeType: activeType,
+              sortType: sortType,
+              subSortType: subSortType,
+              sortArr: sortArr,
+              handleCardType: handleCardType,
+              handleSortType: handleSortType,
+              handleSubSortType: handleSubSortType,
+            )),
         Indexed(
             index: 50,
             child: Column(
@@ -180,7 +143,14 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                 Indexer(children: [
                   Indexed(
                       index: 200,
-                      child: sortType >= 0 ? subSortField() : const SizedBox()),
+                      child: sortType >= 0
+                          ? PhysicalTeamSubSort(
+                              sortType: sortType,
+                              subSortType: subSortType,
+                              sortArr: sortArr,
+                              handleSubSortType: handleSubSortType,
+                            )
+                          : const SizedBox()),
                   Indexed(
                       index: 40,
                       child: Column(
@@ -191,7 +161,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                           sortType < 0
                               ? const CustomSpacer(size: 10)
                               : const SizedBox(),
-                          getTransactionArrWidgets(transactionArr)
+                          transaction(orgId)
                         ],
                       ))
                 ])
@@ -199,6 +169,41 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
             )),
       ]),
     );
+  }
+
+  Widget transaction(orgId) {
+    return Query(
+        options: QueryOptions(
+          document: gql(teamVirtualCardsListQuery),
+          variables: {
+            'accountSubtype': "VIRTUAL",
+            'limit': 10,
+            'offset': 0,
+            'orgId': orgId,
+            'status': activeType == 1 ? "ACTIVE" : "INACTIVE",
+          },
+          // pollInterval: const Duration(seconds: 10),
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Text(result.exception.toString());
+          }
+
+          if (result.isLoading) {
+            return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+          }
+          var listTeamFinanceAccounts = result.data!['listTeamFinanceAccounts'];
+          return listTeamFinanceAccounts['totalCount'] == 0
+              ? Image.asset('assets/empty_transaction.png',
+                  fit: BoxFit.contain, width: wScale(327))
+              : getTransactionArrWidgets(
+                  listTeamFinanceAccounts['financeAccounts']);
+        });
   }
 
   Widget headerField() {
@@ -346,8 +351,9 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         ));
   }
 
-  Widget collapseField(data) {
+  Widget collapseField(index, data) {
     return ExpandableNotifier(
+      initialExpanded: index == 0 ? true : false,
       child: Container(
         margin: EdgeInsets.only(bottom: hScale(10)),
         decoration: BoxDecoration(
@@ -390,10 +396,47 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return collapseField(item);
-    }).toList());
+    if (sortType == 0) {
+      subSortType == 0
+          ? arr.sort((a, b) => a['accountName']
+              .toString()
+              .toLowerCase()
+              .compareTo(b['accountName'].toString().toLowerCase()))
+          : arr.sort((a, b) => b['accountName']
+              .toString()
+              .toLowerCase()
+              .compareTo(a['accountName'].toString().toLowerCase()));
+    } else if (sortType == 1) {
+      subSortType == 0
+          ? arr.sort((a, b) => a['financeAccountLimits'][0]['availableLimit'] <
+                  b['financeAccountLimits'][0]['availableLimit']
+              ? 1
+              : -1)
+          : arr.sort((a, b) => a['financeAccountLimits'][0]['availableLimit'] >
+                  b['financeAccountLimits'][0]['availableLimit']
+              ? 1
+              : -1);
+    } else {
+      subSortType == 0
+          ? arr.sort((a, b) =>
+              a['startDate'].toString().compareTo(b['startDate'].toString()))
+          : arr.sort((a, b) =>
+              b['startDate'].toString().compareTo(a['startDate'].toString()));
+    }
+
+    List tempArr = [];
+    arr.forEach((item) {
+      if (item['accountName'].toLowerCase().indexOf(searchText.toLowerCase()) >=
+          0) tempArr.add(item);
+    });
+
+    return tempArr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: tempArr.map<Widget>((item) {
+            return collapseField(tempArr.indexOf(item), item);
+          }).toList());
   }
 
   Widget cardHeader(data) {
@@ -415,9 +458,9 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(data['userName'],
+            Text(data['cardName'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text('**** **** **** ${data["cardNum"]} | ${data['type']}',
+            Text('${data["permanentAccountNumber"]} | ${data['accountType']}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
         ));
@@ -434,11 +477,16 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         ),
         child: Column(
           children: [
-            cardBodyDetail('Available Limit', data['available'], 1),
+            cardBodyDetail(
+                'Available Limit',
+                data['currencyCode'],
+                data['financeAccountLimits'][0]['availableLimit'].toString(),
+                1),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Monthly Spend Limit', data['monthly'], 2),
+            cardBodyDetail('Monthly Spend Limit', data['currencyCode'],
+                data['financeAccountLimits'][0]['limitValue'].toString(), 2),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Status', data['status'], 3),
+            cardBodyDetail('Status', '', data['status'], 3),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             TextButton(
               style: TextButton.styleFrom(
@@ -457,7 +505,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
         ));
   }
 
-  Widget cardBodyDetail(title, value, type) {
+  Widget cardBodyDetail(title, symbol, value, type) {
     return Container(
         padding: EdgeInsets.only(
             top: hScale(10),
@@ -490,7 +538,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     type != 3
-                        ? Text('SGD ',
+                        ? Text('$symbol ',
                             style: TextStyle(
                                 fontSize: fSize(8),
                                 fontWeight: FontWeight.w500,

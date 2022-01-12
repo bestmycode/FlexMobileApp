@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:auth0/auth0.dart';
+import 'package:co/ui/auth/signup/mail_verify.dart';
 import 'package:co/utils/basedata.dart';
+import 'package:co/utils/token.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:co/ui/widgets/custom_mobile_textfield.dart';
@@ -37,40 +39,18 @@ class SignUpScreenState extends State<SignUpScreen> {
   }
 
   final LocalStorage storage = LocalStorage('sign_up_info1');
-
+  final LocalStorage tokenStorage = LocalStorage('token');
   final firstNameCtl = TextEditingController();
   final lastNameCtl = TextEditingController();
   final mobileNumberCtl = TextEditingController();
   final companyNameCtl = TextEditingController();
   final companyEmailCtl = TextEditingController();
   final passwordCtl = TextEditingController();
-
-  Country _selectedDialogCountry =
-      CountryPickerUtils.getCountryByPhoneCode('65');
+  late String testtext = 'tete';
 
   bool flagTerm = false;
   int signUpProgress = 1;
   String errorText = '';
-  String queryText = '''
-    {
-      countries{
-        id, name
-      }
-    }
-  ''';
-
-  // String queryText = '''
-  // {
-  //     characters(page: 1, filter: { name: "rick" }) {
-  //       info {
-  //         count
-  //       }
-  //       results {
-  //         name
-  //         status
-  //       }
-  //     }
-  // }''';
 
   handleBack() {
     Navigator.of(context).pop();
@@ -88,7 +68,7 @@ class SignUpScreenState extends State<SignUpScreen> {
     storage.setItem('password', passwordCtl.text);
     storage.setItem('flagTerm', flagTerm);
 
-    var url = '${BaseData.BASE_URL}/oauth/token';
+    Uri url = Uri.parse('${BaseData.BASE_URL}/oauth/token');
 
     var data = {
       "client_id": BaseData.CLIENT_ID,
@@ -102,32 +82,83 @@ class SignUpScreenState extends State<SignUpScreen> {
 
     var body = json.decode(tokenResponse.body);
     var token = body["access_token"];
-    var client = Auth0Client(
-        clientId: data["client_id"],
-        clientSecret: data["client_secret"],
-        domain: "finaxar-staging.auth0.com",
-        connectTimeout: 10000,
-        sendTimeout: 10000,
-        receiveTimeout: 60000,
-        useLoggerInterceptor: true,
-        accessToken: token);
-    print("${client}");
-    // Ref : https://pub.dev/packages/auth0/
+    storage.setItem('client_token', token);
 
-    // try {
-    //   var user = await client.createUser({
-    //     "email": companyEmailCtl.text,
-    //     "phone_number": "+8617640105623",
-    //     "given_name": firstNameCtl.text,
-    //     "family_name": lastNameCtl.text,
-    //     "connection": "Username-Password-Authentication",
-    //     "password": passwordCtl.text,
-    //   });
-    // } catch(error) {
-    //   setState(() {
-    //     errorText = error.toString();
-    //   });
-    // }
+    var client = Auth0Client(
+      clientId: data["client_id"].toString(),
+      clientSecret: data["client_secret"].toString(),
+      domain: "finaxar-staging.auth0.com",
+      connectTimeout: 10000,
+      sendTimeout: 10000,
+      receiveTimeout: 60000,
+      useLoggerInterceptor: true,
+      accessToken: token);
+
+    try {
+      var user = await client.createUser({
+        "email": companyEmailCtl.text,
+        "password": passwordCtl.text,
+        "connection": "Username-Password-Authentication",
+        "metadata": {
+          "phone": mobileNumberCtl.text,
+          "first_name": firstNameCtl.text,
+          "last_name": lastNameCtl.text,
+        }
+      });
+
+      var temp_user = await client.passwordGrant({
+        // "username": companyEmailCtl.text,
+        // "password": passwordCtl.text,
+        // "username": "demo@flexnow.co",
+        // "password": "Flex@01082021",
+        "username":"ronak+testivbbank1@finaxar.com",
+	      "password": "Gofast@123",
+        "scope": "openid profile email",
+        "realm": "Username-Password-Authentication"
+      });
+      
+      var accessToken = temp_user.accessToken;
+      await tokenStorage.setItem('jwt_token', accessToken);
+
+
+      // Uri url = Uri.parse('${BaseData.BASE_URL}/co/authenticate');
+
+      // var data = {
+      //   "client_id": BaseData.CLIENT_ID,
+      //   "credential_type": "http://auth0.com/oauth/grant-type/password-realm",
+      //   "realm": "Username-Password-Authentication",
+      //   "username": companyEmailCtl.text,
+      //   "password": passwordCtl.text
+      // };  
+
+      // var jwtTokenResponse = await http.post(url,
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       "auth0-client": token,
+      //       "Origin": "https://app.staging.fxr.one",
+      //       "Referer": "https://app.staging.fxr.one/"
+      //     }, body: json.encode(data));
+
+      // var jwtbody = json.decode(jwtTokenResponse.body);
+      // var jwttoken = jwtbody["access_token"];
+      
+      // print("----------------");
+      // print(token);
+      // print("----------------");
+      // print(jwtbody);
+      // print("----------------");
+      // print(jwttoken);
+
+      // await tokenStorage.setItem('jwt_token', jwttoken);
+      
+      Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => MailVerifyScreen(verifyCode: user['app_metadata']['verification_code'])),
+      );
+    } catch(error) {
+      setState(() {
+        errorText = error.toString();
+      });
+    }
   }
 
   handleLogin() {
@@ -136,7 +167,6 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   @override
   void initState() {
-    super.initState();
     firstNameCtl.text = storage.getItem('firstName');
     lastNameCtl.text = storage.getItem('lastName');
     mobileNumberCtl.text = storage.getItem('mobileNumber');
@@ -144,72 +174,62 @@ class SignUpScreenState extends State<SignUpScreen> {
     companyEmailCtl.text = storage.getItem('companyEmail');
     passwordCtl.text = storage.getItem('password');
     flagTerm = storage.getItem('flagTerm') ?? false;
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    return GraphQLProvider(
+        client: Token().getLink(Token().getClientToken()),
+        child: main()
+    );
+  }
+
+  Widget main() {
     return Material(
         child: Scaffold(
-      body: Query(
-        options: QueryOptions(
-          document: gql(queryText),
-        ),
-        builder: (QueryResult result, { VoidCallback? refetch, FetchMore? fetchMore }) {
-          if (result.hasException) {
-            print(result.exception.toString());
-            return Text(result.exception.toString(), textAlign: TextAlign.center,);
-          }
-          
-          if (result.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          return SingleChildScrollView(
-              child: Column(children: [
-            const SignupProgressHeader(prev: SPLASH_SCREEN),
-            const CustomSpacer(size: 38),
-            CustomTextField(
-                ctl: firstNameCtl,
-                hint: 'Enter First Name',
-                label: 'First Name'),
-            const CustomSpacer(size: 32),
-            CustomTextField(
-                ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
-            const CustomSpacer(size: 32),
-            CustomMobileTextField(
-                ctl: mobileNumberCtl,
-                hint: 'Enter Mobile Number',
-                label: 'Mobile Number'),
-            const CustomSpacer(size: 32),
-            CustomTextField(
-                ctl: companyNameCtl,
-                hint: 'Enter Company Name',
-                label: 'Registered Company Name'),
-            const CustomSpacer(size: 32),
-            CustomTextField(
-                ctl: companyEmailCtl,
-                hint: 'Enter Company Email Address',
-                label: 'Company Email Address'),
-            const CustomSpacer(size: 32),
-            CustomTextField(
-                ctl: passwordCtl,
-                hint: 'At Least 8 Characters',
-                label: 'Password',
-                pwd: true),
-            const CustomSpacer(size: 21),
-            termsField(),
-            const CustomSpacer(size: 22),
-            continueButton(),
-            errorText != '' ? showErrorText() : const CustomSpacer(size: 45),
-            loginField(),
-            const CustomSpacer(size: 52),
-          ]));
-        },
-      ),
-      
-    ));
+            body: SingleChildScrollView(
+                child: Container(
+                  color: Colors.white,
+                  child: Column(children: [
+      const SignupProgressHeader(prev: SPLASH_SCREEN),
+      const CustomSpacer(size: 38),
+      CustomTextField(
+          ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: lastNameCtl, hint: 'Enter Last Name', label: 'Last Name'),
+      const CustomSpacer(size: 32),
+      CustomMobileTextField(
+          ctl: mobileNumberCtl,
+          hint: 'Enter Mobile Number',
+          label: 'Mobile Number'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: companyNameCtl,
+          hint: 'Enter Company Name',
+          label: 'Registered Company Name'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: companyEmailCtl,
+          hint: 'Enter Company Email Address',
+          label: 'Company Email Address'),
+      const CustomSpacer(size: 32),
+      CustomTextField(
+          ctl: passwordCtl,
+          hint: 'At Least 8 Characters',
+          label: 'Password',
+          pwd: true),
+      const CustomSpacer(size: 21),
+      termsField(),
+      const CustomSpacer(size: 22),
+      continueButton(),
+      errorText != ''? showErrorText() : const CustomSpacer(size: 45),
+      loginField(),
+      const CustomSpacer(size: 52),
+                
+                
+    ])))));
   }
 
   Widget termsField() {
@@ -280,13 +300,13 @@ class SignUpScreenState extends State<SignUpScreen> {
         height: hScale(56),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xff1A2831),
+            primary: flagTerm ? const Color(0xff1A2831) : const Color(0xff1A2831).withOpacity(0.5),
             side: const BorderSide(width: 0, color: Color(0xff1A2831)),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleContinue();
+            flagTerm ? handleContinue() : null;
           },
           child: Text("Continue",
               style: TextStyle(
@@ -327,13 +347,23 @@ class SignUpScreenState extends State<SignUpScreen> {
 
   Widget showErrorText() {
     return Container(
-      height: hScale(45),
+      width: wScale(295),
+      height: hScale(60),
       alignment: Alignment.center,
-      child: Text(errorText,
-          style: TextStyle(
-              color: const Color(0xFFEB5757),
-              fontSize: fSize(16),
-              fontWeight: FontWeight.bold)),
+      padding: EdgeInsets.only(top: hScale(15)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [Flexible(child: 
+            Text(errorText,
+              softWrap: true,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: const Color(0xFFEB5757),
+                fontSize: fSize(16),
+                fontWeight: FontWeight.bold)))
+        ]
+      )      
     );
   }
 }

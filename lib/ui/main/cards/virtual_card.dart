@@ -1,4 +1,5 @@
 import 'package:co/ui/main/cards/physical_team_card.dart';
+import 'package:co/ui/main/cards/virtual_my_card.dart';
 import 'package:co/ui/main/cards/virtual_my_transaction.dart';
 import 'package:co/ui/main/cards/virtual_team_card.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
@@ -7,13 +8,11 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:localstorage/localstorage.dart';
 
 class VirtualCards extends StatefulWidget {
-  // final CupertinoTabController controller;
-  // final GlobalKey<NavigatorState> navigatorKey;
-
-  // const VirtualCards({Key? key,  required this.controller, required this.navigatorKey}) : super(key: key);
-  const VirtualCards({Key? key}) : super(key: key);
+  final defaultType;
+  const VirtualCards({Key? key, this.defaultType = 0}) : super(key: key);
   @override
   VirtualCardsState createState() => VirtualCardsState();
 }
@@ -31,7 +30,8 @@ class VirtualCardsState extends State<VirtualCards> {
     return Scale().fSize(context, size);
   }
 
-  int cardType = 1;
+  int cardType = 0;
+  final LocalStorage userStorage = LocalStorage('user_info');
 
   handleBack() {
     DefaultTabController.of(context)!.animateTo(1);
@@ -46,6 +46,9 @@ class VirtualCardsState extends State<VirtualCards> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      cardType = widget.defaultType;
+    });
   }
 
   @override
@@ -53,20 +56,24 @@ class VirtualCardsState extends State<VirtualCards> {
     return Material(
         child: Scaffold(
             body: Stack(children: [
-      SingleChildScrollView(
-          child: Column(children: [
-        const CustomSpacer(size: 44),
-        const CustomMainHeader(title: 'Virtual Cards'),
-        const CustomSpacer(size: 38),
-        cardGroupField(),
-        // const CustomSpacer(size: 10),
-        cardType == 1
-            ? const VirtualMyTransactions()
-            : cardType == 2
-                ? const VirtualTeamCards()
-                : const VirtualTeamCards(),
-        const CustomSpacer(size: 88),
-      ])),
+      Container(
+        height: hScale(812),
+        child: SingleChildScrollView(
+            child: Container(
+                child: Column(children: [
+          const CustomSpacer(size: 44),
+          const CustomMainHeader(title: 'Virtual Cards'),
+          const CustomSpacer(size: 38),
+          cardGroupField(),
+          // const CustomSpacer(size: 10),
+          cardType == 0
+              ? const VirtualMyTransactions()
+              : cardType == 1
+                  ? const VirtualMyCards()
+                  : const VirtualTeamCards(),
+          const CustomSpacer(size: 88),
+        ]))),
+      ),
       const Positioned(
         bottom: 0,
         left: 0,
@@ -116,6 +123,7 @@ class VirtualCardsState extends State<VirtualCards> {
   }
 
   Widget cardGroupField() {
+    var isAdmin = userStorage.getItem('isAdmin');
     return Container(
         width: wScale(327),
         height: hScale(46),
@@ -133,16 +141,17 @@ class VirtualCardsState extends State<VirtualCards> {
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.zero,
             child: Row(children: [
-              cardGroupButton('My Transactions', 1),
-              cardGroupButton('My Cards', 2),
-              cardGroupButton('Team Cards', 3),
+              cardGroupButton('My Transactions', 0),
+              cardGroupButton('My Cards', 1),
+              isAdmin ? cardGroupButton('Team Cards', 2): SizedBox(),
             ])));
   }
 
   Widget cardGroupButton(cardName, type) {
+    var isAdmin = userStorage.getItem('isAdmin');
     return type == cardType
         ? Container(
-            width: wScale(130),
+            width: wScale(isAdmin ? 130: 161),
             height: hScale(35),
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
@@ -185,7 +194,7 @@ class VirtualCardsState extends State<VirtualCards> {
               handleCardType(type);
             },
             child: Container(
-              width: wScale(130),
+              width: wScale(isAdmin?130: 161),
               height: hScale(35),
               alignment: Alignment.center,
               child: Text(

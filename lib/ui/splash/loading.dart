@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:co/ui/splash/first_loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
+import 'package:localstorage/localstorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -13,8 +16,8 @@ class LoadingScreen extends StatefulWidget {
 
 class LoadingScreenState extends State<LoadingScreen>
     with SingleTickerProviderStateMixin {
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   var _visible = true;
-
   late AnimationController animationController;
   late Animation<double> animation;
 
@@ -23,8 +26,15 @@ class LoadingScreenState extends State<LoadingScreen>
     return Timer(_duration, navigationPage);
   }
 
-  void navigationPage() {
-    Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN);
+  void navigationPage() async{
+    SharedPreferences prefs = await _prefs;
+    bool? isFirst = prefs.getBool("isFirst");
+    bool? isRememberd = prefs.getBool("isRemembered");
+    isFirst == false
+    ? isRememberd == true 
+      ? Navigator.of(context).pushReplacementNamed(SIGN_IN)
+      :Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN)
+    : Navigator.of(context).pushReplacementNamed(FIRST_LOADING_SCREEN);
   }
 
   @override

@@ -6,8 +6,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
-import 'package:local_auth/local_auth.dart';
+// import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignInAuthScreen extends StatefulWidget {
   const SignInAuthScreen({Key? key}) : super(key: key);
@@ -17,7 +19,13 @@ class SignInAuthScreen extends StatefulWidget {
 }
 
 class SignInAuthScreenState extends State<SignInAuthScreen> {
-  final LocalAuthentication _localAuthentication = LocalAuthentication();
+  // final LocalAuthentication _localAuthentication = LocalAuthentication();
+  final LocalAuthentication auth = LocalAuthentication();
+  _SupportState _supportState = _SupportState.unknown;
+  bool? _canCheckBiometrics;
+  List<BiometricType>? _availableBiometrics;
+  String _authorized = 'Not Authorized';
+  bool _isAuthenticating = false;
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -39,7 +47,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
   }
 
   handleEnableFaceID() {
-    authenticate();
+    _authenticateWithBiometrics();
   }
 
   handleSetUpLater() {
@@ -49,36 +57,119 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
   @override
   void initState() {
     super.initState();
+    auth.isDeviceSupported().then(
+          (bool isSupported) => setState(() => _supportState = isSupported
+              ? _SupportState.supported
+              : _SupportState.unsupported),
+        );
+    _checkBiometrics();
+    _getAvailableBiometrics();
   }
 
-  authenticate() async {
-    if (await _isBiometricAvailable()) {
-      await _getListOfBiometricTypes();
-      await _authenticateUser();
+  Future<void> _checkBiometrics() async {
+    late bool canCheckBiometrics;
+    try {
+      canCheckBiometrics = await auth.canCheckBiometrics;
+    } on PlatformException catch (e) {
+      canCheckBiometrics = false;
+      print(e);
     }
-  }
-
-  Future<bool> _isBiometricAvailable() async {
-    bool isAvailable = await _localAuthentication.canCheckBiometrics;
-    return isAvailable;
-  }
-
-  Future<void> _getListOfBiometricTypes() async {
-    List<BiometricType> listOfBiometrics =
-        await _localAuthentication.getAvailableBiometrics();
-  }
-
-  Future<void> _authenticateUser() async {
-    bool isAuthenticated =
-        await _localAuthentication.authenticateWithBiometrics(
-      localizedReason: "Use a biometria para prosseguir",
-      useErrorDialogs: true,
-      stickyAuth: true,
-    );
-
-    if (isAuthenticated) {
-      Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
+    if (!mounted) {
+      return;
     }
+
+    setState(() {
+      _canCheckBiometrics = canCheckBiometrics;
+    });
+  }
+
+  Future<void> _getAvailableBiometrics() async {
+    late List<BiometricType> availableBiometrics;
+    try {
+      availableBiometrics = await auth.getAvailableBiometrics();
+    } on PlatformException catch (e) {
+      availableBiometrics = <BiometricType>[];
+      print(e);
+    }
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _availableBiometrics = availableBiometrics;
+    });
+  }
+
+  Future<void> _authenticate() async {
+    bool authenticated = false;
+    try {
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticate(
+          localizedReason: 'Let OS determine authentication method',
+          useErrorDialogs: true,
+          stickyAuth: true);
+      setState(() {
+        _isAuthenticating = false;
+      });
+    } on PlatformException catch (e) {
+      print(e);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Error - ${e.message}';
+      });
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+
+    setState(
+        () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
+    navigationMainPage();
+  }
+
+  Future<void> _authenticateWithBiometrics() async {
+    bool authenticated = false;
+    try {
+      setState(() {
+        _isAuthenticating = true;
+        _authorized = 'Authenticating';
+      });
+      authenticated = await auth.authenticate(
+          localizedReason:
+              'Scan your fingerprint (or face or whatever) to authenticate',
+          useErrorDialogs: true,
+          stickyAuth: true,
+          biometricOnly: true);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Authenticating';
+      });
+    } on PlatformException catch (e) {
+      print(e);
+      setState(() {
+        _isAuthenticating = false;
+        _authorized = 'Error - ${e.message}';
+      });
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+
+    final String message = authenticated ? 'Authorized' : 'Not Authorized';
+    setState(() {
+      _authorized = message;
+    });
+    navigationMainPage();
+  }
+
+  Future<void> _cancelAuthentication() async {
+    await auth.stopAuthentication();
+    setState(() => _isAuthenticating = false);
   }
 
   @override
@@ -122,8 +213,8 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
               top: hScale(113), left: wScale(40), right: wScale(40)),
           child: Text(
               platform == 'ios'
-                  ? "Secure your account with Face ID"
-                  : "Secure your account with Touch ID",
+                  ? AppLocalizations.of(context)!.secureFaceID
+                  : AppLocalizations.of(context)!.secureTouchID,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: const Color(0xffffffff), fontSize: fSize(24))),
@@ -150,7 +241,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
           onPressed: () {
             handleEnableFaceID();
           },
-          child: Text(platform == 'ios' ? "Enable Face ID" : 'Enable Touch ID',
+          child: Text(platform == 'ios' ? AppLocalizations.of(context)!.enableFaceID : AppLocalizations.of(context)!.enableTouchID,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: fSize(16),
@@ -168,7 +259,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
       onPressed: () {
         handleSetUpLater();
       },
-      child: const Text('I’ll set it up later'),
+      child: Text(AppLocalizations.of(context)!.setUpLater),
     );
   }
 
@@ -202,7 +293,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
                   fit: BoxFit.contain,
                   width: hScale(72)),
               const CustomSpacer(size: 19),
-              Text("Face ID",
+              Text(AppLocalizations.of(context)!.faceID,
                   style: TextStyle(color: Colors.black, fontSize: fSize(16))),
             ],
           ),

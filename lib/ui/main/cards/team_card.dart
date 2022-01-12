@@ -104,7 +104,6 @@ class TeamCardsState extends State<TeamCards> {
     setState(() {
       showModal = false;
     });
-    print('------++++++++++++++');
   }
 
   sortAvailableLimit() {

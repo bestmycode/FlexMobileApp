@@ -1,10 +1,16 @@
 import 'package:co/ui/main/cards/physical_personal_card.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/physical_team_header.dart';
+import 'package:co/ui/widgets/physical_team_subsort.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
+import 'package:localstorage/localstorage.dart';
 
 class PhysicalTeamCards extends StatefulWidget {
   const PhysicalTeamCards({Key? key}) : super(key: key);
@@ -30,66 +36,10 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   int sortType = -1;
   int subSortType = 0;
   final searchCtl = TextEditingController();
-  bool showSortModal = false;
-  bool showSubSortModal = false;
-  var transactionArr = [
-    {
-      'id': 0,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-    {
-      'id': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-    {
-      'id': 2,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-    {
-      'id': 3,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-    {
-      'id': 4,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-    {
-      'id': 5,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-    {
-      'id': 6,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'available': '1,200.00',
-      'monthly': '600.00',
-      'status': 'Active'
-    },
-  ];
+  String teamCardsList = Queries.QUERY_PHYSICAL_TEAMCARD_LIST;
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String queryAllTransactions = Queries.QUERY_PHYSICAL_TEAMCARD_LIST;
 
   var sortArr = [
     {'sortType': 'card holder', 'subType1': 'A - Z', 'subType2': 'Z - A'},
@@ -104,6 +54,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
       'subType2': 'Oldest to newest'
     },
   ];
+  String searchText = "";
 
   handleCardType(type) {
     setState(() {
@@ -111,49 +62,27 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     });
   }
 
-  handleSort() {
+  handleSearch() {
     setState(() {
-      showSortModal = !showSortModal;
+      searchText = searchCtl.text;
     });
   }
-
-  handleSearch() {}
 
   handleCardDetail(data) {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const PhysicalPersonalCard()),
+      CupertinoPageRoute(
+          builder: (context) => PhysicalPersonalCard(cardData: data)),
     );
-  }
-
-  sortCardHolder() {
-    setState(() {
-      showSortModal = false;
-      sortType = 1;
-    });
-  }
-
-  handleSortModal() {
-    setState(() {
-      showSortModal = !showSortModal;
-    });
-  }
-
-  handleSubSortModal() {
-    setState(() {
-      showSubSortModal = !showSubSortModal;
-    });
   }
 
   handleSortType(type) {
     setState(() {
-      showSortModal = false;
       sortType = type;
     });
   }
 
   handleSubSortType(type) {
     setState(() {
-      showSubSortModal = false;
       subSortType = type;
     });
   }
@@ -165,11 +94,26 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Container(
       padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
       margin: EdgeInsets.only(top: hScale(14)),
       child: Indexer(children: [
-        Indexed(index: 100, child: headerField()),
+        Indexed(
+            index: 100,
+            child: PhysicalTeamHeader(
+              activeType: activeType,
+              sortType: sortType,
+              subSortType: subSortType,
+              sortArr: sortArr,
+              handleCardType: handleCardType,
+              handleSortType: handleSortType,
+              handleSubSortType: handleSubSortType,
+            )),
         Indexed(
             index: 50,
             child: Column(
@@ -179,7 +123,14 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                 Indexer(children: [
                   Indexed(
                       index: 200,
-                      child: sortType >= 0 ? subSortField() : const SizedBox()),
+                      child: sortType >= 0
+                          ? PhysicalTeamSubSort(
+                              sortType: sortType,
+                              subSortType: subSortType,
+                              sortArr: sortArr,
+                              handleSubSortType: handleSubSortType,
+                            )
+                          : const SizedBox()),
                   Indexed(
                       index: 40,
                       child: Column(
@@ -190,7 +141,8 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                           sortType < 0
                               ? const CustomSpacer(size: 10)
                               : const SizedBox(),
-                          getTransactionArrWidgets(transactionArr)
+                          // widget.data['data']['totalPhysicalCards'] ==  0 ? emptyTransactionWidget() : getTransactionArrWidgets(transactionArr)
+                          queryTransactionField()
                         ],
                       ))
                 ])
@@ -202,77 +154,35 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
     );
   }
 
-  Widget headerField() {
-    return Stack(overflow: Overflow.visible, children: [
-      headerSortField(),
-      showSortModal
-          ? Positioned(top: hScale(50), right: 0, child: modalField())
-          : const SizedBox()
-    ]);
-  }
-
-  Widget headerSortField() {
-    return Container(
-      height: hScale(200),
-      alignment: Alignment.topCenter,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Row(children: [
-          activeButton('Active Cards', 1),
-          activeButton('Inactive Cards', 2),
-        ]),
-        TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(
-                  fontSize: fSize(14), color: const Color(0xff70828D)),
-            ),
-            onPressed: () {
-              handleSort();
-            },
-            child: Row(
-              children: [
-                Icon(Icons.swap_vert_rounded,
-                    color: const Color(0xff29C490), size: hScale(18)),
-                Text('Sort by', style: TextStyle(fontSize: fSize(12)))
-              ],
-            )),
-      ]),
-    );
-  }
-
-  Widget activeButton(title, type) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff70828D),
-        padding: EdgeInsets.symmetric(vertical: 0, horizontal: wScale(5)),
-        // textStyle: TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-      ),
-      onPressed: () {
-        handleCardType(type);
-      },
-      child: Container(
-        height: hScale(35),
-        padding: EdgeInsets.only(left: wScale(6), right: wScale(6)),
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-                    color: type == activeType
-                        ? const Color(0xFF29C490)
-                        : const Color(0xFFEEEEEE),
-                    width: type == activeType ? hScale(2) : hScale(1)))),
-        alignment: Alignment.center,
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              color: type == activeType
-                  ? const Color(0xff1A2831)
-                  : const Color(0xff70828D)),
+  Widget queryTransactionField() {
+    var orgId = userStorage.getItem('orgId');
+    return Query(
+        options: QueryOptions(
+          document: gql(queryAllTransactions),
+          variables: {
+            "accountSubtype": "PHYSICAL",
+            "limit": 10,
+            "offset": 0,
+            "orgId": orgId,
+            "status": activeType == 1 ? "ACTIVE" : "INACTIVE"
+          },
+          // pollInterval: const Duration(seconds: 10),
         ),
-      ),
-    );
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Text(result.exception.toString());
+          }
+
+          if (result.isLoading) {
+            return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+          }
+          var transactionArr =
+              result.data!['listTeamFinanceAccounts']['financeAccounts'];
+          return getTransactionArrWidgets(transactionArr);
+        });
   }
 
   Widget searchField() {
@@ -334,9 +244,9 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         ));
   }
 
-  Widget collapseField(data) {
+  Widget collapseField(index, data) {
     return ExpandableNotifier(
-      initialExpanded: data['id'] == 0 ? true : false,
+      initialExpanded: index == 0 ? true : false,
       child: Container(
         margin: EdgeInsets.only(bottom: hScale(5)),
         decoration: BoxDecoration(
@@ -379,10 +289,47 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return collapseField(item);
-    }).toList());
+    if (sortType == 0) {
+      subSortType == 0
+          ? arr.sort((a, b) => a['accountName']
+              .toString()
+              .toLowerCase()
+              .compareTo(b['accountName'].toString().toLowerCase()))
+          : arr.sort((a, b) => b['accountName']
+              .toString()
+              .toLowerCase()
+              .compareTo(a['accountName'].toString().toLowerCase()));
+    } else if (sortType == 1) {
+      subSortType == 0
+          ? arr.sort((a, b) => a['financeAccountLimits'][0]['availableLimit'] <
+                  b['financeAccountLimits'][0]['availableLimit']
+              ? 1
+              : -1)
+          : arr.sort((a, b) => a['financeAccountLimits'][0]['availableLimit'] >
+                  b['financeAccountLimits'][0]['availableLimit']
+              ? 1
+              : -1);
+    } else {
+      subSortType == 0
+          ? arr.sort((a, b) =>
+              a['startDate'].toString().compareTo(b['startDate'].toString()))
+          : arr.sort((a, b) =>
+              b['startDate'].toString().compareTo(a['startDate'].toString()));
+    }
+
+    List tempArr = [];
+    arr.forEach((item) {
+      if (item['accountName'].toLowerCase().indexOf(searchText.toLowerCase()) >= 0)
+        tempArr.add(item);
+    });
+
+    return tempArr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: tempArr.map<Widget>((item) {
+            return collapseField(tempArr.indexOf(item), item);
+          }).toList());
   }
 
   Widget cardHeader(data) {
@@ -404,9 +351,9 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(data['userName'],
+            Text(data['accountName'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text('**** **** **** ${data["cardNum"]}',
+            Text(data['permanentAccountNumber'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
         ));
@@ -423,11 +370,22 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
         ),
         child: Column(
           children: [
-            cardBodyDetail('Available Limit', data['available'], 0),
+            cardBodyDetail(
+                'Available Limit',
+                data['financeAccountLimits'][0]['availableLimit'].toString(),
+                0),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Monthly Spend Limit', data['monthly'], 1),
+            cardBodyDetail('Monthly Spend Limit',
+                data['financeAccountLimits'][0]['limitValue'].toString(), 1),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Status', data['status'], 2),
+            cardBodyDetail(
+                'Status',
+                data['status'] == "ACTIVATE"
+                    ? 'Activated'
+                    : data['status'] == "INACTIVE"
+                        ? 'Unactivated'
+                        : 'Cancelled',
+                2),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             TextButton(
               style: TextButton.styleFrom(
@@ -467,8 +425,15 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                     top: hScale(5),
                     bottom: hScale(5)),
                 decoration: BoxDecoration(
-                  color:
-                      type != 1 ? const Color(0xFFDEFEE9) : Colors.transparent,
+                  color: type == 1
+                      ? Colors.transparent
+                      : type == 2 && value == "Unactivated"
+                          ? Color(0xFF1A2831)
+                          : type == 2 && value == "Activated"
+                              ? Color(0xFFDEFEE9)
+                              : type == 2
+                                  ? Color(0xFFffdfd5)
+                                  : Color(0xFFDEFEE9),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(hScale(16)),
                     topRight: Radius.circular(hScale(16)),
@@ -494,173 +459,17 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                               fontSize: fSize(14),
                               fontWeight: FontWeight.w600,
                               height: 1,
-                              color: type != 1
-                                  ? const Color(0xFF30E7A9)
-                                  : const Color(0xFF1A2831)))
+                              color: type == 1
+                                  ? const Color(0xFF1A2831)
+                                  : type == 2 && value == "Unactivated"
+                                      ? const Color(0xFFFFFFFF)
+                                      : type == 2 && value == "Activated"
+                                          ? const Color(0xFF30E7A9)
+                                          : type == 2
+                                              ? const Color(0xFFeb5757)
+                                              : const Color(0xFF30E7A9)))
                     ]))
           ],
         ));
-  }
-
-  Widget modalField() {
-    return Container(
-      width: wScale(177),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          modalButton('Sort by ${sortArr[0]['sortType']}', 0, 0),
-          modalButton('Sort by ${sortArr[1]['sortType']}', 1, 0),
-          modalButton('Sort by ${sortArr[2]['sortType']}', 2, 0)
-        ],
-      ),
-    );
-  }
-
-  Widget modalButton(title, type, style) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: style == 0
-            ? sortType == type
-                ? const Color(0xFF29C490)
-                : Colors.black
-            : subSortType == type
-                ? const Color(0xFF29C490)
-                : Colors.black,
-        padding: EdgeInsets.only(
-            top: hScale(10),
-            bottom: hScale(10),
-            left: wScale(16),
-            right: wScale(16)),
-        textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
-      ),
-      onPressed: () {
-        style == 0 ? handleSortType(type) : handleSubSortType(type);
-      },
-      child: Container(
-        width: wScale(177),
-        padding: EdgeInsets.only(top: hScale(6), bottom: hScale(6)),
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          textAlign: TextAlign.start,
-          style: TextStyle(fontSize: fSize(12)),
-        ),
-      ),
-    );
-  }
-
-  Widget subSortField() {
-    return Stack(overflow: Overflow.visible, children: [
-      sortField(),
-      showSubSortModal
-          ? Positioned(
-              top: hScale(50), right: 0, child: subSortTypeModalField())
-          : const SizedBox()
-    ]);
-  }
-
-  Widget sortField() {
-    return Container(
-      height: hScale(500),
-      alignment: Alignment.topCenter,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Sorted by: ${sortArr[sortType]['sortType']}',
-              style: TextStyle(
-                  fontSize: fSize(12),
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF1B2931))),
-          sortValue()
-        ],
-      ),
-    );
-  }
-
-  Widget subSortTypeModalField() {
-    return Container(
-      width: wScale(177),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          sortType != -1
-              ? modalButton(sortArr[sortType]['subType1'], 0, 1)
-              : const SizedBox(),
-          sortType != -1
-              ? modalButton(sortArr[sortType]['subType2'], 1, 1)
-              : const SizedBox()
-        ],
-      ),
-    );
-  }
-
-  Widget sortValue() {
-    return TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xffffffff),
-          padding: const EdgeInsets.all(0),
-        ),
-        child: Container(
-          padding:
-              EdgeInsets.symmetric(vertical: hScale(3), horizontal: wScale(16)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
-          child: Row(children: [
-            Text(
-                subSortType == 0
-                    ? '${sortArr[sortType]['subType1']}'
-                    : '${sortArr[sortType]['subType2']}',
-                style: TextStyle(
-                    fontSize: fSize(12), color: const Color(0xFF1B2931))),
-            SizedBox(width: wScale(12)),
-            SizedBox(
-              width: wScale(12),
-              child: Icon(Icons.keyboard_arrow_down_rounded,
-                  color: const Color(0xFFBFBFBF), size: fSize(24)),
-            )
-          ]),
-        ),
-        onPressed: () {
-          handleSubSortModal();
-        });
   }
 }

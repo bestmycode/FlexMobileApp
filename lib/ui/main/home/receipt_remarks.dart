@@ -4,9 +4,11 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:intl/intl.dart';
 
 class ReceiptRemarks extends StatefulWidget {
-  const ReceiptRemarks({Key? key}) : super(key: key);
+  final data;
+  const ReceiptRemarks({Key? key, this.data}) : super(key: key);
 
   @override
   ReceiptRemarksState createState() => ReceiptRemarksState();
@@ -25,52 +27,6 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
     return Scale().fSize(context, size);
   }
 
-  bool flagRemarks = false;
-  var remarkArr = [
-    {
-      'name': 'John Tan',
-      'date': '20 Dec 2021 | 8:40 PM',
-      'detail':
-          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
-    },
-    {
-      'name': 'John Tan',
-      'date': '20 Dec 2021 | 8:40 PM',
-      'detail':
-          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
-    },
-    {
-      'name': 'John Tan',
-      'date': '20 Dec 2021 | 8:40 PM',
-      'detail':
-          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
-    },
-    {
-      'name': 'John Tan',
-      'date': '20 Dec 2021 | 8:40 PM',
-      'detail':
-          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
-    },
-    {
-      'name': 'John Tan',
-      'date': '20 Dec 2021 | 8:40 PM',
-      'detail':
-          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
-    },
-    {
-      'name': 'John Tan',
-      'date': '20 Dec 2021 | 8:40 PM',
-      'detail':
-          'I think we need to lorem ipsum dolor sit \namet, consectetur adipiscing elit, sed do \neiusmod tempor incididunt?'
-    }
-  ];
-
-  handleAddRemark() {
-    setState(() {
-      flagRemarks = true;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -78,7 +34,7 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
 
   @override
   Widget build(BuildContext context) {
-    return flagRemarks == false ? emptyRemarkField() : remarkField();
+    return widget.data.length == 0 ? emptyRemarkField() : remarkField();
   }
 
   Widget emptyRemarkField() {
@@ -96,8 +52,11 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
 
   Widget remarkField() {
     return Column(
-        children: remarkArr.map<Widget>((item) {
-      return remarkDetail(item['name'], item['date'], item['detail']);
+        children: widget.data.map<Widget>((item) {
+      return remarkDetail(
+          item['remarkUserName'],
+          "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['remarkCreatedAt']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['remarkCreatedAt']))}",
+          item['remark']);
     }).toList());
   }
 
@@ -155,9 +114,7 @@ class ReceiptRemarksState extends State<ReceiptRemarks> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
-          onPressed: () {
-            handleAddRemark();
-          },
+          onPressed: () {},
           child: Text("Add Remarks",
               style: TextStyle(
                   color: Colors.white,

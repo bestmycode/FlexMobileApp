@@ -6,6 +6,7 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:intercom_flutter/intercom_flutter.dart';
 
 class CompleteNewSubsidiary extends StatefulWidget {
   const CompleteNewSubsidiary({Key? key}) : super(key: key);
@@ -57,6 +58,33 @@ class CompleteNewSubsidiaryState extends State<CompleteNewSubsidiary> {
         CupertinoPageRoute(builder: (context) => const RequestCard()),
       );
     }
+  }
+
+  handleCreditline(title) {
+    // Intercom.displayMessenger();
+    debugPrint(title);
+
+    String msg = "";
+
+    if (title == "Increase Credit Line") {
+      msg = '''Hello Flex,
+
+I would like to apply for increase in Flex Plus Credit line [SGD 10,000 or 30,000 or 100,000]. 
+
+Please reach out to me to process the application further.
+
+Thanks.''';
+    } else {
+      msg = '''Hello Flex,
+
+I would like to apply for Flex plus credit line [SGD 3000 or 10,000 or 30,000 or 100,000] 
+
+Please reach out to me to process the application further.
+
+Thanks.''';
+    }
+
+    Intercom.displayMessageComposer(msg);
   }
 
   @override
@@ -211,7 +239,9 @@ class CompleteNewSubsidiaryState extends State<CompleteNewSubsidiary> {
                   borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              handleDepositFunds();
+              title == "Deposit Funds"
+                  ? handleDepositFunds()
+                  : handleCreditline(title);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -225,7 +255,7 @@ class CompleteNewSubsidiaryState extends State<CompleteNewSubsidiary> {
                   SizedBox(width: wScale(18)),
                   Text(title,
                       style: TextStyle(
-                          fontSize: fSize(12), color: const Color(0xff465158))),
+                          fontSize: fSize(14), color: const Color(0xff465158))),
                 ]),
                 const Icon(Icons.arrow_forward_rounded,
                     color: Color(0xff70828D), size: 24.0),

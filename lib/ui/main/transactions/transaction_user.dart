@@ -1,11 +1,17 @@
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
+import 'package:intl/intl.dart';
+import 'package:localstorage/localstorage.dart';
 
 class TransactionUser extends StatefulWidget {
   // final CupertinoTabController controller;
@@ -37,71 +43,11 @@ class TransactionUserState extends State<TransactionUser> {
   final searchCtl = TextEditingController();
   final startDateCtl = TextEditingController();
   final endDateCtl = TextEditingController();
-  var transactionArr = [
-    {
-      'date': '21 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage1',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '22 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage2',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '23 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage3',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '24 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage4',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '25 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage5',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '26 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage6',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '27 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage7',
-      'status': 'Cancelled',
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    }
-  ];
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
+  String getRecentTransactions = Queries.QUERY_RECENT_TRANSACTIONS;
+  
   handleDepositFunds() {}
 
   handleTransactionStatus(type) {
@@ -138,24 +84,79 @@ class TransactionUserState extends State<TransactionUser> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
     return Material(
         child: Scaffold(
-            body: Stack(children: [
+            body: Query(
+                options: QueryOptions(
+                  document: gql(getUserAccountSummary),
+                  variables: {
+                    'orgId': userStorage.getItem('orgId'),
+                    'isAdmin': false
+                  }
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult accountSummary,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (accountSummary.hasException) {
+                    return Text(accountSummary.exception.toString());
+                  }
+
+                  if (accountSummary.isLoading) {
+                    return CustomLoading();
+                  }
+                  var businessAccountSummary =
+                      accountSummary.data!['readUserFinanceAccountSummary'];
+                  return Query(
+                      options: QueryOptions(
+                        document: gql(getRecentTransactions),
+                        variables: {
+                          'orgId': userStorage.getItem('orgId'),
+                          'offset': 0,
+                          'status': "PENDING_OR_COMPLETED"
+                        },
+                      ),
+                      builder: (QueryResult recentTransactionResult,
+                          {VoidCallback? refetch, FetchMore? fetchMore}) {
+                        if (recentTransactionResult.hasException) {
+                          return Text(
+                              recentTransactionResult.exception.toString());
+                        }
+
+                        if (recentTransactionResult.isLoading) {
+                          return CustomLoading();
+                        }
+                        var listTransactions =
+                            recentTransactionResult.data!['listTransactions']['financeAccountTransactions'];
+                        return mainHome(
+                            businessAccountSummary, listTransactions);
+                      });
+                })));
+  }
+
+  Widget mainHome(businessAccountSummary, listTransactions) {
+    return Stack(children: [
       SingleChildScrollView(
           padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-          child: Align(
+          child: Container(
+            height: hScale(812),
+            child: Align(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 const CustomSpacer(size: 57),
-                cardValanceField(),
+                cardValanceField(businessAccountSummary),
                 const CustomSpacer(size: 20),
-                welcomeHandleField(
-                    'assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                const CustomSpacer(size: 10),
-                welcomeHandleField(
-                    'assets/get_credit_line.png', 21.0, "Increase Credit Line"),
-                const CustomSpacer(size: 20),
+                // welcomeHandleField(
+                //     'assets/deposit_funds.png', 27.0, "Deposit Funds"),
+                // const CustomSpacer(size: 10),
+                // welcomeHandleField(
+                //     'assets/get_credit_line.png', 21.0, "Increase Credit Line"),
+                // const CustomSpacer(size: 20),
                 Indexer(children: [
                   Indexed(index: 100, child: searchRowField()),
                   Indexed(
@@ -169,20 +170,22 @@ class TransactionUserState extends State<TransactionUser> {
                               : const SizedBox(),
                           showDateRange ? dateRangeField() : const SizedBox(),
                           const CustomSpacer(size: 15),
-                          getTransactionArrWidgets(transactionArr)
+                          getTransactionArrWidgets(listTransactions),
+                          const CustomSpacer(size: 88),
                         ],
                       )),
                 ])
-              ]))),
+              ])))
+          ),
       const Positioned(
         bottom: 0,
         left: 0,
         child: CustomBottomBar(active: 2),
       )
-    ])));
+    ]);
   }
 
-  Widget cardValanceField() {
+  Widget cardValanceField(businessAccountSummary) {
     return Container(
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.all(hScale(24)),
@@ -194,13 +197,19 @@ class TransactionUserState extends State<TransactionUser> {
           ),
         ),
         child: Column(children: [
-          moneyValue('Total Balance', '0.00', 20.0, FontWeight.bold,
+          moneyValue(
+              'Month to Date Spend',
+              businessAccountSummary == null
+                  ? '-'
+                  : businessAccountSummary['data']['totalSpend'].toStringAsFixed(2),
+              20.0,
+              FontWeight.bold,
               const Color(0xff30E7A9)),
-          const CustomSpacer(
-            size: 8,
-          ),
-          moneyValue('Ledger Balance', '0.00', 16.0, FontWeight.w600,
-              const Color(0xffADD2C8)),
+          // const CustomSpacer(
+          //   size: 8,
+          // ),
+          // moneyValue('Ledger Balance', '0.00', 16.0, FontWeight.w600,
+          //     const Color(0xffADD2C8)),
         ]));
   }
 
@@ -256,7 +265,7 @@ class TransactionUserState extends State<TransactionUser> {
                   SizedBox(width: wScale(18)),
                   Text(title,
                       style: TextStyle(
-                          fontSize: fSize(12), color: const Color(0xff465158))),
+                          fontSize: fSize(14), color: const Color(0xff465158))),
                 ]),
                 const Icon(Icons.arrow_forward_rounded,
                     color: Color(0xff70828D), size: 24.0),
@@ -392,16 +401,20 @@ class TransactionUserState extends State<TransactionUser> {
   }
 
   Widget getTransactionArrWidgets(arr) {
+    if (arr == [])
+      return Container(child: Image.asset('assets/empty_transaction'));
     return Column(
         children: arr.map<Widget>((item) {
       return TransactionItem(
-        date: item['date'],
-        time: item['time'],
-        transactionName: item['transactionName'],
-        userName: item['userName'],
-        cardNum: item['cardNum'],
-        value: item['value'],
+        accountId: item['txnFinanceAccId'],
+        transactionId: item['sourceTransactionId'],
+        date: '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+        transactionName: item['description'],
         status: item['status'],
+        userName: item['merchantName'],
+        cardNum: item['pan'],
+        value: item['fxrBillAmount'].toStringAsFixed(2),
+        receiptStatus: item['fxrBillAmount'] >= 0 ? 0: item['receiptStatus'] == "PAID" ? 2 : 1
       );
     }).toList());
   }

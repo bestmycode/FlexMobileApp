@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:flutter/services.dart';
 
 class DepositFundsScreen extends StatefulWidget {
-  const DepositFundsScreen({Key? key}) : super(key: key);
+  final data;
+  const DepositFundsScreen({Key? key, this.data}) : super(key: key);
 
   @override
   DepositFundsScreenState createState() => DepositFundsScreenState();
@@ -31,7 +33,8 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
     Navigator.of(context).pop();
   }
 
-  handleCopied() {
+  handleCopied(num) {
+    Clipboard.setData(ClipboardData(text: num));
     setState(() {
       flagCopied = true;
     });
@@ -107,7 +110,8 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
               Image.asset('assets/bank_icon.png',
                   fit: BoxFit.contain, width: wScale(20)),
               SizedBox(width: wScale(10)),
-              detail('DBS Bank, Singapore')
+              detail(
+                  '${widget.data["businessAccount"]["bankName"]} Bank, Singapore')
             ],
           ),
           const CustomSpacer(size: 24),
@@ -115,25 +119,30 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
           const CustomSpacer(size: 8),
           Row(
             children: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff515151),
-                  padding: EdgeInsets.zero,
-                  textStyle: TextStyle(
-                      fontSize: fSize(14),
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xff040415)),
-                ),
-                onPressed: () {
-                  handleCopied();
-                },
-                child: const Text('885123000180'),
-              ),
+              detail(
+                  widget.data["businessAccount"]["virtualAccountNumber"] == null
+                      ? "-"
+                      : widget.data["businessAccount"]["virtualAccountNumber"]),
               SizedBox(width: wScale(10)),
-              flagCopied
-                  ? const Icon(Icons.content_copy,
-                      color: Color(0xff30E7A9), size: 14.0)
-                  : const SizedBox(),
+              Container(
+                  width: wScale(14),
+                  height: hScale(14),
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff515151),
+                      padding: EdgeInsets.all(0),
+                      textStyle: TextStyle(
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff040415)),
+                    ),
+                    onPressed: () {
+                      handleCopied(widget.data["businessAccount"]["virtualAccountNumber"]);
+                    },
+                    child: const Icon(Icons.content_copy,
+                        color: Color(0xff30E7A9), size: 14.0),
+                  )),
               SizedBox(width: wScale(4)),
               flagCopied
                   ? Text('Copied',
@@ -147,7 +156,9 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
           const CustomSpacer(size: 24),
           title('Account Name'),
           const CustomSpacer(size: 8),
-          detail('FXR BUSINESS SERVICES PTE.LTD.'),
+          detail(widget.data["businessAccount"]["bankAccountName"] == null
+              ? "-"
+              : widget.data["businessAccount"]["bankAccountName"]),
           const CustomSpacer(size: 25),
           Container(
               padding: EdgeInsets.only(

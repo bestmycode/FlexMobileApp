@@ -1,10 +1,12 @@
 import 'package:co/ui/auth/signup/almost_done.dart';
+import 'package:co/ui/auth/signup/signup_web.dart';
 import 'package:co/ui/main/cards/physical_card.dart';
 import 'package:co/ui/main/cards/virtual_card.dart';
 import 'package:co/ui/main/credit/credit.dart';
 import 'package:co/ui/main/home/home.dart';
 import 'package:co/ui/main/transactions/transaction_admin.dart';
 import 'package:co/ui/main/transactions/transaction_user.dart';
+import 'package:co/ui/splash/first_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:co/constants/constants.dart';
@@ -22,15 +24,48 @@ import 'package:co/ui/auth/signup/two_step_verification.dart';
 import 'package:co/ui/auth/signup/two_step_final.dart';
 import 'package:co/ui/auth/signup/two_step_failed.dart';
 
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:co/utils/basedata.dart';
-import 'dart:convert';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intercom_flutter/intercom_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
-void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Intercom.initialize(
+    'gyig20s7',
+    androidApiKey: 'android_sdk-b636d4562969f34701d23ae59be81ca77ca619d5',
+    iosApiKey: 'ios_sdk-121e7be1206bf3835b6187b837d61c37fe28f9c0',
+  );
+  await Intercom.registerUnidentifiedUser();
+  /*
+  final LocalStorage userStorage = LocalStorage('user_info');
+  final signed_user = {
+    'email': userStorage.getItem('email'),
+    'name': userStorage.getItem('name'),
+    'phone': userStorage.getItem('phone'),
+    'company': userStorage.getItem('orgName'),
+    'companyId': userStorage.getItem('orgId'),
+    'userId': userStorage.getItem('id')
+  };
 
-class MyApp extends StatelessWidget {
+  await Intercom.updateUser(signed_user);
+  */
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyApp createState() => _MyApp();
+}
+
+class _MyApp extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,32 +74,24 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    final HttpLink httpLink = HttpLink("https://gql.staging.fxr.one/v1/graphiql/");
-    AuthLink authLink = AuthLink(getToken: () async =>
-      // final temptoken = token;
-      // return '$temptoken';
-      'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJqQXhNekkwTjBWR1JqazRNalk0TWtZME1VTTBNVGd3TURsQlJVWTJOMFJCUXpVMU1UWXlSUSJ9.eyJodHRwOi8vYXBwLnN0YWdpbmcuZmluYXhhci5jb20vdXNlcl9tZXRhZGF0YSI6eyJmaXJzdF9uYW1lIjoiUm9uYWsiLCJsYXN0X25hbWUiOiJKYWluIiwicGhvbmUiOiIrOTE4ODc4MjQ0NTU0IiwiY29tcGFueV9uYW1lIjoiW1RFU1RdIGZsZXggbmV3IGNoYW5nZXMiLCJjb21wYW55X3R5cGUiOiJQYXJ0bmVyc2hpcHMiLCJsYW5ndWFnZSI6ImVuIiwic2lnbnVwX2NvdW50cnkiOiJzZyIsImdlb19kYXRhIjp7ImNvdW50cnlfY29kZSI6IklOIiwiY291bnRyeV9jb2RlMyI6IklORCIsImNvdW50cnlfbmFtZSI6IkluZGlhIiwiY2l0eV9uYW1lIjoiUHVuZSIsImxhdGl0dWRlIjoxOC42MTYxLCJsb25naXR1ZGUiOjczLjcyODYsInRpbWVfem9uZSI6IkFzaWEvS29sa2F0YSIsImNvbnRpbmVudF9jb2RlIjoiQVMifSwiaWQiOjE5OTMsInRva2VuIjoiWW53MFpBOVhLLUtwR3ZFZ2dSZE9wMng1THBZc3VHZzAifSwiaXNzIjoiaHR0cHM6Ly9maW5heGFyLXN0YWdpbmcuYXV0aDAuY29tLyIsInN1YiI6ImF1dGgwfDYwMTAxY2RkMTljOTI3MDA2YzUxNDdhYSIsImF1ZCI6WyJodHRwczovL2ZpbmF4YXItc3RhZ2luZy5hdXRoMC5jb20vYXBpL3YyLyIsImh0dHBzOi8vZmluYXhhci1zdGFnaW5nLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2Mzg3NzE4MjEsImV4cCI6MTYzODc3OTAyMSwiYXpwIjoibExUWnA5VTRSUkRONDlXdHA5YTE2c2lzamw0TXJFa0wiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIn0.YMsQ8Az4jzsTxJLoHpy1pUx0iz1Ma_ArE35xGRvg_q8vjYgrAuSH82Y2JTGjCaOmxCrDu40CUcPIoR5bbliK-u9VeiZWJ79ofe9puvbrRohGlfdyKhM7B-fv8Ye_5_-iWTdh7nPpq9OsLLYHXVCaAdoplHzuVS165F9nUe9zdMZmBcWjQyLJSVhDZyiDJgxUMvP-xMOXrLQVkepKSSHjHlVyRDAAzCKUvEdzAhX6otszVoIVyWbHgaHcZnZsBzMN4beiq0MjgM4SDZWyXLWI1z17GhWDfo3wVfYJMAVZV0jyWGEFhKkDUfVaBQMrhsAIkbttBAWSk-33jxxz4fg0Ow'
-    );
-    final Link link = authLink.concat(httpLink);
-
-    // final HttpLink rickAndMortyHttpLink =
-    //     HttpLink('https://rickandmortyapi.com/graphql');
-
-    ValueNotifier<GraphQLClient> client = ValueNotifier(
-      GraphQLClient(
-        link: link,
-        cache: GraphQLCache(
-          store: InMemoryStore(),
-        ),
-      ),
-    );
-
-    return GraphQLProvider(
-      client: client,
-      child: MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        AppLocalizations.delegate, // Add this line
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''), // English, no country code
+        Locale('vi', ''), // Vietnamese, no country code
+        Locale('ru', ''), // Russian, no country code
+      ],
+      home: SplashScreen(),
       routes: <String, WidgetBuilder>{
         LOADING_SCREEN: (BuildContext context) => const LoadingScreen(),
+        FIRST_LOADING_SCREEN: (BuildContext context) =>
+            const FirstLoadingScreen(),
         SPLASH_SCREEN: (BuildContext context) => const SplashScreen(),
         SIGN_IN: (BuildContext context) => const SignInScreen(),
         SIGN_IN_AUTH: (BuildContext context) => const SignInAuthScreen(),
@@ -88,20 +115,11 @@ class MyApp extends StatelessWidget {
         TRANSACTION_ADMIN: (BuildContext context) => const TransactionAdmin(),
         TRANSACTION_USER: (BuildContext context) => const TransactionUser(),
         CREDIT_SCREEN: (BuildContext context) => const CreditScreen(),
+        SIGN_UP_WEB: (BuildContext context) => const SignUpWebScreen(),
       },
       initialRoute: LOADING_SCREEN,
-      
-    ));
+    );
   }
 }
 
-// class AuthenticationState extends ChangeNotifier{
-
-//   final _token = [];
-//   dynamic get authenticationToken => _token;
-
-//   void changeAuthState(value){
-//     _token.add(value);
-//     notifyListeners();
-//   }
-// }
+class SINGUP_WEB {}

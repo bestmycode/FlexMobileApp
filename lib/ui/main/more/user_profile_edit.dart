@@ -1,13 +1,19 @@
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class UserProfileEdit extends StatefulWidget {
-  const UserProfileEdit({Key? key}) : super(key: key);
+  final userData;
+  const UserProfileEdit({Key? key, this.userData}) : super(key: key);
   @override
   UserProfileEditState createState() => UserProfileEditState();
 }
@@ -31,10 +37,27 @@ class UserProfileEditState extends State<UserProfileEdit> {
   final phoneNumberCtl = TextEditingController();
   final languageCtl = TextEditingController();
 
-  handleConfirm() {}
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String updateUserProfileMutation = FXRMutations.MUTATION_UPDATE_USER_PROFILE;
+
+  handleConfirm(runMutation) {
+    runMutation({
+      "firstName": widget.userData['firstName'],
+      "language": languageCtl.text,
+      "lastName": widget.userData['lastName'],
+      "mobile": phoneNumberCtl.text,
+      "userId": widget.userData['id'],
+    });
+  }
 
   @override
   void initState() {
+    firstNameCtl.text = widget.userData['firstName'];
+    lastNameCtl.text = widget.userData['lastName'];
+    emailCtl.text = widget.userData['email'];
+    phoneNumberCtl.text = widget.userData['mobile'];
+    languageCtl.text = widget.userData['language'];
     super.initState();
   }
 
@@ -54,7 +77,7 @@ class UserProfileEditState extends State<UserProfileEdit> {
               const CustomSpacer(size: 39),
               userProfileEditField(),
               const CustomSpacer(size: 30),
-              confirmButton(),
+              mutationButton(),
               const CustomSpacer(size: 88),
             ]))),
       ),
@@ -96,18 +119,21 @@ class UserProfileEditState extends State<UserProfileEdit> {
                 ctl: firstNameCtl,
                 hint: 'Enter First Name',
                 label: 'First Name',
+                readOnly: true,
                 fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
             const CustomSpacer(size: 22),
             CustomTextField(
                 ctl: lastNameCtl,
                 hint: 'Enter Last Name',
                 label: 'Last Name',
+                readOnly: true,
                 fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
             const CustomSpacer(size: 22),
             CustomTextField(
                 ctl: emailCtl,
                 hint: 'Enter Email',
                 label: 'Email',
+                readOnly: true,
                 fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
             const CustomSpacer(size: 22),
             CustomTextField(
@@ -125,7 +151,56 @@ class UserProfileEditState extends State<UserProfileEdit> {
         ));
   }
 
-  Widget confirmButton() {
+  Widget mutationButton() {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(updateUserProfileMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                if (resultData['user'] != null) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+                          child: Dialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: CustomResultModal(
+                                  status: true,
+                                  title: "Update Successful",
+                                  message:
+                                      "User Profile has been successfully updated")));
+                    });
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+                          child: Dialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: CustomResultModal(
+                                  status: true,
+                                  title: "Failed",
+                                  message:
+                                      "User Profile Don't Updated!!!")));
+                    });
+                }
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return confirmButton(runMutation);
+            }));
+  }
+
+  Widget confirmButton(runMutation) {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -137,7 +212,7 @@ class UserProfileEditState extends State<UserProfileEdit> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleConfirm();
+            handleConfirm(runMutation);
           },
           child: Text("Confirm Changes",
               style: TextStyle(

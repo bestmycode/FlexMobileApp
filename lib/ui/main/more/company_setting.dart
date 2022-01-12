@@ -1,14 +1,21 @@
 import 'package:co/ui/main/more/app_setting.dart';
 import 'package:co/ui/main/more/company_profile.dart';
+import 'package:co/ui/main/more/company_setting_tab.dart';
 import 'package:co/ui/main/more/team_setting.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:localstorage/localstorage.dart';
 
 class CompanySetting extends StatefulWidget {
-  const CompanySetting({Key? key}) : super(key: key);
+  final tabIndex;
+  const CompanySetting({Key? key, this.tabIndex}) : super(key: key);
   @override
   CompanySettingState createState() => CompanySettingState();
 }
@@ -26,13 +33,10 @@ class CompanySettingState extends State<CompanySetting> {
     return Scale().fSize(context, size);
   }
 
-  int settingType = 1;
-
-  handleSettingType(type) {
-    setState(() {
-      settingType = type;
-    });
-  }
+  late int settingType;
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String getCompanySettingQuery = Queries.QUERY_GET_COMPANY_SETTING;
 
   @override
   void initState() {
@@ -41,9 +45,35 @@ class CompanySettingState extends State<CompanySetting> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    var orgId = userStorage.getItem('orgId');
     return Material(
-        child: Scaffold(
-            body: Stack(children: [
+      child: Scaffold(
+          body: Query(
+            options: QueryOptions(
+              document: gql(getCompanySettingQuery),
+              variables: {'orgId': orgId},
+              // pollInterval: const Duration(seconds: 10),
+            ),
+            builder: (QueryResult result, {VoidCallback? refetch, FetchMore? fetchMore}) {
+              if (result.hasException) {
+                return Text(result.exception.toString());
+              }
+
+              if (result.isLoading) {
+                return CustomLoading();
+              }
+              var companyProfile = result.data!['organization'];
+              return mainHome(companyProfile);
+            })));
+  }
+
+  Widget mainHome(companyProfile) {
+    return Stack(children: [
       Container(
         color: Colors.white,
         child: Container(
@@ -52,15 +82,10 @@ class CompanySettingState extends State<CompanySetting> {
             child: SingleChildScrollView(
                 child: Column(children: [
               const CustomSpacer(size: 57),
-              companyTitle(),
+              companyTitle(companyProfile!['name']),
               const CustomSpacer(size: 40),
-              userSettingTypeField(),
-              settingType == 1
-                  ? const CompanyProfile()
-                  : settingType == 2
-                      ? const TeamSetting()
-                      : const AppSetting(),
-              const CustomSpacer(size: 88),
+              CompanySettingTab(tabIndex: widget.tabIndex),
+              // const CustomSpacer(size: 88),
             ]))),
       ),
       const Positioned(
@@ -68,10 +93,10 @@ class CompanySettingState extends State<CompanySetting> {
         left: 0,
         child: CustomBottomBar(active: 4),
       )
-    ])));
+    ]);
   }
 
-  Widget companyTitle() {
+  Widget companyTitle(title) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: hScale(96),
@@ -95,65 +120,12 @@ class CompanySettingState extends State<CompanySetting> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Green Grocer Pte Ltd',
+            Text(title,
                 style: TextStyle(
                     fontSize: fSize(22),
                     fontWeight: FontWeight.w700,
                     color: Colors.white))
           ],
         ));
-  }
-
-  Widget userSettingTypeField() {
-    return Container(
-      width: wScale(327),
-      alignment: Alignment.topCenter,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.zero,
-        child: Row(children: [
-          statusButton('Company Profile', 1),
-          statusButton('Team', 2),
-          statusButton('App', 3),
-        ]),
-      ),
-    );
-  }
-
-  Widget statusButton(title, type) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff70828D),
-        padding: const EdgeInsets.all(0),
-        textStyle:
-            TextStyle(fontSize: fSize(14), color: const Color(0xff70828D)),
-      ),
-      onPressed: () {
-        handleSettingType(type);
-      },
-      child: Container(
-        width: wScale(123),
-        height: hScale(35),
-        // padding: EdgeInsets.only(left: wScale(10),right: wScale(10)),
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-                    color: type == settingType
-                        ? const Color(0xFF29C490)
-                        : const Color(0xFFEEEEEE),
-                    width: type == settingType ? hScale(2) : hScale(1)))),
-        alignment: Alignment.center,
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: fSize(14),
-              fontWeight:
-                  type == settingType ? FontWeight.w600 : FontWeight.w500,
-              color:
-                  type == settingType ? Colors.black : const Color(0xff70828D)),
-        ),
-      ),
-    );
   }
 }
