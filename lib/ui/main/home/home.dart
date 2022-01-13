@@ -74,11 +74,14 @@ class HomeScreenState extends State<HomeScreen> {
 
   handleViewAllTransaction(isMobileVerified) {
     var isAdmin = userStorage.getItem("isAdmin");
-    isMobileVerified ? Navigator.of(context).push(
-      CupertinoPageRoute(
-          builder: (context) =>
-              isAdmin ? const TransactionAdmin() : const TransactionUser()),
-    ): null;
+    isMobileVerified
+        ? Navigator.of(context).push(
+            CupertinoPageRoute(
+                builder: (context) => isAdmin
+                    ? const TransactionAdmin()
+                    : const TransactionUser()),
+          )
+        : null;
   }
 
   handleNotification() {
@@ -129,13 +132,18 @@ Thanks.''';
         CupertinoPageRoute(builder: (context) => CompanySetting(tabIndex: 1)),
       );
     } else if (index == 1) {
-      isMobileVerified ? Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const IssueVirtaulCard()),
-      ) : null;
+      isMobileVerified
+          ? Navigator.of(context).push(
+              CupertinoPageRoute(
+                  builder: (context) => const IssueVirtaulCard()),
+            )
+          : null;
     } else if (index == 2) {
-      isMobileVerified ? Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const RequestCard()),
-      ) : null;
+      isMobileVerified
+          ? Navigator.of(context).push(
+              CupertinoPageRoute(builder: (context) => const RequestCard()),
+            )
+          : null;
     }
   }
 
@@ -226,91 +234,132 @@ Thanks.''';
                                 .data!['readBusinessAcccountSummary']
                             : accountSummary
                                 .data!['readUserFinanceAccountSummary'];
-                        // var userAccountSummary = accountSummary.data!['readUserFinanceAccountSummary'];
-                        return Query(
-                            options: QueryOptions(
-                              document: gql(getRecentTransactions),
-                              variables: {
-                                'orgId': userInfo['currentOrgId'],
-                                'limit': 10,
-                                'offset': 0,
-                                'status': "PENDING_OR_COMPLETED"
-                              },
-                            ),
-                            builder: (QueryResult recentTransactionResult,
-                                {VoidCallback? refetch, FetchMore? fetchMore}) {
-                              if (recentTransactionResult.hasException) {
-                                return Text(recentTransactionResult.exception
-                                    .toString());
-                              }
+                        print(businessAccountSummary);
+                        if (businessAccountSummary['data'] == null) {
+                          return nonUser();
+                        } else {
+                          userStorage.setItem(
+                              "isCredit",
+                              businessAccountSummary['data']['creditLine'] !=
+                                  null);
+                          // var userAccountSummary = accountSummary.data!['readUserFinanceAccountSummary'];
+                          return Query(
+                              options: QueryOptions(
+                                document: gql(getRecentTransactions),
+                                variables: {
+                                  'orgId': userInfo['currentOrgId'],
+                                  'limit': 10,
+                                  'offset': 0,
+                                  'status': "PENDING_OR_COMPLETED"
+                                },
+                              ),
+                              builder: (QueryResult recentTransactionResult,
+                                  {VoidCallback? refetch,
+                                  FetchMore? fetchMore}) {
+                                if (recentTransactionResult.hasException) {
+                                  return Text(recentTransactionResult.exception
+                                      .toString());
+                                }
 
-                              if (recentTransactionResult.isLoading) {
-                                return CustomLoading();
-                              }
-                              var listTransactions = recentTransactionResult
-                                  .data!['listTransactions'];
-                              return Query(
-                                  options: QueryOptions(
-                                    document: gql(getOrgIntegration),
-                                    variables: {
-                                      "orgId": userInfo['currentOrgId']
-                                    },
-                                  ),
-                                  builder: (QueryResult result,
-                                      {VoidCallback? refetch,
-                                      FetchMore? fetchMore}) {
-                                    if (result.hasException) {
-                                      return Text(result.exception.toString());
-                                    }
-
-                                    if (result.isLoading) {
-                                      return CustomLoading();
-                                    }
-                                    var orgIntegrations =
-                                        result.data!['orgIntegrations'];
-                                    var temp_index = orgIntegrations.indexWhere(
-                                        (item) =>
-                                            item['integrationType'] ==
-                                            "FINANCE");
-
-                                    if (isAdmin) {
-                                      if (temp_index >= 0) {
-                                        if (businessAccountSummary['data'] ==
-                                            null) {
-                                          // Non FCA user
-                                          return noFCAuser(userInfo);
-                                        } else {
-                                          // FCA user
-                                          return mainField(
-                                              userInfo,
-                                              businessAccountSummary['data'],
-                                              listTransactions[
-                                                  'financeAccountTransactions'],
-                                              isAdmin);
-                                        }
+                                if (recentTransactionResult.isLoading) {
+                                  return CustomLoading();
+                                }
+                                var listTransactions = recentTransactionResult
+                                    .data!['listTransactions'];
+                                return Query(
+                                    options: QueryOptions(
+                                      document: gql(getOrgIntegration),
+                                      variables: {
+                                        "orgId": userInfo['currentOrgId']
+                                      },
+                                    ),
+                                    builder: (QueryResult result,
+                                        {VoidCallback? refetch,
+                                        FetchMore? fetchMore}) {
+                                      if (result.hasException) {
+                                        return Text(
+                                            result.exception.toString());
                                       }
+
+                                      if (result.isLoading) {
+                                        return CustomLoading();
+                                      }
+                                      var orgIntegrations =
+                                          result.data!['orgIntegrations'];
+                                      var temp_index =
+                                          orgIntegrations.indexWhere((item) =>
+                                              item['integrationType'] ==
+                                              "FINANCE");
+
+                                      if (isAdmin) {
+                                        if (temp_index >= 0) {
+                                          if (businessAccountSummary['data'] ==
+                                              null) {
+                                            // Non FCA user
+                                            return noFCAuser(userInfo);
+                                          } else {
+                                            // FCA user
+                                            return mainField(
+                                                userInfo,
+                                                businessAccountSummary['data'],
+                                                listTransactions[
+                                                    'financeAccountTransactions'],
+                                                isAdmin,
+                                                true);
+                                          }
+                                        }
+                                        return mainField(
+                                            userInfo,
+                                            businessAccountSummary['data'],
+                                            listTransactions[
+                                                'financeAccountTransactions'],
+                                            isAdmin,
+                                            false);
+                                      }
+                                      // Normal User
                                       return mainField(
                                           userInfo,
                                           businessAccountSummary['data'],
                                           listTransactions[
                                               'financeAccountTransactions'],
-                                          isAdmin);
-                                    }
-                                    // Normal User
-                                    return mainField(
-                                        userInfo,
-                                        businessAccountSummary['data'],
-                                        listTransactions[
-                                            'financeAccountTransactions'],
-                                        isAdmin);
-                                  });
-                            });
+                                          isAdmin,
+                                          false);
+                                    });
+                              });
+                        }
                       });
                 })));
   }
 
+  Widget nonUser() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+            'You have successfully completed your Flex sign up!!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: fSize(16),
+                fontWeight: FontWeight.w600,
+                color: Color(0xff1A2831))),
+        const CustomSpacer(size: 40),
+        Image.asset('assets/verifyfinish.png',
+            fit: BoxFit.contain, width: wScale(260)),
+        const CustomSpacer(size: 40),
+        Text(
+            'You have successfully completed your Flex sign up!!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: fSize(14),
+                fontWeight: FontWeight.normal,
+                color: Color(0xff515151)))
+      ],
+    );
+  }
+
   Widget mainField(
-      userInfo, businessAccountSummary, listTransactions, isAdmin) {
+      userInfo, businessAccountSummary, listTransactions, isAdmin, isFCA) {
     bool isMobileVerified = userInfo['mobileVerified'];
     return Stack(children: [
       Container(
@@ -338,7 +387,7 @@ Thanks.''';
                         )
                       ]),
                   // const CustomSpacer(size: 20),
-                  CustomFCAUser(),
+                  isFCA ? CustomFCAUser() : SizedBox(),
                   const CustomSpacer(size: 10),
                   cardValanceField(businessAccountSummary, isAdmin),
                   const CustomSpacer(size: 20),
@@ -376,7 +425,8 @@ Thanks.''';
                   listTransactions.length == 0
                       ? Image.asset('assets/empty_transaction.png',
                           fit: BoxFit.contain, width: wScale(327))
-                      : getTransactionArrWidgets(listTransactions, isMobileVerified),
+                      : getTransactionArrWidgets(
+                          listTransactions, isMobileVerified),
                   const CustomSpacer(size: 88),
                 ]))),
       ),
@@ -624,12 +674,21 @@ Thanks.''';
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
             // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              actionButton('assets/invite_user.png',
-                  AppLocalizations.of(context)!.inviteuser, 0, isMobileVerified),
-              actionButton('assets/issue_virtual_card.png',
-                  AppLocalizations.of(context)!.issuevirtualcard, 1, isMobileVerified),
-              actionButton('assets/green_card.png',
-                  AppLocalizations.of(context)!.requestphysicalcard, 2, isMobileVerified)
+              actionButton(
+                  'assets/invite_user.png',
+                  AppLocalizations.of(context)!.inviteuser,
+                  0,
+                  isMobileVerified),
+              actionButton(
+                  'assets/issue_virtual_card.png',
+                  AppLocalizations.of(context)!.issuevirtualcard,
+                  1,
+                  isMobileVerified),
+              actionButton(
+                  'assets/green_card.png',
+                  AppLocalizations.of(context)!.requestphysicalcard,
+                  2,
+                  isMobileVerified)
             ])
       ],
     );
@@ -789,27 +848,28 @@ Thanks.''';
   }
 
   Widget getTransactionArrWidgets(arr, isMobileVerified) {
-    if (arr == [])
-      return Container(child: Image.asset('assets/empty_transaction'));
-    return Column(
-        children: arr.map<Widget>((item) {
-      return TransactionItem(
-          accountId: item['txnFinanceAccId'],
-          transactionId: item['sourceTransactionId'],
-          date:
-              '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
-          transactionName: item['description'],
-          status: item['status'],
-          userName: item['merchantName'],
-          cardNum: item['pan'],
-          value: item['fxrBillAmount'].toStringAsFixed(2),
-          receiptStatus: item['fxrBillAmount'] >= 0
-              ? 0
-              : item['receiptStatus'] == "PAID"
-                  ? 2
-                  : 1,
-          mobileVerified: isMobileVerified);
-    }).toList());
+    return arr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: arr.map<Widget>((item) {
+            return TransactionItem(
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                transactionName: item['description'],
+                status: item['status'],
+                userName: item['merchantName'],
+                cardNum: item['pan'],
+                value: item['fxrBillAmount'].toStringAsFixed(2),
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1,
+                mobileVerified: isMobileVerified);
+          }).toList());
   }
 
   Widget noFCAuser(userInfo) {

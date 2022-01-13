@@ -47,7 +47,7 @@ class TransactionUserState extends State<TransactionUser> {
   final LocalStorage userStorage = LocalStorage('user_info');
   String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
   String getRecentTransactions = Queries.QUERY_RECENT_TRANSACTIONS;
-  
+
   handleDepositFunds() {}
 
   handleTransactionStatus(type) {
@@ -93,13 +93,13 @@ class TransactionUserState extends State<TransactionUser> {
         child: Scaffold(
             body: Query(
                 options: QueryOptions(
-                  document: gql(getUserAccountSummary),
-                  variables: {
-                    'orgId': userStorage.getItem('orgId'),
-                    'isAdmin': false
-                  }
-                  // pollInterval: const Duration(seconds: 10),
-                ),
+                    document: gql(getUserAccountSummary),
+                    variables: {
+                      'orgId': userStorage.getItem('orgId'),
+                      'isAdmin': false
+                    }
+                    // pollInterval: const Duration(seconds: 10),
+                    ),
                 builder: (QueryResult accountSummary,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
                   if (accountSummary.hasException) {
@@ -131,7 +131,8 @@ class TransactionUserState extends State<TransactionUser> {
                           return CustomLoading();
                         }
                         var listTransactions =
-                            recentTransactionResult.data!['listTransactions']['financeAccountTransactions'];
+                            recentTransactionResult.data!['listTransactions']
+                                ['financeAccountTransactions'];
                         return mainHome(
                             businessAccountSummary, listTransactions);
                       });
@@ -143,40 +144,41 @@ class TransactionUserState extends State<TransactionUser> {
       SingleChildScrollView(
           padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
           child: Container(
-            height: hScale(812),
-            child: Align(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                const CustomSpacer(size: 57),
-                cardValanceField(businessAccountSummary),
-                const CustomSpacer(size: 20),
-                // welcomeHandleField(
-                //     'assets/deposit_funds.png', 27.0, "Deposit Funds"),
-                // const CustomSpacer(size: 10),
-                // welcomeHandleField(
-                //     'assets/get_credit_line.png', 21.0, "Increase Credit Line"),
-                // const CustomSpacer(size: 20),
-                Indexer(children: [
-                  Indexed(index: 100, child: searchRowField()),
-                  Indexed(
-                      index: 50,
-                      child: Column(
-                        children: [
-                          const CustomSpacer(size: 50),
-                          transactionStatusField(),
-                          showDateRange
-                              ? const CustomSpacer(size: 15)
-                              : const SizedBox(),
-                          showDateRange ? dateRangeField() : const SizedBox(),
-                          const CustomSpacer(size: 15),
-                          getTransactionArrWidgets(listTransactions),
-                          const CustomSpacer(size: 88),
-                        ],
-                      )),
-                ])
-              ])))
-          ),
+              height: hScale(812),
+              child: Align(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    const CustomSpacer(size: 57),
+                    cardValanceField(businessAccountSummary),
+                    const CustomSpacer(size: 20),
+                    // welcomeHandleField(
+                    //     'assets/deposit_funds.png', 27.0, "Deposit Funds"),
+                    // const CustomSpacer(size: 10),
+                    // welcomeHandleField(
+                    //     'assets/get_credit_line.png', 21.0, "Increase Credit Line"),
+                    // const CustomSpacer(size: 20),
+                    Indexer(children: [
+                      Indexed(index: 100, child: searchRowField()),
+                      Indexed(
+                          index: 50,
+                          child: Column(
+                            children: [
+                              const CustomSpacer(size: 50),
+                              transactionStatusField(),
+                              showDateRange
+                                  ? const CustomSpacer(size: 15)
+                                  : const SizedBox(),
+                              showDateRange
+                                  ? dateRangeField()
+                                  : const SizedBox(),
+                              const CustomSpacer(size: 15),
+                              getTransactionArrWidgets(listTransactions),
+                              const CustomSpacer(size: 88),
+                            ],
+                          )),
+                    ])
+                  ])))),
       const Positioned(
         bottom: 0,
         left: 0,
@@ -201,7 +203,8 @@ class TransactionUserState extends State<TransactionUser> {
               'Month to Date Spend',
               businessAccountSummary == null
                   ? '-'
-                  : businessAccountSummary['data']['totalSpend'].toStringAsFixed(2),
+                  : businessAccountSummary['data']['totalSpend']
+                      .toStringAsFixed(2),
               20.0,
               FontWeight.bold,
               const Color(0xff30E7A9)),
@@ -401,22 +404,27 @@ class TransactionUserState extends State<TransactionUser> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    if (arr == [])
-      return Container(child: Image.asset('assets/empty_transaction'));
-    return Column(
-        children: arr.map<Widget>((item) {
-      return TransactionItem(
-        accountId: item['txnFinanceAccId'],
-        transactionId: item['sourceTransactionId'],
-        date: '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
-        transactionName: item['description'],
-        status: item['status'],
-        userName: item['merchantName'],
-        cardNum: item['pan'],
-        value: item['fxrBillAmount'].toStringAsFixed(2),
-        receiptStatus: item['fxrBillAmount'] >= 0 ? 0: item['receiptStatus'] == "PAID" ? 2 : 1
-      );
-    }).toList());
+    return arr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: arr.map<Widget>((item) {
+            return TransactionItem(
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                transactionName: item['description'],
+                status: item['status'],
+                userName: item['merchantName'],
+                cardNum: item['pan'],
+                value: item['fxrBillAmount'].toStringAsFixed(2),
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
+          }).toList());
   }
 
   Widget dateRangeField() {

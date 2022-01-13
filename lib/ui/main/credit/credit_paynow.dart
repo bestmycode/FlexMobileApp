@@ -1,12 +1,15 @@
+import 'package:co/ui/main/credit/qr_view.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class CreditPayNowScreen extends StatefulWidget {
-  const CreditPayNowScreen({Key? key}) : super(key: key);
+  final data;
+  const CreditPayNowScreen({Key? key, this.data}) : super(key: key);
 
   @override
   CreditPayNowScreenState createState() => CreditPayNowScreenState();
@@ -26,8 +29,19 @@ class CreditPayNowScreenState extends State<CreditPayNowScreen> {
   }
 
   bool flagCopied = false;
+  bool isScan = false;
+  Barcode? result;
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  late QRViewController controller;
 
-  handleScanToPay() {}
+  handleScanToPay() {
+    setState(() {
+      isScan = true;
+    });
+    // Navigator.of(context).push(
+    //   CupertinoPageRoute(builder: (context) => QRViewScreen()),
+    // );
+  }
 
   handleBack() {
     Navigator.of(context).pop();
@@ -67,7 +81,7 @@ class CreditPayNowScreenState extends State<CreditPayNowScreen> {
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456',
+      child: Text('Flex PLUS Account ${widget.data['creditLine']['name']}',
           style: TextStyle(
               fontSize: fSize(16),
               fontWeight: FontWeight.w600,
@@ -105,33 +119,36 @@ class CreditPayNowScreenState extends State<CreditPayNowScreen> {
         children: [
           Image.asset('assets/paynow.png',
               fit: BoxFit.contain, width: wScale(71)),
-          const CustomSpacer(size: 18),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: const Color(0xff1A2831),
-                side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-              ),
-              onPressed: () {
-                handleScanToPay();
-              },
-              child: SizedBox(
-                  width: wScale(295),
-                  height: hScale(56),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/scan.png',
-                          fit: BoxFit.contain, width: wScale(21)),
-                      SizedBox(width: wScale(18)),
-                      Text('Scan to Pay',
-                          style: TextStyle(
-                              fontSize: fSize(16),
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white))
-                    ],
-                  )))
+          CustomSpacer(size: 18),
+          isScan
+              ? Image.asset('assets/qr_code.png',
+                  fit: BoxFit.contain, width: wScale(320))
+              : ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: const Color(0xff1A2831),
+                    side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                  ),
+                  onPressed: () {
+                    handleScanToPay();
+                  },
+                  child: SizedBox(
+                      width: wScale(295),
+                      height: hScale(56),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/scan.png',
+                              fit: BoxFit.contain, width: wScale(21)),
+                          SizedBox(width: wScale(18)),
+                          Text('Scan to Pay',
+                              style: TextStyle(
+                                  fontSize: fSize(16),
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white))
+                        ],
+                      )))
         ],
       ),
     );

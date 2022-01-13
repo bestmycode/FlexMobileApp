@@ -1,9 +1,18 @@
+import 'package:co/ui/main/cards/manage_limits.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
+import 'package:co/utils/mutations.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:localstorage/localstorage.dart';
 
 class VirtualPersonalCard extends StatefulWidget {
   final cardData;
@@ -29,73 +38,13 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   int cardType = 1;
   int transactionStatus = 1;
   bool showCardDetail = true;
-  var transactionArr = [
-    {
-      'date': '21 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage1',
-      'status': 0,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '22 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage2',
-      'status': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '23 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage3',
-      'status': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '24 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage4',
-      'status': 0,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '25 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage5',
-      'status': 0,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '26 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage6',
-      'status': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    },
-    {
-      'date': '27 June 2021',
-      'time': '03:45 AM',
-      'transactionName': 'Mobile Phone Rechage7',
-      'status': 1,
-      'userName': 'Erin Rosser',
-      'cardNum': '2314',
-      'value': '1,200.00'
-    }
-  ];
-
-  handleBack() {}
+  bool freezeMode = false;
+  final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
+  String queryAllTransactions = Queries.QUERY_ALL_TRANSACTIONS;
+  String freezeMutation = FXRMutations.MUTATION_FREEZE_FINANCE_ACCOUNT;
+  String unFreezeMutation = FXRMutations.MUTATION_UNFREEZE_FINANCE_ACCOUNT;
+  String removeMutation = FXRMutations.MUTATION_BLOCK_FINANCE_ACCOUNT;
 
   handleCardType(type) {
     setState(() {
@@ -115,8 +64,6 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     });
   }
 
-  handleExport() {}
-
   @override
   void initState() {
     super.initState();
@@ -124,7 +71,50 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.cardData);
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget getTransactionArrFromQuery() {
+    return Query(
+        options: QueryOptions(
+          document: gql(queryAllTransactions),
+          variables: {
+            "flaId": widget.cardData['id'],
+            "limit": 100,
+            "offset": 0,
+            "orgId": widget.cardData['orgId'],
+            "status": transactionStatus == 1
+                ? "COMPLETED"
+                : transactionStatus == 2
+                    ? "APPROVED"
+                    : "DECLINED"
+          },
+          // pollInterval: const Duration(seconds: 10),
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Text(result.exception.toString());
+          }
+
+          if (result.isLoading) {
+            return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+          }
+          var transactionArr =
+              result.data!['listTransactions']['financeAccountTransactions'];
+          return transactionArr.length == 0
+              ? Image.asset('assets/empty_transaction.png',
+                  fit: BoxFit.contain, width: wScale(327))
+              : getTransactionArrWidgets(transactionArr);
+        });
+  }
+
+  Widget home() {
     return Material(
         child: Scaffold(
             body: Stack(children: [
@@ -141,7 +131,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
         const CustomSpacer(size: 20),
         allTransactionField(),
         const CustomSpacer(size: 15),
-        getTransactionArrWidgets(transactionArr),
+        getTransactionArrFromQuery(),
         const CustomSpacer(size: 88),
       ])),
       const Positioned(
@@ -233,7 +223,10 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                     Text('Valid Thru',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ? widget.cardData['expiryDate'] : 'MM / DD',
+                    Text(
+                        showCardDetail
+                            ? widget.cardData['expiryDate']
+                            : 'MM / DD',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -279,25 +272,34 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                 Radius.circular(hScale(16)),
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.cardData['currencyCode'],
-                  style: TextStyle( fontSize: fSize(8), fontWeight: FontWeight.w500, height: 1,)),
-                Text(widget.cardData['financeAccountLimits'][0]['availableLimit'].toString(),
-                  style: TextStyle( fontSize: fSize(8), fontWeight: FontWeight.w500, height: 1,)),  
-              ]
-          ))
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${widget.cardData['currencyCode']} ',
+                      style: TextStyle(
+                          fontSize: fSize(8),
+                          fontWeight: FontWeight.w500,
+                          height: 1,
+                          color: Color(0xFF30E7A9))),
+                  Text(
+                      widget.cardData['financeAccountLimits'][0]
+                              ['availableLimit']
+                          .toStringAsFixed(2),
+                      style: TextStyle(
+                          fontSize: fSize(8),
+                          fontWeight: FontWeight.w500,
+                          height: 1,
+                          color: Color(0xFF30E7A9))),
+                ]))
       ],
     );
-  }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+  }
 
   Widget eyeIconField() {
     return Container(
         height: hScale(34),
         width: hScale(34),
-        // padding: EdgeInsets.all(hScale(17)),
         decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.3),
             borderRadius: BorderRadius.only(
@@ -308,7 +310,6 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
             )),
         child: IconButton(
           padding: const EdgeInsets.all(0),
-          // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
           icon: Image.asset(
               showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png',
               fit: BoxFit.contain,
@@ -321,6 +322,9 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   }
 
   Widget spendLimitField() {
+    var limitData = widget.cardData['financeAccountLimits'][0];
+    double percentage =
+        (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
     return Container(
       width: wScale(327),
       padding: EdgeInsets.only(
@@ -361,13 +365,15 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SGD ',
+                    Text('${widget.cardData['currencyCode']} ',
                         style: TextStyle(
                             fontSize: fSize(10),
                             fontWeight: FontWeight.w600,
                             height: 1,
                             color: const Color(0xFF1A2831))),
-                    Text('5,000.00',
+                    Text(
+                        widget.cardData['financeAccountLimits'][0]['limitValue']
+                            .toStringAsFixed(2),
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w600,
@@ -379,9 +385,13 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             child: LinearProgressIndicator(
-              value: 0.8,
+              value: percentage,
               backgroundColor: const Color(0xFFF4F4F4),
-              color: const Color(0xFF30E7A9),
+              color: percentage < 0.8
+                  ? const Color(0xFF30E7A9)
+                  : percentage < 0.9
+                      ? const Color(0xFFFEB533)
+                      : const Color(0xFFEB5757),
               minHeight: hScale(10),
             ),
           ),
@@ -401,7 +411,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     );
   }
 
-  Widget actionButton(imageUrl, text) {
+  Widget actionButton(imageUrl, text, type) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.all(0),
@@ -410,7 +420,20 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        onPressed: () {},
+        onPressed: () {
+          if (widget.cardData['status'] != "CLOSED") {
+            if (type == 0) {
+              _showFreezeModalDialog();
+            } else if (type == 1) {
+              Navigator.of(context).push(
+                CupertinoPageRoute(
+                    builder: (context) => ManageLimits(data: widget.cardData)),
+              );
+            } else {
+              _showRemoveModalDialog();
+            }
+          }
+        },
         child: SizedBox(
             width: wScale(102),
             height: hScale(82),
@@ -438,9 +461,14 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     return SizedBox(
       width: wScale(327),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        actionButton('assets/free.png', 'Freeze Card'),
-        actionButton('assets/limit.png', 'Edit Limit'),
-        actionButton('assets/cancel.png', 'Cancel Card'),
+        actionButton(
+            'assets/free.png',
+            widget.cardData['status'] == 'ACTIVE'
+                ? 'Freeze Card'
+                : 'Unfreeze Card',
+            0),
+        actionButton('assets/limit.png', 'Edit Limit', 1),
+        actionButton('assets/cancel.png', 'Cancel Card', 2),
       ]),
     );
   }
@@ -656,10 +684,253 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return transactionField(
-          item['date'], item['transactionName'], item['value'], item['status']);
-    }).toList());
+    return arr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: arr.map<Widget>((item) {
+            return TransactionItem(
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                transactionName: item['description'],
+                status: item['status'],
+                userName: item['merchantName'],
+                cardNum: item['pan'],
+                value: item['billAmount'].toString(),
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
+          }).toList());
+  }
+
+  _showFreezeModalDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: freezeMutationField()));
+        });
+  }
+
+  _showRemoveModalDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: removeMutationField()));
+        });
+  }
+
+  Widget freezeMutationField() {
+    String accessToken = storage.getItem("jwt_token");
+    String cardStatus = widget.cardData['status'];
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(cardStatus == 'ACTIVE'
+                  ? freezeMutation
+                  : cardStatus == 'SUSPENDED'
+                      ? unFreezeMutation
+                      : ''),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                var success = cardStatus == 'ACTIVE'
+                    ? resultData['freezeFinanceAccount']['success']
+                    : resultData['unfreezeFinanceAccount']['success'];
+                var message = cardStatus == 'ACTIVE'
+                    ? resultData['freezeFinanceAccount']['message']
+                    : resultData['unfreezeFinanceAccount']['message'];
+                if (success)
+                  setState(() {
+                    freezeMode = true;
+                  });
+                _showResultModalDialog(context, success, message);
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return freezeModalField(runMutation);
+            }));
+  }
+
+  Widget removeMutationField() {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(removeMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                var success = resultData['blockFinanceAccount']['success'];
+                var message = resultData['blockFinanceAccount']['message'];
+                if (success)
+                  setState(() {
+                    freezeMode = true;
+                  });
+                _showResultModalDialog(context, success, message);
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return removeModalField(runMutation);
+            }));
+  }
+
+  _showResultModalDialog(context, success, message) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: CustomResultModal(
+                      status: success,
+                      title: success ? "Success" : "Failed",
+                      message: message)));
+        });
+  }
+
+  Widget freezeModalField(runMutation) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(vertical: hScale(25), horizontal: wScale(16)),
+          child: Column(children: [
+            Image.asset('assets/snow_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text(
+                widget.cardData['status'] == "ACTIVE"
+                    ? 'Freezing this card?'
+                    : "Unfreezing this card?",
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              widget.cardData['status'] == "ACTIVE"
+                  ? "Once the card is frozen, the user won't be able to use the card until you reactivate it."
+                  : "You will be able to use the card when you unfreeze it.",
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      var orgId = userStorage.getItem('orgId');
+                      var accountId = widget.cardData['id'];
+                      runMutation(
+                          {'financeAccountId': accountId, "orgId": orgId});
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Ok'),
+                  ))
+            ],
+          ))
+    ]);
+  }
+
+  Widget removeModalField(runMutation) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(vertical: hScale(25)),
+          child: Column(children: [
+            Image.asset('assets/warning_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text('This action cannot be reversed?',
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              'Once the card is cancelled, you won’t be able to reactivate it again.',
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      var orgId = userStorage.getItem('orgId');
+                      var accountId = widget.cardData['id'];
+                      runMutation({
+                        'financeAccountId': accountId,
+                        "orgId": orgId,
+                        "reason": "DESTROYED"
+                      });
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Confirm'),
+                  ))
+            ],
+          ))
+    ]);
   }
 }

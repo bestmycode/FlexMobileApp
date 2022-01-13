@@ -1,12 +1,18 @@
+import 'dart:io';
+
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:open_file/open_file.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class CreditDirectDebitScreen extends StatefulWidget {
-  const CreditDirectDebitScreen({Key? key}) : super(key: key);
+  final data;
+  const CreditDirectDebitScreen({Key? key, this.data}) : super(key: key);
 
   @override
   CreditDirectDebitScreenState createState() => CreditDirectDebitScreenState();
@@ -25,7 +31,42 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
     return Scale().fSize(context, size);
   }
 
-  handleUpload() {}
+  late DownloaderUtils options;
+  late DownloaderCore core;
+  late final String path;
+  double progress = 0.0;
+
+  handleDownload(type) async {
+    String path = type == 0
+        ? "/storage/emulated/0/Download/DDA.docx"
+        : '/storage/emulated/0/Download/DDA.pdf';
+    options = DownloaderUtils(
+      progressCallback: (current, total) {
+        progress = (current / total) * 100;
+        print('Downloading: $progress');
+
+        setState(() {
+          progress = (current / total);
+        });
+      },
+      file: File(path),
+      progress: ProgressImplementation(),
+      onDone: () {
+        setState(() {
+          progress = 0.0;
+        });
+        OpenFile.open(path).then((value) {
+        });
+      },
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(
+      type == 0
+          ? 'https://app.staging.fxr.one/flex/static/media/DDA.c359397a.docx'
+          : 'https://app.staging.fxr.one/flex/static/media/DDA.00f8db8e.pdf',
+      options,
+    );
+  }
 
   @override
   void initState() {
@@ -61,7 +102,7 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456',
+      child: Text('Flex PLUS Account ${widget.data['creditLine']['name']}',
           style: TextStyle(
               fontSize: fSize(16),
               fontWeight: FontWeight.w600,
@@ -112,34 +153,25 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF1A2831))),
             SizedBox(width: wScale(24)),
-            downloadType('assets/excel.png'),
+            downloadType('assets/excel.png', 0),
             SizedBox(width: wScale(15)),
-            downloadType('assets/pdf.png'),
+            downloadType('assets/pdf.png', 1),
           ]),
-          const CustomSpacer(size: 36),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: const Color(0xff1A2831),
-                side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-              ),
-              onPressed: () {
-                handleUpload();
-              },
-              child: SizedBox(
-                  width: wScale(295),
-                  height: hScale(56),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Upload DDA',
-                          style: TextStyle(
-                              fontSize: fSize(16),
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white))
-                    ],
-                  )))
+          const CustomSpacer(size: 23),
+          progress == 0.0
+              ? SizedBox(height: 14)
+              : Row(
+                  children: [
+                    Text('${(progress * 100).toStringAsFixed(0)} %'),
+                    LinearPercentIndicator(
+                      width: wScale(260),
+                      lineHeight: 14.0,
+                      percent: progress,
+                      backgroundColor: Colors.white,
+                      progressColor: Colors.blue,
+                    ),
+                  ],
+                )
         ],
       ),
     );
@@ -158,7 +190,7 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
             fontWeight: FontWeight.w500));
   }
 
-  Widget downloadType(imageURL) {
+  Widget downloadType(imageURL, type) {
     return Container(
       width: hScale(34),
       height: hScale(34),
@@ -172,7 +204,15 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
           bottomRight: Radius.circular(hScale(6)),
         ),
       ),
-      child: Image.asset(imageURL, fit: BoxFit.contain, width: hScale(18)),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            // primary: const Color(0xffF5F5F5).withOpacity(0.4),
+            padding: const EdgeInsets.all(0),
+          ),
+          onPressed: () {
+            handleDownload(type);
+          },
+          child: Image.asset(imageURL, fit: BoxFit.contain, width: hScale(18))),
     );
   }
 }

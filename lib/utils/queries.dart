@@ -1187,5 +1187,63 @@ query listMerchantGroups($countryCode: String!) {
   }
 }''';
 
+static const QUERY_READ_FINANCE_ACCOUNT = r'''
+query readFinanceAccount($orgId: Int!, $financeAccountId: String!) {
+  readFinanceAccount(orgId: $orgId, financeAccountId: $financeAccountId) {
+    id
+    accountType
+    orgId
+    parentAccountId
+    userId
+    cvv
+    publicToken
+    permanentAccountNumber
+    accountName
+    startDate
+    expiryDate
+    balance
+    status
+    cardStatus
+    currencyCode
+    accountSubtype
+    availableLimit
+    totalCreditLimit
+    totalUnbilledAmount
+    outstandingAuthorisedAmount
+    lastBilledAmount
+    billingDate
+    dueDate
+    creditUsage
+    availableBalance
+    cardType
+    cardExpiryDate
+    financeAccountLimits {
+      id
+      limitType
+      limitValue
+      controlValue
+      utilization
+      availableLimit
+      status
+    }
+    virtualAccountNumber
+    bankName
+    bankAccountName
+    bankBranchCode
+    odBalance
+    totalLimit
+    holdBalance
+    spendControlLimits {
+      transactionLimit
+      variancePercentage
+      allowedCategories {
+        categoryName
+        displayName
+        isAllowed
+      }
+    }
+  }
+}
+''';
 }
 

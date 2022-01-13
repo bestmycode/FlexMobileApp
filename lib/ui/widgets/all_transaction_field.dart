@@ -114,7 +114,9 @@ class AllTransactionState extends State<AllTransaction> {
           if (result.isLoading) {
             return Container(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
           }
           var transactionArr =
               result.data!['listTransactions']['financeAccountTransactions'];
@@ -126,19 +128,27 @@ class AllTransactionState extends State<AllTransaction> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return TransactionItem(
-          accountId: item['txnFinanceAccId'],
-          transactionId: item['sourceTransactionId'],
-          date: '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
-          transactionName: item['description'],
-          status: item['status'],
-          userName: item['merchantName'],
-          cardNum: item['pan'],
-          value: item['billAmount'].toString(),
-          receiptStatus: item['fxrBillAmount'] >= 0 ? 0: item['receiptStatus'] == "PAID" ? 2 : 1);
-    }).toList());
+    return arr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: arr.map<Widget>((item) {
+            return TransactionItem(
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                transactionName: item['description'],
+                status: item['status'],
+                userName: item['merchantName'],
+                cardNum: item['pan'],
+                value: item['billAmount'].toString(),
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
+          }).toList());
   }
 
   Widget transactionStatusField() {

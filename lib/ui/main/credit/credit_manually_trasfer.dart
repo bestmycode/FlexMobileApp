@@ -4,9 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:flutter/services.dart';
 
 class CreditManuallyTransferScreen extends StatefulWidget {
-  const CreditManuallyTransferScreen({Key? key}) : super(key: key);
+  final data;
+  const CreditManuallyTransferScreen({Key? key, this.data}) : super(key: key);
 
   @override
   CreditManuallyTransferScreenState createState() =>
@@ -33,7 +35,8 @@ class CreditManuallyTransferScreenState
     Navigator.of(context).pop();
   }
 
-  handleCopied() {
+  handleCopied(num) {
+    Clipboard.setData(ClipboardData(text: num));
     setState(() {
       flagCopied = true;
     });
@@ -75,7 +78,7 @@ class CreditManuallyTransferScreenState
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456',
+      child: Text('Flex PLUS Account ${widget.data['creditLine']['name']}',
           style: TextStyle(
               fontSize: fSize(16),
               fontWeight: FontWeight.w600,
@@ -134,7 +137,9 @@ class CreditManuallyTransferScreenState
               Image.asset('assets/bank_icon.png',
                   fit: BoxFit.contain, width: wScale(20)),
               SizedBox(width: wScale(10)),
-              detail('DBS Bank, Singapore')
+              detail(widget.data['businessAccount']['bankName'] == null
+                  ? "DBS Bank, Singapore"
+                  : widget.data['businessAccount']['bankName'])
             ],
           ),
           const CustomSpacer(size: 38),
@@ -144,25 +149,27 @@ class CreditManuallyTransferScreenState
           const CustomSpacer(size: 8),
           Row(
             children: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff515151),
-                  padding: EdgeInsets.zero,
-                  textStyle: TextStyle(
-                      fontSize: fSize(14),
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xff040415)),
-                ),
-                onPressed: () {
-                  handleCopied();
-                },
-                child: const Text('885123000180'),
-              ),
+              detail("0720088905"),
               SizedBox(width: wScale(10)),
-              flagCopied
-                  ? const Icon(Icons.content_copy,
-                      color: Color(0xff30E7A9), size: 14.0)
-                  : const SizedBox(),
+              Container(
+                  width: wScale(14),
+                  height: hScale(14),
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff515151),
+                      padding: EdgeInsets.all(0),
+                      textStyle: TextStyle(
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff040415)),
+                    ),
+                    onPressed: () {
+                      handleCopied("0720088905");
+                    },
+                    child: const Icon(Icons.content_copy,
+                        color: Color(0xff30E7A9), size: 14.0),
+                  )),
               SizedBox(width: wScale(4)),
               flagCopied
                   ? Text('Copied',
@@ -176,7 +183,7 @@ class CreditManuallyTransferScreenState
           const CustomSpacer(size: 24),
           title('Account Name'),
           const CustomSpacer(size: 8),
-          detail('FXR BUSINESS SERVICES PTE.LTD.'),
+          detail("FINAXAR CAPITAL II PTE. LTD"),
         ],
       ),
     );

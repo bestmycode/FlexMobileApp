@@ -1,10 +1,8 @@
 import 'package:co/constants/constants.dart';
 import 'package:co/ui/main/credit/credit_transaction_type.dart';
-import 'package:co/ui/widgets/billing_item.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,9 +16,6 @@ import 'package:localstorage/localstorage.dart';
 import 'credit_payment.dart';
 
 class CreditScreen extends StatefulWidget {
-  // final CupertinoTabController controller;
-  // final GlobalKey<NavigatorState> navigatorKey;
-  // const Credit({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
   const CreditScreen({Key? key}) : super(key: key);
 
   @override
@@ -52,10 +47,10 @@ class CreditScreenState extends State<CreditScreen> {
       Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
   String billingStatementsTable = Queries.QUERY_BILLING_STATEMENTTABLE;
 
-  handleDepositFunds(flag) {
+  handleDepositFunds(data, flag) {
     if (flag == 'payment') {
       Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const CreditPaymentScreen()),
+        CupertinoPageRoute(builder: (context) => CreditPaymentScreen(data: data)),
       );
     } else if (flag == 'deposit') {}
   }
@@ -166,13 +161,14 @@ Thanks.''';
                         return CustomLoading();
                       }
                       var listBills = billedResult.data!['listBills'];
-                      return mainHome(listTransactions, listBills);
+                      return mainHome(
+                          listUserFinanceAccounts, listTransactions, listBills);
                     });
               });
         });
   }
 
-  Widget mainHome(listTransactions, listBills) {
+  Widget mainHome(listUserFinanceAccounts, listTransactions, listBills) {
     return WillPopScope(
         onWillPop: () => _onBackPressed(context),
         child: Scaffold(
@@ -194,24 +190,28 @@ Thanks.''';
                 child: Column(
                   children: [
                     const CustomSpacer(size: 20),
-                    titleField(),
+                    titleField(
+                        listUserFinanceAccounts['data']['creditLine']['name']),
                     FPL_enhancement == 2
                         ? const CustomSpacer(size: 15)
                         : const SizedBox(),
                     FPL_enhancement == 2 ? suspendedField() : const SizedBox(),
                     const CustomSpacer(size: 16),
-                    cardAvailableValanceField(),
+                    cardAvailableValanceField(
+                        listUserFinanceAccounts['data']['creditLine']),
                     const CustomSpacer(size: 10),
-                    cardTotalValanceField(),
+                    cardTotalValanceField(
+                        listUserFinanceAccounts['data']['creditLine']),
                     FPL_enhancement == 1
                         ? const CustomSpacer(size: 30)
                         : const SizedBox(),
                     FPL_enhancement == 1
-                        ? welcomeHandleField('assets/deposit_funds.png', 27.0,
+                        ? welcomeHandleField(listUserFinanceAccounts['data'], 'assets/deposit_funds.png', 27.0,
                             "Increase Credit Line", 'deposit')
                         : const SizedBox(),
                     const CustomSpacer(size: 10),
                     welcomeHandleField(
+                      listUserFinanceAccounts['data'],
                         'assets/green_card.png',
                         21.0,
                         FPL_enhancement == 3 ? "Get Credit Line" : "Payment",
@@ -268,11 +268,11 @@ Thanks.''';
     );
   }
 
-  Widget titleField() {
+  Widget titleField(accountNum) {
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456',
+      child: Text('Flex PLUS Account ${accountNum}',
           style: TextStyle(
               fontSize: fSize(16),
               fontWeight: FontWeight.w600,
@@ -280,7 +280,7 @@ Thanks.''';
     );
   }
 
-  Widget cardAvailableValanceField() {
+  Widget cardAvailableValanceField(creditLine) {
     return Stack(
       children: [
         Container(
@@ -297,14 +297,25 @@ Thanks.''';
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  moneyValue('Available Credit', 'SGD', '1,800.00', 20.0,
-                      FontWeight.bold, const Color(0xff30E7A9)),
-                  moneyValue('Total Credit Line', 'SGD', '3,000.00', 16.0,
-                      FontWeight.w600, const Color(0xffADD2C8)),
+                  moneyValue(
+                      'Available Credit',
+                      creditLine['currencyCode'],
+                      creditLine['availableLimit'].toStringAsFixed(2),
+                      20.0,
+                      FontWeight.bold,
+                      const Color(0xff30E7A9)),
+                  moneyValue(
+                      'Total Credit Line',
+                      creditLine['currencyCode'],
+                      creditLine['totalCreditLimit'].toStringAsFixed(2),
+                      16.0,
+                      FontWeight.w600,
+                      const Color(0xffADD2C8)),
                   ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                     child: LinearProgressIndicator(
-                      value: 18 / 30,
+                      value: creditLine['totalCreditLimit'] /
+                          creditLine['availableLimit'],
                       backgroundColor: const Color(0xFFF4F4F4),
                       color: const Color(0xFF30E7A9),
                       minHeight: hScale(10),
@@ -328,7 +339,7 @@ Thanks.''';
     );
   }
 
-  Widget cardTotalValanceField() {
+  Widget cardTotalValanceField(creditLine) {
     return Container(
         padding: EdgeInsets.all(hScale(24)),
         decoration: BoxDecoration(
@@ -339,13 +350,32 @@ Thanks.''';
           ),
         ),
         child: Column(children: [
-          moneyValue('Total Amount Due', 'SGD', '800.00', 20.0, FontWeight.bold,
+          moneyValue(
+              'Total Amount Due',
+              creditLine['currencyCode'],
+              creditLine['creditUsage'].toStringAsFixed(2),
+              20.0,
+              FontWeight.bold,
               const Color(0xff30E7A9)),
           const CustomSpacer(size: 8),
-          moneyValue('Due Date', '', '6 April 2021', 16.0, FontWeight.w600,
+          moneyValue(
+              'Due Date',
+              '',
+              creditLine['dueDate'] == null
+                  ? '-'
+                  : DateFormat.yMMMd().format(
+                      DateTime.fromMillisecondsSinceEpoch(
+                          creditLine['dueDate'])),
+              16.0,
+              FontWeight.w600,
               const Color(0xffADD2C8)),
           const CustomSpacer(size: 14),
-          moneyValue('Unbilled Amount', 'SGD', '300.00', 16.0, FontWeight.w600,
+          moneyValue(
+              'Unbilled Amount',
+              creditLine['currencyCode'],
+              creditLine['totalUnbilledAmount'].toStringAsFixed(2),
+              16.0,
+              FontWeight.w600,
               const Color(0xffADD2C8)),
         ]));
   }
@@ -374,7 +404,7 @@ Thanks.''';
     );
   }
 
-  Widget welcomeHandleField(imageURL, imageScale, title, funcFlag) {
+  Widget welcomeHandleField(data, imageURL, imageScale, title, funcFlag) {
     return SizedBox(
         height: hScale(63),
         child: ElevatedButton(
@@ -386,7 +416,7 @@ Thanks.''';
             ),
             onPressed: () {
               title == "Payment"
-                  ? handleDepositFunds(funcFlag)
+                  ? handleDepositFunds(data, funcFlag)
                   : handleCreditline(title);
             },
             child: Row(

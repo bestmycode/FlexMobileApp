@@ -400,7 +400,11 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
             child: LinearProgressIndicator(
               value: percentage,
               backgroundColor: const Color(0xFFF4F4F4),
-              color: const Color(0xFF30E7A9),
+              color: percentage < 0.8
+                      ? const Color(0xFF30E7A9)
+                      : percentage < 0.9
+                          ? const Color(0xFFFEB533)
+                          : const Color(0xFFEB5757),
               minHeight: hScale(10),
             ),
           ),

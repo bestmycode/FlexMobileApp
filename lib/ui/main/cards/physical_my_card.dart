@@ -39,7 +39,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   final LocalStorage userStorage = LocalStorage('user_info');
   String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
   String freezeMutation = FXRMutations.MUTATION_FREEZE_FINANCE_ACCOUNT;
-  String unFreezeMutation = FXRMutations.MUTATION_FREEZE_FINANCE_ACCOUNT;
+  String unFreezeMutation = FXRMutations.MUTATION_UNFREEZE_FINANCE_ACCOUNT;
 
   handleCloneSetting() {}
 
@@ -147,6 +147,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const CustomSpacer(size: 10),
           cardTitle(userAccountSummary),
           const CustomSpacer(size: 10),
           cardField(userAccountSummary),
@@ -651,7 +652,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
   Widget freezeMutationField(userAccountSummary) {
     String accessToken = storage.getItem("jwt_token");
     String cardStatus =
-        userAccountSummary['data']['physicalCard']['cardStatus'];
+        userAccountSummary['data']['physicalCard']['status'];
     return GraphQLProvider(
         client: Token().getLink(accessToken),
         child: Mutation(
@@ -665,8 +666,12 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                 return cache;
               },
               onCompleted: (resultData) {
-                var success = resultData['freezeFinanceAccount']['success'];
-                var message = resultData['freezeFinanceAccount']['message'];
+                var success = cardStatus == 'ACTIVE'
+                    ? resultData['freezeFinanceAccount']['success']
+                    : resultData['unfreezeFinanceAccount']['success'];
+                var message = cardStatus == 'ACTIVE'
+                    ? resultData['freezeFinanceAccount']['message']
+                    : resultData['unfreezeFinanceAccount']['message'];
                 if (success)
                   setState(() {
                     freezeMode = true;

@@ -73,7 +73,7 @@ mutation freezeFinanceAccount($financeAccountId: String!, $orgId: Int!) {
 ''';
 static const MUTATION_UNFREEZE_FINANCE_ACCOUNT = r'''
 mutation unfreezeFinanceAccountMutation($financeAccountId: String!, $orgId: Int!) {
-  freezeFinanceAccount(financeAccountId: $financeAccountId, orgId: $orgId) {
+  unfreezeFinanceAccount(financeAccountId: $financeAccountId, orgId: $orgId) {
     statusCode
     success
     message
@@ -393,6 +393,70 @@ mutation removereceiptMutation($ReceiptId: Int!, $orgId: Int!, $sourceTxnId: Str
   ) {
     id
   }
+}
+''';
+
+static const MUTATION_REVOKE_INVITE = r'''
+mutation revokeInviteMutation($id: Int!) {
+  revokeInvitation(id: $id) {
+    id
+    orgId
+    orgName
+    email
+    role
+    senderId
+    senderName
+    invitationToken
+    invitationSentAt
+    invitationAcceptedAt
+    createdAt
+    status
+  }
+}
+''';
+
+static const MUTATION_CHANGE_ROLE = r'''
+mutation changeRole($userId: Int!, $orgId: Int!, $role: String!) {
+    changeRoleInOrganization(userId: $userId, orgId: $orgId, role: $role)
+}''';
+
+static const MUTATION_DEACTIVE_USER = r'''
+mutation deactivateUser($userId: Int!, $orgId: Int!) {
+  removeUserFromOrganization(userId: $userId, orgId: $orgId) {
+    id
+    userId
+    email
+    firstName
+    lastName
+    mobile
+  }
+}
+
+''';
+
+static const MUTATION_BLOCK_FINANCE_ACCOUNT = r'''
+mutation blockFinanceAccount($financeAccountId: String!, $reason: String!, $orgId: Int!) {
+  blockFinanceAccount(
+    financeAccountId: $financeAccountId
+    reason: $reason
+    orgId: $orgId
+  ) {
+    statusCode
+    success
+    message
+  }
+}
+
+''';
+
+static const MUTATION_FINANCE_ACCOUNT_LIMIT = r'''
+mutation financeAccountLimitMutation($orgId: Int!, $financeAccountId: String!, $limitValue: BigDecimal!, $controls: Controls) {
+  updateFinanceAccountLimit(
+    orgId: $orgId
+    financeAccountId: $financeAccountId
+    limitValue: $limitValue
+    controls: $controls
+  )
 }
 ''';
 }

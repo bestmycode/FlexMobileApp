@@ -1,19 +1,13 @@
-import 'package:co/ui/main/cards/physical_card.dart';
-import 'package:co/ui/main/cards/virtual_card.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/mutations.dart';
-import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
-import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
-import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TeamSettingInvite extends StatefulWidget {
   final bool mobileVerified;

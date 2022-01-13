@@ -9,7 +9,8 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 
 class CreditPaymentScreen extends StatefulWidget {
-  const CreditPaymentScreen({Key? key}) : super(key: key);
+  final data;
+  const CreditPaymentScreen({Key? key, this.data}) : super(key: key);
 
   @override
   CreditPaymentScreenState createState() => CreditPaymentScreenState();
@@ -37,19 +38,19 @@ class CreditPaymentScreenState extends State<CreditPaymentScreen> {
   handleManuallyTransfer() {
     Navigator.of(context).push(
       CupertinoPageRoute(
-          builder: (context) => const CreditManuallyTransferScreen()),
+          builder: (context) => CreditManuallyTransferScreen(data: widget.data)),
     );
   }
 
   handlePayNow() {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const CreditPayNowScreen()),
+      CupertinoPageRoute(builder: (context) => CreditPayNowScreen(data: widget.data)),
     );
   }
 
   handleDirectDebit() {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const CreditDirectDebitScreen()),
+      CupertinoPageRoute(builder: (context) => CreditDirectDebitScreen(data: widget.data)),
     );
   }
 
@@ -87,7 +88,7 @@ class CreditPaymentScreenState extends State<CreditPaymentScreen> {
     return Container(
       width: wScale(327),
       alignment: Alignment.centerLeft,
-      child: Text('Flex PLUS Account 123456',
+      child: Text('Flex PLUS Account ${widget.data['creditLine']['name']}',
           style: TextStyle(
               fontSize: fSize(16),
               fontWeight: FontWeight.w600,

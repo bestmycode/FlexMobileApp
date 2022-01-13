@@ -248,12 +248,15 @@ class HomeCardTypeState extends State<HomeCardType> {
                         child: Icon(Icons.arrow_forward_rounded,
                             color: Color(0xff70828D), size: wScale(12)),
                         onPressed: () {
-                          widget.mobileVerified ? Navigator.of(context).push(
-                            CupertinoPageRoute(
-                                builder: (context) => type == "physical"
-                                    ? PhysicalCards(defaultType: cardType)
-                                    : VirtualCards(defaultType: cardType + 1)),
-                          ): null;
+                          widget.mobileVerified
+                              ? Navigator.of(context).push(
+                                  CupertinoPageRoute(
+                                      builder: (context) => type == "physical"
+                                          ? PhysicalCards(defaultType: cardType)
+                                          : VirtualCards(
+                                              defaultType: cardType + 1)),
+                                )
+                              : null;
                         })),
           ],
         ),

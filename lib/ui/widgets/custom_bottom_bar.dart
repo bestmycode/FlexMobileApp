@@ -138,6 +138,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   @override
   Widget build(BuildContext context) {
     bool isAdmin = userStorage.getItem("isAdmin");
+    bool isCredit = userStorage.getItem("isCredit");
     return Container(
         width: MediaQuery.of(context).size.width,
         height: hScale(88),
@@ -168,7 +169,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                         : 'assets/grey_transaction.png',
                     AppLocalizations.of(context)!.transactions,
                     2),
-                isAdmin
+                isAdmin && isCredit
                     ? navItem(
                         widget.active == 3
                             ? 'assets/green_credit.png'
@@ -274,6 +275,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
         ),
         builder: (BuildContext context) {
           bool isAdmin = userStorage.getItem("isAdmin");
+          bool isCredit = userStorage.getItem("isCredit");
           return Container(
               height: !widget.mobileVerified ? hScale(366) : isAdmin ? hScale(621) : hScale(474),
               padding: EdgeInsets.symmetric(horizontal: hScale(24)),
@@ -331,7 +333,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                                 ? const CustomSpacer(size: 0)
                                 : const CustomSpacer(size: 18)
                             : SizedBox(),
-                        isAdmin
+                        isAdmin && isCredit
                             ? modalItem(
                                 AppLocalizations.of(context)!.flexpluscredit,
                                 'assets/green_credit.png',

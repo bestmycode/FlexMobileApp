@@ -52,24 +52,26 @@ class CompanySettingState extends State<CompanySetting> {
   Widget home() {
     var orgId = userStorage.getItem('orgId');
     return Material(
-      child: Scaffold(
-          body: Query(
-            options: QueryOptions(
-              document: gql(getCompanySettingQuery),
-              variables: {'orgId': orgId},
-              // pollInterval: const Duration(seconds: 10),
-            ),
-            builder: (QueryResult result, {VoidCallback? refetch, FetchMore? fetchMore}) {
-              if (result.hasException) {
-                return Text(result.exception.toString());
-              }
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: Query(
+                options: QueryOptions(
+                  document: gql(getCompanySettingQuery),
+                  variables: {'orgId': orgId},
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult result,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (result.hasException) {
+                    return Text(result.exception.toString());
+                  }
 
-              if (result.isLoading) {
-                return CustomLoading();
-              }
-              var companyProfile = result.data!['organization'];
-              return mainHome(companyProfile);
-            })));
+                  if (result.isLoading) {
+                    return CustomLoading();
+                  }
+                  var companyProfile = result.data!['organization'];
+                  return mainHome(companyProfile);
+                })));
   }
 
   Widget mainHome(companyProfile) {

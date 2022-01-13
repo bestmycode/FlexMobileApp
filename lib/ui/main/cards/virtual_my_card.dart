@@ -1,5 +1,4 @@
 import 'package:co/ui/main/cards/virtual_personal_card.dart';
-import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/virtual_my_cards_search_filed.dart';
 import 'package:co/ui/widgets/virtual_my_cards_sub_search_filed.dart';
@@ -11,7 +10,6 @@ import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
-import 'package:intl/date_time_patterns.dart';
 import 'package:localstorage/localstorage.dart';
 
 class VirtualMyCards extends StatefulWidget {
@@ -71,12 +69,14 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
   }
 
   handleCardDetail(data) {
-    Navigator.of(context).push(
-      CupertinoPageRoute(
-          builder: (context) => VirtualPersonalCard(
-                cardData: data,
-              )),
-    );
+    Navigator.of(context)
+        .push(
+          CupertinoPageRoute(
+              builder: (context) => VirtualPersonalCard(
+                    cardData: data,
+                  )),
+        )
+        .then((_) => setState(() {}));
   }
 
   handleSortType(type) {
@@ -176,7 +176,9 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
           if (result.isLoading) {
             return Container(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
           }
           var listUserFinanceAccounts = result.data!['listUserFinanceAccounts'];
           return getTransactionArrWidgets(
@@ -317,11 +319,13 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
     }
     List tempArr = [];
     arr.forEach((item) {
-      if (item['accountName'].toLowerCase().indexOf(searchText.toLowerCase()) >= 0)
-        tempArr.add(item);
+      var cardName =
+          item['cardName'] != null ? item['cardName'].toLowerCase() : '';
+      var searchTxt = searchText != '' ? searchText.toLowerCase() : '';
+      if (cardName.indexOf(searchTxt) >= 0) tempArr.add(item);
     });
 
-    return tempArr.length == 0
+    return arr.length == 0
         ? Image.asset('assets/empty_transaction.png',
             fit: BoxFit.contain, width: wScale(327))
         : Column(
@@ -349,7 +353,7 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${data['accountName']}',
+            Text('${data['cardName']}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
             Text('${data["permanentAccountNumber"]} | ${data['accountType']}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
@@ -371,11 +375,16 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
             cardBodyDetail(
                 'Available Limit',
                 data['currencyCode'],
-                data['financeAccountLimits'][0]['availableLimit'].toStringAsFixed(2),
+                data['financeAccountLimits'][0]['availableLimit']
+                    .toStringAsFixed(2),
                 1),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
-            cardBodyDetail('Monthly Spend Limit', data['currencyCode'],
-                data['financeAccountLimits'][0]['limitValue'].toStringAsFixed(2), 2),
+            cardBodyDetail(
+                'Monthly Spend Limit',
+                data['currencyCode'],
+                data['financeAccountLimits'][0]['limitValue']
+                    .toStringAsFixed(2),
+                2),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             cardBodyDetail('Status', '', data['status'], 3),
             Container(height: 1, color: const Color(0xFFF1F1F1)),
@@ -417,7 +426,15 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
                     top: hScale(5),
                     bottom: hScale(5)),
                 decoration: BoxDecoration(
-                  color: type != 2 ? const Color(0xFFDEFEE9) : Colors.white,
+                  color: type == 3
+                      ? value == "ACTIVE"
+                          ? Color(0xFFDEFEE9)
+                          : value == "SUSPENDED"
+                              ? Color(0xFFc9e8fb)
+                              : Color(0xFFffdfd5)
+                      : type != 2
+                          ? const Color(0xFFDEFEE9)
+                          : Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(hScale(16)),
                     topRight: Radius.circular(hScale(16)),
@@ -438,14 +455,27 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
                                     ? const Color(0xFF30E7A9)
                                     : const Color(0xFF1A2831)))
                         : const SizedBox(),
-                    Text(value,
+                    Text(
+                        type == 3
+                            ? value == "ACTIVE"
+                                ? "Active"
+                                : value == "SUSPENDED"
+                                    ? "Frozen"
+                                    : "Cancelled"
+                            : value,
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
                             height: 1,
-                            color: type == 2
-                                ? const Color(0xFF1A2831)
-                                : const Color(0xFF30E7A9)))
+                            color: type == 3
+                                ? value == "ACTIVE"
+                                    ? Color(0xFF30E7A9)
+                                    : value == "SUSPENDED"
+                                        ? Color(0xFF2f7bfa)
+                                        : Color(0xFFeb5757)
+                                : type == 2
+                                    ? const Color(0xFF1A2831)
+                                    : const Color(0xFF30E7A9)))
                   ],
                 ))
           ],

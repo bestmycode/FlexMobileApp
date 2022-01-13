@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Validator {
   String? validateName(String value) {
     String pattern = r'(^[a-zA-Z ]*$)';
@@ -45,5 +43,12 @@ class Validator {
     } else {
       return '';
     }
+  }
+
+  String? validateEmpty(String value){
+    if(value.isEmpty){
+      return "This field is required.";
+    }
+    return '';
   }
 }

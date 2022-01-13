@@ -470,7 +470,7 @@ class CompanyProfileState extends State<CompanyProfile> {
         const CustomSpacer(size: 16),
         customEditField('City', companyProfile['orgAddress']['country'], false),
         const CustomSpacer(size: 16),
-        customEditField('Operating Address', operatingAddressCtl.text, true),
+        customEditField('Operating Address', operatingAddressCtl.text, false),
         const CustomSpacer(size: 16),
         customEditField('Postal Code', operatingPostalCodeCtl.text, true),
         const CustomSpacer(size: 16),

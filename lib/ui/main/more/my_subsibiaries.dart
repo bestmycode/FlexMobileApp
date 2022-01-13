@@ -97,6 +97,7 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   }
 
   Widget companyNameField() {
+    var currentCompany = widget.roles.firstWhere((role) => role['orgId'] == userStorage.getItem("orgId"));
     return Container(
         width: wScale(327),
         height: hScale(73),
@@ -120,7 +121,7 @@ class MySubsibiariesState extends State<MySubsibiaries> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Green Grocer Pte Ltd',
+              Text(currentCompany['orgName'],
                   style: TextStyle(
                       fontSize: fSize(22),
                       fontWeight: FontWeight.w700,

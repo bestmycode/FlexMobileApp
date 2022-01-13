@@ -110,8 +110,9 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
               Image.asset('assets/bank_icon.png',
                   fit: BoxFit.contain, width: wScale(20)),
               SizedBox(width: wScale(10)),
-              detail(
-                  '${widget.data["businessAccount"]["bankName"]} Bank, Singapore')
+              detail(widget.data["businessAccount"]["bankName"] == null
+                  ? "DBS Bank, Singapore"
+                  : '${widget.data["businessAccount"]["bankName"]} Bank, Singapore')
             ],
           ),
           const CustomSpacer(size: 24),
@@ -124,25 +125,28 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
                       ? "-"
                       : widget.data["businessAccount"]["virtualAccountNumber"]),
               SizedBox(width: wScale(10)),
-              Container(
-                  width: wScale(14),
-                  height: hScale(14),
-                  alignment: Alignment.center,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: const Color(0xff515151),
-                      padding: EdgeInsets.all(0),
-                      textStyle: TextStyle(
-                          fontSize: fSize(14),
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff040415)),
-                    ),
-                    onPressed: () {
-                      handleCopied(widget.data["businessAccount"]["virtualAccountNumber"]);
-                    },
-                    child: const Icon(Icons.content_copy,
-                        color: Color(0xff30E7A9), size: 14.0),
-                  )),
+              widget.data["businessAccount"]["virtualAccountNumber"] == null
+                  ? SizedBox()
+                  : Container(
+                      width: wScale(14),
+                      height: hScale(14),
+                      alignment: Alignment.center,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: const Color(0xff515151),
+                          padding: EdgeInsets.all(0),
+                          textStyle: TextStyle(
+                              fontSize: fSize(14),
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xff040415)),
+                        ),
+                        onPressed: () {
+                          handleCopied(widget.data["businessAccount"]
+                              ["virtualAccountNumber"]);
+                        },
+                        child: const Icon(Icons.content_copy,
+                            color: Color(0xff30E7A9), size: 14.0),
+                      )),
               SizedBox(width: wScale(4)),
               flagCopied
                   ? Text('Copied',
