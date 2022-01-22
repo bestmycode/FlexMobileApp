@@ -6,15 +6,18 @@ import 'package:expandable/expandable.dart';
 import 'package:co/ui/main/more/new_subsidiary.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MySubsibiaries extends StatefulWidget {
   final roles;
   final userInvitations;
-  const MySubsibiaries({Key? key, this.roles, this.userInvitations}) : super(key: key);
+  const MySubsibiaries({Key? key, this.roles, this.userInvitations})
+      : super(key: key);
   @override
   MySubsibiariesState createState() => MySubsibiariesState();
 }
@@ -35,7 +38,7 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String updateMutation = FXRMutations.MUTATION_UPDATE_LAST_ORG_SESSION;
-  
+
   handleNewSubsidiay() {
     Navigator.of(context).push(
       CupertinoPageRoute(builder: (context) => const NewSubsidiary()),
@@ -47,6 +50,15 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   }
 
   handleAccept() {}
+
+  handleRegister() async {
+    var signupUrl = 'https://app.staging.fxr.one/signup';
+    if (await canLaunch(signupUrl)) {
+      await launch(signupUrl);
+    } else {
+      throw 'Could not launch $signupUrl';
+    }
+  }
 
   @override
   void initState() {
@@ -61,18 +73,18 @@ class MySubsibiariesState extends State<MySubsibiaries> {
 
   Widget home() {
     return Mutation(
-      options: MutationOptions(
-        document: gql(updateMutation),
-        update: ( GraphQLDataProxy cache, QueryResult? result) {
-          return cache;
-        },
-        onCompleted: (resultData) {
-          Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
-        },
-      ),
-      builder: (RunMutation runMutation, QueryResult? result ) {
-        return mainHome(runMutation);
-      });
+        options: MutationOptions(
+          document: gql(updateMutation),
+          update: (GraphQLDataProxy cache, QueryResult? result) {
+            return cache;
+          },
+          onCompleted: (resultData) {
+            Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
+          },
+        ),
+        builder: (RunMutation runMutation, QueryResult? result) {
+          return mainHome(runMutation);
+        });
   }
 
   Widget mainHome(runMutation) {
@@ -97,7 +109,8 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   }
 
   Widget companyNameField() {
-    var currentCompany = widget.roles.firstWhere((role) => role['orgId'] == userStorage.getItem("orgId"));
+    var currentCompany = widget.roles
+        .firstWhere((role) => role['orgId'] == userStorage.getItem("orgId"));
     return Container(
         width: wScale(327),
         height: hScale(73),
@@ -162,16 +175,20 @@ class MySubsibiariesState extends State<MySubsibiaries> {
                     fontSize: fSize(14),
                     color: const Color(0xFF70828D),
                     height: 1.25),
-                children: const [
+                children: [
                   TextSpan(
                       text:
-                          'This page allows you to create separate \nsubsidiares to be managed under the same \ne-mail address. If you are looking to create \na separate Flex Business Account under a \nseparate e-mail address,'),
+                          'This page allows you to create separate \nsubsidiares to be managed under the same \ne-mail address. If you are looking to create \na separate Flex Business Account under a \nseparate e-mail address,  '),
                   TextSpan(
                       text: 'click here',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
-                          color: Color(0xFF0450e0))),
+                          color: Color(0xFF0450e0)),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          handleRegister();
+                        }),
                 ],
               ),
             )
@@ -208,8 +225,8 @@ class MySubsibiariesState extends State<MySubsibiaries> {
 
   Widget getSubsidiariesArrWidgets(arr, runMutation) {
     return Column(
-      children: arr.map<Widget>((item) {
-        return collapseField(arr.indexOf(item), item, runMutation);
+        children: arr.map<Widget>((item) {
+      return collapseField(arr.indexOf(item), item, runMutation);
     }).toList());
   }
 
@@ -322,17 +339,17 @@ class MySubsibiariesState extends State<MySubsibiaries> {
   }
 
   Widget getInvitationArrWidgets(arr) {
-    return arr.length == 0?
-      SizedBox():
-      Column(
-          children: arr.map<Widget>((item) {
-        return Column(
-          children: [
-            invitationField(item),
-            const CustomSpacer(size: 10),
-          ],
-        );
-      }).toList());
+    return arr.length == 0
+        ? SizedBox()
+        : Column(
+            children: arr.map<Widget>((item) {
+            return Column(
+              children: [
+                invitationField(item),
+                const CustomSpacer(size: 10),
+              ],
+            );
+          }).toList());
   }
 
   Widget invitationField(data) {

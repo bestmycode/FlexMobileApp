@@ -1,5 +1,6 @@
 import 'package:co/ui/main/cards/manage_limits_additional.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
 class ManageLimits extends StatefulWidget {
@@ -45,7 +45,7 @@ class ManageLimitsState extends State<ManageLimits> {
   final varianceLimitCtl = TextEditingController(text: '0%');
 
   bool isSwitchedMerchant = true;
-  bool isSwitchedTransactionLimit = false;
+  bool isSwitchedTransactionLimit = true;
   List<bool> isSwitchedArr = [
     true,
     true,
@@ -141,15 +141,17 @@ class ManageLimitsState extends State<ManageLimits> {
               }
 
               if (result.isLoading) {
-                return home(null);
+                return CustomLoading();
               }
 
               var financeAccount = result.data!['readFinanceAccount'];
+
               return home(financeAccount);
             }));
   }
 
   Widget home(data) {
+    print(data['spendControlLimits']['transactionLimit']);
     return Material(
         child: Scaffold(
             body: Stack(children: [
@@ -169,13 +171,14 @@ class ManageLimitsState extends State<ManageLimits> {
                           AlwaysStoppedAnimation<Color>(Color(0xFF60C094))))
               : Column(
                   children: [
-                    cardDetailField(data),
+                    cardDetailField(widget.data),
                     const CustomSpacer(size: 20),
                     // additionalField(data['spendControlLimits']),
                     ManageLimitsAdditional(
                         data: data == null ? null : data['spendControlLimits'],
-                        transactionLimitValue: transactionLimitValue,
-                        varianceLimitValue: varianceLimitValue,
+                        availableLimitValue: data == null? 0.0 : data['financeAccountLimits'][0]['availableLimit'].toDouble(),
+                        transactionLimitValue: data['spendControlLimits']['transactionLimit'] == null ? 0.0 : data['spendControlLimits']['transactionLimit'].toDouble(),
+                        varianceLimitValue: data['spendControlLimits']['variancePercentage'] == null ? 0.0 : data['spendControlLimits']['variancePercentage'].toDouble(),
                         isSwitchedArr: isSwitchedArr,
                         // handleSwitch: handleSwitch,
                         setTransactionLimitValue: setTransactionLimitValue,
@@ -238,14 +241,14 @@ class ManageLimitsState extends State<ManageLimits> {
                         .toString(),
               hint: 'Enter Card Limit',
               label: 'Card Limit',
-              onChanged: (text) {
-                setState(() {
-                  isSwitchedTransactionLimit =
-                    isSwitchedMerchant && text.length > 0 ? true : false;
-                });
-              },
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
+              // onChanged: (text) {
+              //   setState(() {
+              //     isSwitchedTransactionLimit =
+              //       isSwitchedMerchant && text.length > 0 ? true : false;
+              //   });
+              // },
+              // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number),
           const CustomSpacer(size: 22),
           limitRefreshField(),
           const CustomSpacer(size: 15),

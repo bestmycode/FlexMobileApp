@@ -1,6 +1,5 @@
 import 'package:co/ui/main/more/my_subsibiaries.dart';
 import 'package:co/ui/main/more/user_profile.dart';
-import 'package:co/ui/splash/loading.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
@@ -110,7 +109,7 @@ class AccountSettingState extends State<AccountSetting> {
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Row(children: [
           statusButton('User Profile', 1),
-          statusButton('My Subsibiaries', 2),
+          statusButton('My Subsidiaries', 2),
         ]),
       ]),
     );

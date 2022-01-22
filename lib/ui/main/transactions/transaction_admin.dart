@@ -1,30 +1,25 @@
 import 'package:co/ui/main/home/deposit_funds.dart';
-import 'package:co/ui/main/transactions/all_transaction_header.dart';
 import 'package:co/ui/main/transactions/transaction_type.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:co/ui/widgets/transaction_item.dart';
-import 'package:co/ui/widgets/virtual_my_transaction_search_filed%20copy.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:indexed/indexed.dart';
-import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 
 class TransactionAdmin extends StatefulWidget {
-  // final CupertinoTabController controller;
-  // final GlobalKey<NavigatorState> navigatorKey;
-  // const TransactionAdmin({Key? key, required this.controller, required this.navigatorKey}) : super(key: key);
   const TransactionAdmin({Key? key}) : super(key: key);
   @override
   TransactionAdminState createState() => TransactionAdminState();
 }
+
+GlobalKey<TransactionAdminState> globalKey = GlobalKey();
 
 class TransactionAdminState extends State<TransactionAdmin> {
   hScale(double scale) {
@@ -64,7 +59,6 @@ class TransactionAdminState extends State<TransactionAdmin> {
   }
 
   handleCreditline(title) async {
-    // Intercom.displayMessenger();
     debugPrint(title);
 
     String msg = "";
@@ -90,45 +84,9 @@ Thanks.''';
     Intercom.displayMessageComposer(msg);
   }
 
-  handleTransactionStatus(type) {
-    setState(() {
-      transactionStatus = type;
-    });
+  handleTouchPan() {
+    return true;
   }
-
-  handleSearch() {
-    setState(() {
-      searchText = searchCtl.text;
-    });
-  }
-
-  handleExport() {}
-
-  setSortType(type) {
-    setState(() {
-      sortType = type;
-    });
-  }
-
-  setDateType(type) {
-    if (type == 4) {
-      setState(() {
-        showDateRange = !showDateRange;
-        showModal = false;
-        dateType = type;
-      });
-    } else {
-      setState(() {
-        showModal = false;
-        showDateRange = false;
-        dateType = type;
-      });
-    }
-  }
-
-  handleStartDateCalendar() {}
-
-  handleEndDateCalendar() {}
 
   @override
   void initState() {
@@ -231,7 +189,9 @@ Thanks.''';
 
   Widget cardValanceField(availableBalance, balance) {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+            .size
+            .width,
         padding: EdgeInsets.all(hScale(24)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(10)),

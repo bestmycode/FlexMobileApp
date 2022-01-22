@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:co/ui/main/home/deposit_funds.dart';
 import 'package:co/ui/main/home/home_card_type.dart';
 import 'package:co/ui/main/home/issue_virtual_card.dart';
@@ -12,10 +10,9 @@ import 'package:co/ui/main/transactions/transaction_user.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_fca_user_alert.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
+import 'package:co/ui/widgets/custom_no_internet.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
-import 'package:co/utils/basedata.dart';
-import 'package:co/utils/defaultLayoutQuery.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,8 +23,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   // final CupertinoTabController controller;
@@ -53,6 +50,7 @@ class HomeScreenState extends State<HomeScreen> {
     return Scale().fSize(context, size);
   }
 
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   double cardType = 1.0;
@@ -148,24 +146,25 @@ Thanks.''';
   }
 
   _onBackPressed(context) {
-    return showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Are you sure?'),
-        content: new Text('Do you want to exit an App'),
-        actions: <Widget>[
-          new GestureDetector(
-            onTap: () => Navigator.of(context).pop(false),
-            child: Text("NO"),
-          ),
-          SizedBox(height: 16),
-          new GestureDetector(
-            onTap: () => SystemNavigator.pop(),
-            child: Text("YES"),
-          ),
-        ],
-      ),
-    );
+    // return showDialog(
+    //   context: context,
+    //   builder: (context) => new AlertDialog(
+    //     title: new Text('Log out'),
+    //     content: new Text('Are you sure you want to log out?'),
+    //     actions: <Widget>[
+    //       new GestureDetector(
+    //         onTap: () => Navigator.of(context).pop(false),
+    //         child: Text("NO"),
+    //       ),
+    //       SizedBox(height: 16),
+    //       new GestureDetector(
+    //         onTap: () => SystemNavigator.pop(),
+    //         child: Text("YES"),
+    //       ),
+    //     ],
+    //   ),
+    // );
+    return null;
   }
 
   @override
@@ -193,7 +192,12 @@ Thanks.''';
                 builder: (QueryResult userInfoResult,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
                   if (userInfoResult.hasException) {
-                    return Text(userInfoResult.exception.toString());
+                    return CustomNoInternet(handleTryAgain: () {
+                      Navigator.of(context)
+                          .push(new MaterialPageRoute(
+                              builder: (context) => HomeScreen()))
+                          .then((value) => setState(() => {}));
+                    });
                   }
 
                   if (userInfoResult.isLoading) {
@@ -204,11 +208,12 @@ Thanks.''';
                   var userRole = userInfo['roles'].firstWhere(
                       (item) => item['orgId'] == userInfo['currentOrgId']);
                   var isAdmin = userRole['roleName'] == 'admin' ? true : false;
+                  bool isMobileVerified = userInfo['mobileVerified'];
 
                   userStorage.setItem("isAdmin", isAdmin);
                   userStorage.setItem("userId", userInfo['id']);
                   userStorage.setItem("orgId", userInfo['currentOrgId']);
-
+                  userStorage.setItem("mobileVerified", isMobileVerified);
                   return Query(
                       options: QueryOptions(
                         document: gql(isAdmin
@@ -234,9 +239,8 @@ Thanks.''';
                                 .data!['readBusinessAcccountSummary']
                             : accountSummary
                                 .data!['readUserFinanceAccountSummary'];
-                        print(businessAccountSummary);
                         if (businessAccountSummary['data'] == null) {
-                          return nonUser();
+                          return noFlexUser(userInfo);
                         } else {
                           userStorage.setItem(
                               "isCredit",
@@ -290,13 +294,12 @@ Thanks.''';
                                           orgIntegrations.indexWhere((item) =>
                                               item['integrationType'] ==
                                               "FINANCE");
-
                                       if (isAdmin) {
                                         if (temp_index >= 0) {
                                           if (businessAccountSummary['data'] ==
                                               null) {
                                             // Non FCA user
-                                            return noFCAuser(userInfo);
+                                            return noFCAUser();
                                           } else {
                                             // FCA user
                                             return mainField(
@@ -331,31 +334,49 @@ Thanks.''';
                 })));
   }
 
-  Widget nonUser() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-            'You have successfully completed your Flex sign up!!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: fSize(16),
-                fontWeight: FontWeight.w600,
-                color: Color(0xff1A2831))),
-        const CustomSpacer(size: 40),
-        Image.asset('assets/verifyfinish.png',
-            fit: BoxFit.contain, width: wScale(260)),
-        const CustomSpacer(size: 40),
-        Text(
-            'You have successfully completed your Flex sign up!!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: fSize(14),
-                fontWeight: FontWeight.normal,
-                color: Color(0xff515151)))
-      ],
-    );
+  Widget noFCAUser() {
+    return Stack(children: [
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('You have successfully completed your Flex sign up!!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(20),
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff1A2831))),
+            const CustomSpacer(size: 40),
+            Image.asset('assets/verifyfinish.png',
+                fit: BoxFit.contain, width: wScale(260)),
+            const CustomSpacer(size: 40),
+            Text(
+                'We have received your application for Flex and are verifying your details.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(16),
+                    fontWeight: FontWeight.normal,
+                    color: Color(0xff515151))),
+            const CustomSpacer(size: 26),
+            Text(
+                'You will receive a confirmation email within 1 business day notifying you of the status of your application. If you do not receive the email, please check your spam inbox.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(16),
+                    fontWeight: FontWeight.normal,
+                    color: Color(0xff515151)))
+          ],
+        ),
+      ),
+      Positioned(
+        bottom: 0,
+        left: 0,
+        child: CustomBottomBar(active: 0, noFlex: true),
+      )
+    ]);
   }
 
   Widget mainField(
@@ -376,8 +397,7 @@ Thanks.''';
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        welcomeUser(
-                            '${userInfo["firstName"]} ${userInfo["lastName"]}'),
+                        welcomeUser(userInfo),
                         IconButton(
                           icon: customImage('assets/notification.png', 16.00),
                           iconSize: hScale(10),
@@ -433,17 +453,23 @@ Thanks.''';
       Positioned(
         bottom: 0,
         left: 0,
-        child: CustomBottomBar(active: 0, mobileVerified: isMobileVerified),
+        child: CustomBottomBar(active: 0),
       )
     ]);
   }
 
-  Widget welcomeUser(fullName) {
+  setFirstNameToPref(userInfo) async {
+    SharedPreferences prefs = await _prefs;
+    prefs.setString("firstName", userInfo["firstName"]);
+  }
+
+  Widget welcomeUser(userInfo) {
+    setFirstNameToPref(userInfo);
     return Row(
       children: [
         Text(AppLocalizations.of(context)!.welcome,
             style: TextStyle(fontSize: fSize(16), color: Colors.black)),
-        Text(fullName,
+        Text('${userInfo["firstName"]} ${userInfo["lastName"]}',
             style: TextStyle(
                 fontSize: fSize(16),
                 color: Colors.black,
@@ -534,7 +560,8 @@ Thanks.''';
 
   Widget cardValanceField(businessAccountSummary, isAdmin) {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width:
+          MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
       padding: EdgeInsets.all(hScale(24)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(hScale(10)),
@@ -872,91 +899,78 @@ Thanks.''';
           }).toList());
   }
 
-  Widget noFCAuser(userInfo) {
-    return Stack(children: [
-      Container(
-          height: hScale(812),
-          child: Column(
-            children: [
-              const CustomSpacer(size: 30),
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: wScale(24)),
-                  child: welcomeUser(
-                      '${userInfo["firstName"]} ${userInfo["lastName"]}')),
-              const CustomSpacer(size: 30),
-              Container(
-                  width: wScale(327),
-                  // height: hScale(320),
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(hScale(24)),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(hScale(10)),
-                      topRight: Radius.circular(hScale(10)),
-                      bottomLeft: Radius.circular(hScale(10)),
-                      bottomRight: Radius.circular(hScale(10)),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.25),
-                        spreadRadius: 4,
-                        blurRadius: 20,
-                        offset:
-                            const Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
+  Widget noFlexUser(userInfo) {
+    return Container(
+        height: hScale(812),
+        child: Column(
+          children: [
+            const CustomSpacer(size: 30),
+            Padding(
+                padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+                child: welcomeUser(userInfo)),
+            const CustomSpacer(size: 30),
+            Container(
+                width: wScale(327),
+                // height: hScale(320),
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(hScale(24)),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(hScale(10)),
+                    topRight: Radius.circular(hScale(10)),
+                    bottomLeft: Radius.circular(hScale(10)),
+                    bottomRight: Radius.circular(hScale(10)),
                   ),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                            AppLocalizations.of(context)!
-                                .noflexbussinessaccount,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: fSize(12),
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF70828D))),
-                        CustomSpacer(size: 18),
-                        Image.asset('assets/empty_transaction.png',
-                            fit: BoxFit.contain, width: wScale(159)),
-                        CustomSpacer(size: 36),
-                        Text(
-                            AppLocalizations.of(context)!.flexmobilesupportflex,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: fSize(12),
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF70828D))),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                  AppLocalizations.of(context)!.clickhere,
-                                  style: TextStyle(
-                                      fontSize: fSize(12),
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF29C490))),
-                            ),
-                            Text(AppLocalizations.of(context)!.torequestfor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.25),
+                      spreadRadius: 4,
+                      blurRadius: 20,
+                      offset: const Offset(0, 1), // changes position of shadow
+                    ),
+                  ],
+                ),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(AppLocalizations.of(context)!.noflexbussinessaccount,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: fSize(12),
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF70828D))),
+                      CustomSpacer(size: 18),
+                      Image.asset('assets/empty_transaction.png',
+                          fit: BoxFit.contain, width: wScale(159)),
+                      CustomSpacer(size: 36),
+                      Text(AppLocalizations.of(context)!.flexmobilesupportflex,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: fSize(12),
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF70828D))),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(AppLocalizations.of(context)!.clickhere,
                                 style: TextStyle(
                                     fontSize: fSize(12),
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF70828D))),
-                          ],
-                        )
-                      ]))
-            ],
-          )),
-      const Positioned(
-        bottom: 0,
-        left: 0,
-        child: CustomBottomBar(active: 0),
-      )
-    ]);
+                                    color: Color(0xFF29C490))),
+                          ),
+                          Text(AppLocalizations.of(context)!.torequestfor,
+                              style: TextStyle(
+                                  fontSize: fSize(12),
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF70828D))),
+                        ],
+                      )
+                    ]))
+          ],
+        ));
   }
 }

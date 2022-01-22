@@ -42,14 +42,14 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
   String queryAllTransactions = Queries.QUERY_PHYSICAL_TEAMCARD_LIST;
 
   var sortArr = [
-    {'sortType': 'card holder', 'subType1': 'A - Z', 'subType2': 'Z - A'},
+    {'sortType': 'Card Holder', 'subType1': 'A - Z', 'subType2': 'Z - A'},
     {
-      'sortType': 'available limit',
+      'sortType': 'Available Limit',
       'subType1': 'Highest to lowest',
       'subType2': 'Lowest to highest'
     },
     {
-      'sortType': 'date issued',
+      'sortType': 'Date Issued',
       'subType1': 'Newest to oldest',
       'subType2': 'Oldest to newest'
     },
@@ -380,7 +380,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
             Container(height: 1, color: const Color(0xFFF1F1F1)),
             cardBodyDetail(
                 'Status',
-                data['status'] == "ACTIVATE"
+                data['status'] == "ACTIVE"
                     ? 'Activated'
                     : data['status'] == "INACTIVE"
                         ? 'Unactivated'
@@ -448,7 +448,7 @@ class PhysicalTeamCardsState extends State<PhysicalTeamCards> {
                       type != 2
                           ? Text('SGD ',
                               style: TextStyle(
-                                  fontSize: fSize(8),
+                                  fontSize: fSize(12),
                                   height: 1,
                                   color: type != 1
                                       ? const Color(0xFF30E7A9)

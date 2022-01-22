@@ -1,7 +1,4 @@
-import 'package:co/ui/main/more/app_setting.dart';
-import 'package:co/ui/main/more/company_profile.dart';
 import 'package:co/ui/main/more/company_setting_tab.dart';
-import 'package:co/ui/main/more/team_setting.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
@@ -100,7 +97,7 @@ class CompanySettingState extends State<CompanySetting> {
 
   Widget companyTitle(title) {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
         height: hScale(96),
         padding: EdgeInsets.symmetric(horizontal: wScale(24)),
         decoration: BoxDecoration(

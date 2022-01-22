@@ -1130,6 +1130,11 @@ query downloadDocument($fileId: String!) {
   downloadDocument(fileId: $fileId)
 }''';
 
+static const QUERY_BILL_DOWNLOAD = r'''
+query downloadBillStatement($fileId: String!) {
+  downloadBillStatement(fileId: $fileId)
+}''';
+
 static const QUERY_TEAMMEMBER_INVITATIONS = r'''
 query teamMembersInvitations($orgId: Int!, $search: String, $limit: Int, $offset: Int, $sort: String) {
   invitations(
@@ -1171,6 +1176,8 @@ query listEligibleUsersCard($orgId: Int!, $accountSubtype: String!) {
       id
       firstName
       lastName
+      virtualCardsCount
+      fxrEnableSpendControl
     }
   }
 }
@@ -1242,6 +1249,26 @@ query readFinanceAccount($orgId: Int!, $financeAccountId: String!) {
         isAllowed
       }
     }
+  }
+}
+''';
+
+static const QUERY_GET_CARD_DETAIL = r'''
+query getCardDetails($financeAccountId: String!, $wrappedSessionKey: String!) {
+  getCardDetails(
+    financeAccountId: $financeAccountId
+    wrappedSessionKey: $wrappedSessionKey
+  ) {
+    encryptedData
+    error {
+      code
+      description
+      fieldErrors {
+        field
+        message
+      }
+    }
+    iv
   }
 }
 ''';

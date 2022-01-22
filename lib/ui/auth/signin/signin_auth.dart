@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart' show TargetPlatform;
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInAuthScreen extends StatefulWidget {
   const SignInAuthScreen({Key? key}) : super(key: key);
@@ -40,6 +41,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
   }
 
   int flagStatus = 0;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   navigationMainPage() {
     // Navigator.of(context).pushReplacementNamed(MAIN_SCREEN);
@@ -54,9 +56,18 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
     navigationMainPage();
   }
 
+  getBioMetrics() async {
+    SharedPreferences prefs = await _prefs;
+    bool? bioMetrics = await prefs.getBool("bioMetrics");
+    if (bioMetrics == true) {
+      _authenticateWithBiometrics();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    getBioMetrics();
     auth.isDeviceSupported().then(
           (bool isSupported) => setState(() => _supportState = isSupported
               ? _SupportState.supported
@@ -108,9 +119,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-          localizedReason: 'Let OS determine authentication method',
-          useErrorDialogs: true,
-          stickyAuth: true);
+          localizedReason: ' ', useErrorDialogs: true, stickyAuth: true);
       setState(() {
         _isAuthenticating = false;
       });
@@ -139,11 +148,10 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-          localizedReason:
-              'Scan your fingerprint (or face or whatever) to authenticate',
+          localizedReason: ' ',
           useErrorDialogs: true,
           stickyAuth: true,
-          biometricOnly: true);
+          biometricOnly: false);
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';
@@ -160,11 +168,17 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
       return;
     }
 
-    final String message = authenticated ? 'Authorized' : 'Not Authorized';
-    setState(() {
-      _authorized = message;
-    });
-    navigationMainPage();
+    if (authenticated) {
+      final String message = authenticated ? 'Authorized' : 'Not Authorized';
+      setState(() {
+        _authorized = message;
+      });
+      SharedPreferences prefs = await _prefs;
+      authenticated
+          ? await prefs.setBool("bioMetrics", true)
+          : await prefs.setBool("bioMetrics", false);
+      navigationMainPage();
+    }
   }
 
   Future<void> _cancelAuthentication() async {
@@ -179,8 +193,12 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
       children: <Widget>[
         Image.asset(
           "assets/loading_background.png",
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+              .size
+              .height,
+          width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+              .size
+              .width,
           fit: BoxFit.cover,
         ),
         Scaffold(
@@ -241,7 +259,10 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
           onPressed: () {
             handleEnableFaceID();
           },
-          child: Text(platform == 'ios' ? AppLocalizations.of(context)!.enableFaceID : AppLocalizations.of(context)!.enableTouchID,
+          child: Text(
+              platform == 'ios'
+                  ? AppLocalizations.of(context)!.enableFaceID
+                  : AppLocalizations.of(context)!.enableTouchID,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: fSize(16),

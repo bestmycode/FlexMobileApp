@@ -7,6 +7,10 @@ import 'package:co/ui/main/home/home.dart';
 import 'package:co/ui/main/transactions/transaction_admin.dart';
 import 'package:co/ui/main/transactions/transaction_user.dart';
 import 'package:co/ui/splash/first_loading.dart';
+// import 'package:co/utils/notification.dart';
+// import 'package:co/utils/notification/firebase_config.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:co/constants/constants.dart';
@@ -27,32 +31,40 @@ import 'package:co/ui/auth/signup/two_step_failed.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
-import 'package:localstorage/localstorage.dart';
 
 // void main() => runApp(MyApp());
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   await Intercom.initialize(
     'gyig20s7',
     androidApiKey: 'android_sdk-b636d4562969f34701d23ae59be81ca77ca619d5',
     iosApiKey: 'ios_sdk-121e7be1206bf3835b6187b837d61c37fe28f9c0',
   );
   await Intercom.registerUnidentifiedUser();
-  /*
-  final LocalStorage userStorage = LocalStorage('user_info');
-  final signed_user = {
-    'email': userStorage.getItem('email'),
-    'name': userStorage.getItem('name'),
-    'phone': userStorage.getItem('phone'),
-    'company': userStorage.getItem('orgName'),
-    'companyId': userStorage.getItem('orgId'),
-    'userId': userStorage.getItem('id')
-  };
 
-  await Intercom.updateUser(signed_user);
-  */
+  // await Firebase.initializeApp(
+  //   options: const FirebaseOptions(
+  //     apiKey: 'AIzaSyATCE3YhmlGNnRJuLah9R6MT1PYdbo844Q',
+  //     appId: '1:243257614357:ios:57d22dd77345d3a845ee1c',
+  //     messagingSenderId: '243257614357',
+  //     projectId: 'flex-by-finaxar',
+  //   ),
+  // );
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
   runApp(MyApp());
 }
+
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp(options: DefaultFirebaseConfig.platformOptions);
+//   print('Handling a background message ${message.messageId}');
+// }
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -62,10 +74,25 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyApp extends State<MyApp> {
+  // String notificationTitle = 'No Title';
+  // String notificationBody = 'No Body';
+  // String notificationData = 'No Data';
+
   @override
   void initState() {
+    // final firebaseMessaging = FCM();
+    // firebaseMessaging.setNotifications();
+
+    // firebaseMessaging.streamCtlr.stream.listen(_changeData);
+    // firebaseMessaging.bodyCtlr.stream.listen(_changeBody);
+    // firebaseMessaging.titleCtlr.stream.listen(_changeTitle);
+
     super.initState();
   }
+
+  // _changeData(String msg) => setState(() => notificationData = msg);
+  // _changeBody(String msg) => setState(() => notificationBody = msg);
+  // _changeTitle(String msg) => setState(() => notificationTitle = msg);
 
   @override
   Widget build(BuildContext context) {

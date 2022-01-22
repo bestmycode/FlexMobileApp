@@ -140,7 +140,7 @@ class TeamCardsState extends State<TeamCards> {
 
   Widget headerField() {
     return Container(
-        // width: MediaQuery.of(context).size.width,
+        // width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
         child: Stack(
             // alignment: Alignment.center,
             overflow: Overflow.visible,

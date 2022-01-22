@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:co/constants/constants.dart';
 import 'package:co/ui/main/cards/name_on_card.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/utils/mutations.dart';
@@ -44,7 +45,7 @@ class RequestCardState extends State<RequestCard> {
   final companyNameCtl = TextEditingController();
 
   final cardHolderNameCtl = TextEditingController();
-  final monthlySpendLimitCtl = TextEditingController(text: "0");
+  final monthlySpendLimitCtl = TextEditingController(text: "500");
 
   bool isSwitchedAdditional = true;
   bool isSwitchedMerchant = true;
@@ -61,8 +62,8 @@ class RequestCardState extends State<RequestCard> {
     true,
     true
   ];
-  double transactionLimitValue = 10;
-  double varianceLimitValue = 30;
+  double transactionLimitValue = 0;
+  double varianceLimitValue = 0;
 
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
@@ -73,6 +74,9 @@ class RequestCardState extends State<RequestCard> {
   late var seletedEligible;
   String companyNameText = '';
   var cardHolders = [];
+  var cardNameHolders = [];
+  bool errorCardHolder = false;
+  bool errorMonthlySpend = false;
 
   handleCloneSetting() {}
 
@@ -83,7 +87,11 @@ class RequestCardState extends State<RequestCard> {
   }
 
   handleSave(runMutation) {
-    if (cardHolders.length != 0) {
+    setState(() {
+      errorMonthlySpend = monthlySpendLimitCtl.text == "" ? true : false;
+      errorCardHolder = cardHolders.length == 0 ? true : false;
+    });
+    if (!errorMonthlySpend && !errorCardHolder) {
       runMutation({
         "accountSubtype": "PHYSICAL",
         "cardHolders": cardHolders,
@@ -107,10 +115,11 @@ class RequestCardState extends State<RequestCard> {
             {"categoryName": "TAXIS", "isAllowed": isSwitchedArr[8]},
             {"categoryName": "OTHERS", "isAllowed": isSwitchedArr[9]},
           ],
-          "transactionLimit": transactionLimitValue *
-              int.parse(monthlySpendLimitCtl.text) /
-              100,
-          "variancePercentage": varianceLimitValue,
+          "transactionLimit": (transactionLimitValue *
+                  int.parse(monthlySpendLimitCtl.text) /
+                  100)
+              .round(),
+          "variancePercentage": varianceLimitValue.round(),
         },
         "orgId": userStorage.getItem('orgId'),
         "remarks": remarksCtl.text,
@@ -140,7 +149,7 @@ class RequestCardState extends State<RequestCard> {
         child: Scaffold(
             body: Stack(children: [
       SingleChildScrollView(
-        child: Column(children: [
+          child: Column(children: [
         const CustomSpacer(size: 44),
         const CustomMainHeader(title: 'Request For Physical Card'),
         const CustomSpacer(size: 38),
@@ -193,6 +202,10 @@ class RequestCardState extends State<RequestCard> {
                 return cardDetailField(null);
               }
               var companyProfile = result.data!['organization'];
+              if (companyProfile == null) {
+                Future.delayed(
+                    Duration.zero, () => _showSimpleModalDialog(context));
+              }
               return cardDetailField(companyProfile);
             }));
   }
@@ -432,14 +445,37 @@ class RequestCardState extends State<RequestCard> {
           const CustomSpacer(size: 22),
           cardHolderNameField(eligibleUsers),
           cardHolderArr(eligibleUsers),
-          const CustomSpacer(size: 32),
+          errorCardHolder
+              ? Container(
+                  height: hScale(32),
+                  width: wScale(295),
+                  padding: EdgeInsets.only(top: hScale(5)),
+                  child: Text("This field is required",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontSize: fSize(12),
+                          color: Color(0xFFEB5757),
+                          fontWeight: FontWeight.w400)))
+              : const CustomSpacer(size: 32),
           CustomTextField(
               ctl: monthlySpendLimitCtl,
               hint: 'Enter Monthly Spend Limit',
               label: 'Monthly Spend Limit',
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
-          const CustomSpacer(size: 15),
+              isError: errorMonthlySpend,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              keyboardType: TextInputType.number),
+          errorMonthlySpend
+              ? Container(
+                  height: hScale(32),
+                  width: wScale(295),
+                  padding: EdgeInsets.only(top: hScale(5)),
+                  child: Text("This field is required",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          fontSize: fSize(12),
+                          color: Color(0xFFEB5757),
+                          fontWeight: FontWeight.w400)))
+              : const CustomSpacer(size: 15),
           monthlyCardsList()
         ],
       ),
@@ -460,8 +496,10 @@ class RequestCardState extends State<RequestCard> {
           margin: EdgeInsets.only(top: hScale(8)),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+              border: Border.all(
+                  color: errorCardHolder
+                      ? Color(0xFFEB5757)
+                      : Color(0xFF040415).withOpacity(0.1))),
           child: Row(
             children: <Widget>[
               Expanded(
@@ -478,7 +516,10 @@ class RequestCardState extends State<RequestCard> {
                       borderSide: BorderSide(color: Colors.white, width: 1.0)),
                   hintText: 'Enter Cardholder Name',
                   hintStyle: TextStyle(
-                      color: const Color(0xffBFBFBF), fontSize: fSize(14)),
+                      color: errorCardHolder
+                          ? Color(0xFFEB5757)
+                          : Color(0xffBFBFBF),
+                      fontSize: fSize(14)),
                   focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white, width: 1.0)),
                 ),
@@ -495,6 +536,7 @@ class RequestCardState extends State<RequestCard> {
                           '${eligibleUsers[index]['firstName']} ${eligibleUsers[index]['firstName']}',
                       "preferredCardName": ""
                     });
+                    cardNameHolders.add(value);
                   });
                 },
                 itemBuilder: (BuildContext context) {
@@ -506,7 +548,9 @@ class RequestCardState extends State<RequestCard> {
                       textStyle: TextStyle(
                           fontSize: fSize(16),
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF040415)),
+                          color: errorCardHolder
+                              ? Color(0xFFEB5757)
+                              : Color(0xFF040415)),
                     );
                   }).toList();
                 },
@@ -520,11 +564,13 @@ class RequestCardState extends State<RequestCard> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: wScale(8)),
             color: Colors.white,
-            child: Text('Company Type',
+            child: Text('Cardholder Name',
                 style: TextStyle(
                     fontSize: fSize(12),
                     fontWeight: FontWeight.w400,
-                    color: const Color(0xFFBFBFBF))),
+                    color: errorCardHolder
+                        ? Color(0xFFEB5757)
+                        : Color(0xFFBFBFBF))),
           ),
         )
       ],
@@ -532,16 +578,14 @@ class RequestCardState extends State<RequestCard> {
   }
 
   Widget cardHolderArr(eligibleUsers) {
-    return eligibleUsers.length == 0
-        ? SizedBox()
-        : Container(
-            padding: EdgeInsets.only(top: 5),
-            child: Wrap(
-                spacing: 5,
-                runSpacing: 5,
-                children: cardHolders.map<Widget>((item) {
-                  return cardholder(cardHolders.indexOf(item), item);
-                }).toList()));
+    return Container(
+        padding: EdgeInsets.only(top: 5),
+        child: Wrap(
+            spacing: 5,
+            runSpacing: 5,
+            children: cardNameHolders.map<Widget>((item) {
+              return cardholder(cardNameHolders.indexOf(item), item);
+            }).toList()));
   }
 
   Widget cardholder(index, item) {
@@ -556,7 +600,7 @@ class RequestCardState extends State<RequestCard> {
           ),
           child: Row(
             children: [
-              Text(item['preferredCardholderName'],
+              Text(item,
                   style: TextStyle(
                       fontSize: fSize(12),
                       fontWeight: FontWeight.w500,
@@ -570,6 +614,8 @@ class RequestCardState extends State<RequestCard> {
                   onPressed: () {
                     setState(() {
                       cardHolders.removeAt(index);
+                      cardNameHolders.removeAt(index);
+                      if (cardHolders.length == 0) cardHolderNameCtl.text = '';
                     });
                   },
                   child: Icon(Icons.close_rounded,
@@ -760,26 +806,26 @@ class RequestCardState extends State<RequestCard> {
                   ),
                   const CustomSpacer(size: 24),
                   customSwitchControl(0, 'assets/air_lines.png', 'Airlines'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(1, 'assets/car_rental.png', 'Car Rental'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(
                       2, 'assets/transportation.png', 'Transportation'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(3, 'assets/hotels.png', 'Hotels'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(4, 'assets/petrol.png', 'Petrol'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(
                       5, 'assets/department_stores.png', 'Department Stores'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(6, 'assets/parking.png', 'Parking'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(
                       7, 'assets/fandb.png', 'F&B (Restaurants & Groceries)'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(8, 'assets/taxis.png', 'Taxis'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 20),
                   customSwitchControl(9, 'assets/others.png', 'Others'),
                   const CustomSpacer(size: 34),
                 ],
@@ -797,20 +843,24 @@ class RequestCardState extends State<RequestCard> {
                           style: TextStyle(
                               fontSize: fSize(14),
                               color: const Color(0xFF1A2831))),
-                      SizedBox(
-                        width: wScale(32),
-                        height: hScale(18),
-                        child: Transform.scale(
-                          scale: 0.5,
-                          child: CupertinoSwitch(
-                            trackColor: const Color(0xFFDFDFDF),
-                            activeColor: const Color(0xFF3BD8A3),
-                            value: isSwitchedTransactionLimit,
-                            onChanged: (v) =>
-                                setState(() => isSwitchedTransactionLimit = v),
-                          ),
-                        ),
-                      )
+                      TextButton(
+                          onPressed: () {
+                            setState(() => isSwitchedTransactionLimit =
+                                !isSwitchedTransactionLimit);
+                          },
+                          child: Container(
+                            width: wScale(32),
+                            height: hScale(18),
+                            child: Transform.scale(
+                              scale: 0.5,
+                              child: CupertinoSwitch(
+                                trackColor: const Color(0xFFDFDFDF),
+                                activeColor: const Color(0xFF3BD8A3),
+                                value: isSwitchedTransactionLimit,
+                                onChanged: (v) {},
+                              ),
+                            ),
+                          ))
                     ],
                   ),
                   const CustomSpacer(size: 28),
@@ -835,12 +885,20 @@ class RequestCardState extends State<RequestCard> {
                           ? (double newValue) {
                               setState(() {
                                 transactionLimitValue = newValue;
+                                if (varianceLimitValue >
+                                    (100 / newValue - 1) * 100) {
+                                  varianceLimitValue =
+                                      (100 / newValue - 1) * 100;
+                                  varianceLimitCtl.text =
+                                      varianceLimitValue.toStringAsFixed(0) +
+                                          "%";
+                                }
                                 transactionLimitCtl.text = 'SGD ' +
                                     (newValue *
                                             int.parse(
                                                 monthlySpendLimitCtl.text) /
                                             100)
-                                        .toStringAsFixed(2);
+                                        .toStringAsFixed(0);
                               });
                             }
                           : null,
@@ -873,8 +931,19 @@ class RequestCardState extends State<RequestCard> {
                           ? (double newValue) {
                               setState(() {
                                 varianceLimitValue = newValue;
+                                if (transactionLimitValue >
+                                    (100 / (100 + newValue) * 100)) {
+                                  transactionLimitValue =
+                                      (100 / (100 + newValue) * 100);
+                                  transactionLimitCtl.text = 'SGD ' +
+                                      (transactionLimitValue *
+                                              int.parse(
+                                                  monthlySpendLimitCtl.text) /
+                                              100)
+                                          .toStringAsFixed(0);
+                                }
                                 varianceLimitCtl.text =
-                                    newValue.toStringAsFixed(2) + '%';
+                                    newValue.toStringAsFixed(0) + '%';
                               });
                             }
                           : null,
@@ -898,30 +967,33 @@ class RequestCardState extends State<RequestCard> {
         Image.asset(image, width: hScale(16), fit: BoxFit.contain),
         SizedBox(width: wScale(9)),
         Container(
-          width: wScale(220),
-          child: Text(title,
-            style: TextStyle(
-                fontSize: fSize(16),
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A2831)))
-        )
+            width: wScale(220),
+            child: Text(title,
+                style: TextStyle(
+                    fontSize: fSize(16),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1A2831))))
       ],
     );
   }
 
   Widget customSwitch(index) {
-    return SizedBox(
-      width: wScale(26),
-      height: hScale(15),
-      child: Transform.scale(
-        scale: 0.4,
-        child: CupertinoSwitch(
-            trackColor: const Color(0xFFEB5757),
-            activeColor: const Color(0xFF3BD8A3),
-            value: isSwitchedArr[index],
-            onChanged: (v) => handleSwitch(index, v)),
-      ),
-    );
+    return Container(
+        height: wScale(30),
+        width: wScale(38),
+        child: TextButton(
+          onPressed: () {
+            setState(() => isSwitchedArr[index] = !isSwitchedArr[index]);
+          },
+          child: Transform.scale(
+            scale: 0.4,
+            child: CupertinoSwitch(
+                trackColor: const Color(0xFFEB5757),
+                activeColor: const Color(0xFF3BD8A3),
+                value: isSwitchedArr[index],
+                onChanged: (v) {}),
+          ),
+        ));
   }
 
   Widget readonlyTextFiled(ctl, hint, label) {
@@ -1097,10 +1169,17 @@ class RequestCardState extends State<RequestCard> {
                                       borderRadius:
                                           BorderRadius.circular(12.0)),
                                   child: CustomResultModal(
-                                      status: true,
-                                      title: "Request sent successfully",
-                                      message:
-                                          "You have successfully requested physical card(s). Please expect your card to be delivered within 7 working days.")));
+                                    status: true,
+                                    title: "Request sent successfully",
+                                    message:
+                                        "You have successfully requested physical card(s). Please expect your card to be delivered within 7 working days.",
+                                    handleOKClick: () {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop('dialog');
+                                      Navigator.of(context)
+                                          .pushReplacementNamed(HOME_SCREEN);
+                                    },
+                                  )));
                         })
                     : showDialog(
                         context: context,
@@ -1142,44 +1221,50 @@ class RequestCardState extends State<RequestCard> {
         width: wScale(327),
         padding:
             EdgeInsets.symmetric(horizontal: wScale(16), vertical: hScale(16)),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('Edit Company Name',
-                style: TextStyle(
-                    fontSize: fSize(14),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A2831))),
-            SizedBox(
-                width: wScale(20),
-                child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: const Color(0xff000000),
-                      padding: const EdgeInsets.all(0),
-                    ),
-                    child: const Icon(
-                      Icons.close_rounded,
-                      color: Color(0xFFC8C4D9),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    }))
-          ]),
-          Text('This is what will be displayed on your physical card',
-              style: TextStyle(
-                  fontSize: fSize(12),
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xFF70828D))),
-          CustomSpacer(size: 32),
-          CustomTextField(
-              ctl: companyNameCtl,
-              hint: 'Type Company Name',
-              label: 'Company Name'),
-          CustomSpacer(size: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [modalBackButton('Back'), modalSaveButton('Update')],
-          )
-        ]));
+        child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text('Edit Company Name',
+                    style: TextStyle(
+                        fontSize: fSize(14),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A2831))),
+                SizedBox(
+                    width: wScale(20),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: const Color(0xff000000),
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          color: Color(0xFFC8C4D9),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        }))
+              ]),
+              Text('This is what will be displayed on your physical card',
+                  style: TextStyle(
+                      fontSize: fSize(12),
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF70828D))),
+              CustomSpacer(size: 32),
+              CustomTextField(
+                  ctl: companyNameCtl,
+                  hint: 'Type Company Name',
+                  label: 'Company Name',
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(20),
+                  ]),
+              CustomSpacer(size: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [modalBackButton('Back'), modalSaveButton('Update')],
+              )
+            ]));
   }
 
   Widget modalBackButton(title) {

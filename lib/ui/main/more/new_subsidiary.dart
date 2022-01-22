@@ -1,6 +1,4 @@
-import 'package:co/ui/main/more/complete_new_subsidiary.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
-import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_mobile_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
@@ -52,28 +50,42 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
   final companyAddressCtl = TextEditingController();
   final companyPostalCodeCtl = TextEditingController();
   final industryCtl = TextEditingController();
+  final selectedIndustryArr = [];
+  String selectedCompanyType = '';
+
   bool flagAddress = false;
   bool showEmpty = false;
 
   handleConfirm(runMutation) {
+    print('llllllllllllllllllllll');
+
+    print(companyNameCtl.text);
+    print(companyNumberCtl.text);
+    print(storage.getItem('country'));
+    print(companyTypeCtl.text);
+    print(companyPhoneNumberCtl.text);
+    print(companyAddressCtl.text);
+    print(companyPostalCodeCtl.text);
+    print(industryCtl.text);
+
     if (companyNameCtl.text != '' &&
         companyNumberCtl.text != '' &&
-        countryCtl.text != '' &&
         companyTypeCtl.text != '' &&
         companyPhoneNumberCtl.text != '' &&
         companyAddressCtl.text != '' &&
         companyPostalCodeCtl.text != '' &&
-        industryCtl.text != '') {
-      runMutation({
+        industryCtl.text != '') {      
+      var mutationValue = {
         "baseCurrency": "SGD",
         "businessDescription": "",
         "city": "1880252",
-        "companyType": "LC",
+        "companyType": selectedCompanyType,
         "contactName": companyNameCtl.text,
-        "contactNumber": companyNumberCtl.text,
+        "contactNumber":
+            '+${_selectedDialogCountry.phoneCode}${companyPhoneNumberCtl.text}',
         "country": storage.getItem("country"),
-        "crn": "gb",
-        "industries": [264, 2039, 1637],
+        "crn": companyPostalCodeCtl.text,
+        "industries": selectedIndustryArr,
         "name": companyNameCtl.text,
         "operatingAddress": {
           "addressLine1": companyAddressCtl.text,
@@ -83,19 +95,24 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
           "city": "1880252",
           "zipCode": companyPostalCodeCtl.text,
         },
-        "phone": companyPhoneNumberCtl.text,
+        "phone":
+            '+${_selectedDialogCountry.phoneCode}${companyPhoneNumberCtl.text}',
         "primaryAddress": {
           "addressLine1": companyAddressCtl.text,
           "addressLine2": "",
           "addressLine3": "",
           "addressLine4": "",
           "city": "1880252",
-          "zipCode": "123123",
+          "zipCode": companyPostalCodeCtl.text,
         },
         "proprietorPartner": false,
         "revenueGenerationDetail": "",
         "signupToken": null,
-      });
+      };
+      print('+=========MutationValue==========> ');
+      print(mutationValue);
+      runMutation(mutationValue);
+      
       setState(() {
         showEmpty = false;
       });
@@ -109,6 +126,7 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
   @override
   void initState() {
     super.initState();
+    storage.setItem('country', _selectedDialogCountry.isoCode);
   }
 
   @override
@@ -118,111 +136,108 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
   }
 
   Widget home() {
-    return Material(
-        child: Scaffold(
-            body: Query(
-                options: QueryOptions(
-                  document: gql(industryFilteredQuery),
-                  variables: {"industryTerm": ""},
-                  // pollInterval: const Duration(seconds: 10),
-                ),
-                builder: (QueryResult industryResult,
-                    {VoidCallback? refetch, FetchMore? fetchMore}) {
-                  if (industryResult.hasException) {
-                    return Text(industryResult.exception.toString());
-                  }
+    return Query(
+        options: QueryOptions(
+          document: gql(industryFilteredQuery),
+          variables: {"industryTerm": ""},
+          // pollInterval: const Duration(seconds: 10),
+        ),
+        builder: (QueryResult industryResult,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (industryResult.hasException) {
+            return Text(industryResult.exception.toString());
+          }
 
-                  if (industryResult.isLoading) {
-                    return mainHome([], []);
-                  }
-                  var industry = industryResult.data!['industriesFiltered'];
-                  return Query(
-                      options: QueryOptions(
-                        document: gql(listCompanyTypeQuery),
-                        variables: {},
-                        // pollInterval: const Duration(seconds: 10),
-                      ),
-                      builder: (QueryResult listCompanyResult,
-                          {VoidCallback? refetch, FetchMore? fetchMore}) {
-                        if (listCompanyResult.hasException) {
-                          return Text(listCompanyResult.exception.toString());
-                        }
+          if (industryResult.isLoading) {
+            return mainHome([], []);
+          }
+          var industry = industryResult.data!['industriesFiltered'];
+          return Query(
+              options: QueryOptions(
+                document: gql(listCompanyTypeQuery),
+                variables: {},
+                // pollInterval: const Duration(seconds: 10),
+              ),
+              builder: (QueryResult listCompanyResult,
+                  {VoidCallback? refetch, FetchMore? fetchMore}) {
+                if (listCompanyResult.hasException) {
+                  return Text(listCompanyResult.exception.toString());
+                }
 
-                        if (listCompanyResult.isLoading) {
-                          return mainHome([], []);
-                        }
-                        var listCompany =
-                            listCompanyResult.data!['LIST_COMPANY_TYPES'];
+                if (listCompanyResult.isLoading) {
+                  return mainHome([], []);
+                }
+                var listCompany = listCompanyResult.data!['LIST_COMPANY_TYPES'];
 
-                        List<String> listCompanyArr = [];
-                        listCompany.forEach((item) {
-                          listCompanyArr.add(item['name']);
-                        });
+                List<String> listCompanyArr = [];
+                listCompany.forEach((item) {
+                  listCompanyArr.add(item['name']);
+                });
 
-                        List<String> industryArr = [];
-                        industry.forEach((item) {
-                          industryArr.add(item['level5CodesAndNames']);
-                        });
-
-                        return mainHome(industryArr, listCompanyArr);
-                      });
-                })));
+                return mainHome(industry, listCompany);
+              });
+        });
   }
 
-  Widget mainHome(industryArr, listCompanyArr) {
+  Widget mainHome(industry, listCompany) {
     return Material(
         child: Scaffold(
             body: Stack(children: [
-      Container(
-        color: Colors.white,
-        child: SizedBox(
-            height: hScale(812),
-            child: SingleChildScrollView(
-                child: Column(children: [
-              const CustomSpacer(size: 44),
-              const CustomMainHeader(title: 'Create New Subsidiary'),
-              const CustomSpacer(size: 20),
-              groupIcon(),
-              const CustomSpacer(size: 15),
-              groupTitle(),
-              const CustomSpacer(size: 36),
-              companyDetailSection(industryArr, listCompanyArr),
-              const CustomSpacer(size: 15),
-              registeredAddressField(),
-              const CustomSpacer(size: 22),
-              differentAddressField(),
-              const CustomSpacer(size: 37),
-              mutationButton(),
-              const CustomSpacer(size: 24),
-              const CustomSpacer(size: 88),
-            ]))),
-      ),
-      const Positioned(
-        bottom: 0,
-        left: 0,
-        child: CustomBottomBar(active: 14),
-      )
-    ])));
+              Container(
+                color: Colors.white,
+                child: SizedBox(
+                    height: hScale(812),
+                    child: SingleChildScrollView(
+                        child: Column(children: [
+                      const CustomSpacer(size: 44),
+                      const CustomMainHeader(title: 'Create New Subsidiary'),
+                      const CustomSpacer(size: 20),
+                      groupIcon(),
+                      const CustomSpacer(size: 15),
+                      groupTitle(),
+                      const CustomSpacer(size: 36),
+                      companyDetailSection(industry, listCompany),
+                      const CustomSpacer(size: 15),
+                      registeredAddressField(),
+                      const CustomSpacer(size: 22),
+                      differentAddressField(),
+                      const CustomSpacer(size: 37),
+                      mutationButton(),
+                      const CustomSpacer(size: 24),
+                      const CustomSpacer(size: 88),
+                    ]))),
+              ),
+              const Positioned(
+                bottom: 0,
+                left: 0,
+                child: CustomBottomBar(active: 14),
+              )
+            ])));
   }
 
   Widget mutationButton() {
-    return Mutation(
-        options: MutationOptions(
-          document: gql(createOrganizationMutation),
-          update: (GraphQLDataProxy cache, QueryResult? result) {
-            return cache;
-          },
-          onCompleted: (resultData) {
-            if (resultData.data['createdOrganization'] == null) {
-              print(resultData.errors[0]['message']);
-            } else {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-        builder: (RunMutation runMutation, QueryResult? result) {
-          return confirmButton(runMutation);
-        });
+    String accessToken = tokenStorage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(FXRMutations.MUTATION_FREEZE_FINANCE_ACCOUNT),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                print("---------------->>>>>>>>>>>>>");
+                print(resultData);
+                if (resultData['data']['createdOrganization'] == null) {
+                  print(resultData['errors'][0]['message']);
+                } else {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return confirmButton(runMutation);
+            }));
   }
 
   Widget groupIcon() {
@@ -394,7 +409,9 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
                               color: Color(0xFFC8C4D9),
                               size: 20,
                             ),
-                            onPressed: () {}))
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }))
                   ],
                 ),
                 const CustomSpacer(
@@ -433,8 +450,8 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
           Row(
             children: [
               SizedBox(
-                width: wScale(24),
-                height: hScale(16),
+                width: wScale(20),
+                height: wScale(12),
                 child: CountryPickerUtils.getDefaultFlagImage(country),
               ),
               SizedBox(width: wScale(16)),
@@ -447,7 +464,12 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
         ],
       );
 
-  Widget companyTypeField(listCompanyArr) {
+  Widget companyTypeField(listCompany) {
+    List<String> listCompanyArr = [];
+    listCompany.forEach((item) {
+      listCompanyArr.add(item['name']);
+    });
+
     return Stack(
       children: [
         Container(
@@ -470,6 +492,7 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF040415)),
                 controller: companyTypeCtl,
+                readOnly: true,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.transparent,
@@ -487,26 +510,32 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
                           BorderSide(color: Colors.transparent, width: 1.0)),
                 ),
               )),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.keyboard_arrow_down_rounded,
-                    color: const Color(0xFFBFBFBF), size: wScale(15)),
-                onSelected: (String value) {
-                  companyTypeCtl.text = value;
-                },
-                itemBuilder: (BuildContext context) {
-                  return listCompanyArr
-                      .map<PopupMenuItem<String>>((String value) {
-                    return PopupMenuItem(
-                      child: Text(value),
-                      value: value,
-                      textStyle: TextStyle(
-                          fontSize: fSize(16),
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF040415)),
-                    );
-                  }).toList();
-                },
-              ),
+              listCompanyArr.length == 0
+                  ? SizedBox()
+                  : PopupMenuButton<String>(
+                      icon: Icon(Icons.keyboard_arrow_down_rounded,
+                          color: const Color(0xFFBFBFBF), size: wScale(15)),
+                      onSelected: (String value) {
+                        companyTypeCtl.text = value;
+                        var index = listCompanyArr.indexOf(value);
+                        setState(() {
+                          selectedCompanyType = listCompany[index]['id'];
+                        });
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return listCompanyArr
+                            .map<PopupMenuItem<String>>((String value) {
+                          return PopupMenuItem(
+                            child: Text(value),
+                            value: value,
+                            textStyle: TextStyle(
+                                fontSize: fSize(16),
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF040415)),
+                          );
+                        }).toList();
+                      },
+                    ),
             ],
           ),
         ),
@@ -530,6 +559,10 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
   }
 
   Widget industryTypeField(industryArr) {
+    List<String> temp_industryArr = [];
+    industryArr.forEach((item) {
+      temp_industryArr.add(item['level5CodesAndNames']);
+    });
     return Stack(
       children: [
         Container(
@@ -570,25 +603,31 @@ class NewSubsidiaryState extends State<NewSubsidiary> {
                           BorderSide(color: Colors.transparent, width: 1.0)),
                 ),
               )),
-              PopupMenuButton<String>(
-                icon: Image.asset('assets/search_icon.png',
-                    fit: BoxFit.contain, width: wScale(15)),
-                onSelected: (String value) {
-                  industryCtl.text = value;
-                },
-                itemBuilder: (BuildContext context) {
-                  return industryArr.map<PopupMenuItem<String>>((String value) {
-                    return PopupMenuItem(
-                      child: Text(value),
-                      value: value,
-                      textStyle: TextStyle(
-                          fontSize: fSize(16),
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF040415)),
-                    );
-                  }).toList();
-                },
-              ),
+              industryArr.length == 0
+                  ? SizedBox()
+                  : PopupMenuButton<String>(
+                      icon: Image.asset('assets/search_icon.png',
+                          fit: BoxFit.contain, width: wScale(15)),
+                      onSelected: (String value) {
+                        industryCtl.text = value;
+                        var index = temp_industryArr.indexOf(value);
+                        selectedIndustryArr
+                            .add(industryArr[index]['industryCode']);
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return temp_industryArr
+                            .map<PopupMenuItem<String>>((String value) {
+                          return PopupMenuItem(
+                            child: Text(value),
+                            value: value,
+                            textStyle: TextStyle(
+                                fontSize: fSize(16),
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF040415)),
+                          );
+                        }).toList();
+                      },
+                    ),
             ],
           ),
         ),

@@ -137,9 +137,7 @@ class CreditManuallyTransferScreenState
               Image.asset('assets/bank_icon.png',
                   fit: BoxFit.contain, width: wScale(20)),
               SizedBox(width: wScale(10)),
-              detail(widget.data['businessAccount']['bankName'] == null
-                  ? "DBS Bank, Singapore"
-                  : widget.data['businessAccount']['bankName'])
+              detail("DBS Bank, Singapore")
             ],
           ),
           const CustomSpacer(size: 38),

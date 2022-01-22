@@ -1,4 +1,3 @@
-import 'package:co/ui/main/cards/physical_team_card.dart';
 import 'package:co/ui/main/cards/virtual_my_card.dart';
 import 'package:co/ui/main/cards/virtual_my_transaction.dart';
 import 'package:co/ui/main/cards/virtual_team_card.dart';

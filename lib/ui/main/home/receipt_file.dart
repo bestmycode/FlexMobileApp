@@ -1,19 +1,25 @@
+import 'dart:io';
+
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/mutations.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
+import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class ReceiptFile extends StatefulWidget {
   final data;
   final isRemoved;
   final handleRemoved;
-  const ReceiptFile({Key? key, this.data, this.isRemoved, this.handleRemoved}) : super(key: key);
+  const ReceiptFile({Key? key, this.data, this.isRemoved, this.handleRemoved})
+      : super(key: key);
 
   @override
   ReceiptFileState createState() => ReceiptFileState();
@@ -37,6 +43,11 @@ class ReceiptFileState extends State<ReceiptFile> {
   String docDownloadQuery = Queries.QUERY_DOC_DOWNLOAD;
   String removeReceiptMutation = FXRMutations.MUTATION_REMOVE_RECEIPT;
 
+  late DownloaderUtils options;
+  late DownloaderCore core;
+  late final String path;
+  double progress = 0.0;
+  
   @override
   void initState() {
     super.initState();
@@ -49,6 +60,32 @@ class ReceiptFileState extends State<ReceiptFile> {
       "orgId": userStorage.getItem('orgId'),
       "sourceTxnId": widget.data['sourceTransactionId'],
     });
+  }
+
+  handleDownload(url) async {
+    final Directory? download = await getApplicationDocumentsDirectory();
+    final String downloadPath = download!.path;
+    final String fileExt = widget.data['receiptData']['fileType'].split('/')[1];
+    String path = "${downloadPath}/receipt_${widget.data['sourceTransactionId']}_${widget.data['receiptData']['uploadedAt']}.${fileExt}";
+    options = DownloaderUtils(
+      progressCallback: (current, total) {
+        progress = (current / total) * 100;
+
+        setState(() {
+          progress = (current / total);
+        });
+      },
+      file: File(path),
+      progress: ProgressImplementation(),
+      onDone: () {
+        setState(() {
+          progress = 0.0;
+        });
+        OpenFile.open(path).then((value) {});
+      },
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(url, options);
   }
 
   @override
@@ -95,10 +132,12 @@ class ReceiptFileState extends State<ReceiptFile> {
             width: wScale(301),
             height: hScale(519),
             margin: EdgeInsets.only(right: wScale(27)),
-            child: SfPdfViewer.network(
-              url,
-              scrollDirection: PdfScrollDirection.vertical,
-            )),
+            child: widget.data['receiptData']['fileType'].split('/')[0] == "image"
+                ? Image.network(url)
+                : SfPdfViewer.network(
+                    url,
+                    scrollDirection: PdfScrollDirection.vertical,
+                  )),
         Positioned(
             top: wScale(-17),
             right: wScale(8),
@@ -106,7 +145,7 @@ class ReceiptFileState extends State<ReceiptFile> {
               children: [
                 removeMutationButton(),
                 const CustomSpacer(size: 12),
-                handleButton(1, null),
+                handleButton(1, url),
               ],
             ))
       ],
@@ -115,28 +154,26 @@ class ReceiptFileState extends State<ReceiptFile> {
 
   Widget removeMutationButton() {
     return Mutation(
-      options: MutationOptions(
-        document: gql(removeReceiptMutation),
-        update: ( GraphQLDataProxy cache, QueryResult? result) {
-          return cache;
-        },
-        onCompleted: (resultData) {
-          print(resultData);
-          if(resultData['removeReceipt']['id'] > 0) {
-            widget.handleRemoved();
-          }
-        },
-      ),
-      builder: (RunMutation runMutation, QueryResult? result ) {
-        return handleButton(0, runMutation);
-      });
+        options: MutationOptions(
+          document: gql(removeReceiptMutation),
+          update: (GraphQLDataProxy cache, QueryResult? result) {
+            return cache;
+          },
+          onCompleted: (resultData) {
+            if (resultData['removeReceipt']['id'] > 0) {
+              widget.handleRemoved();
+            }
+          },
+        ),
+        builder: (RunMutation runMutation, QueryResult? result) {
+          return handleButton(0, runMutation);
+        });
   }
 
-  Widget handleButton(type, runMutation) {
+  Widget handleButton(type, data) {
     return Container(
         width: wScale(35),
         height: wScale(35),
-        padding: EdgeInsets.all(wScale(8)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(8)),
           color: type == 0 ? const Color(0xffFFF2F2) : Colors.white,
@@ -147,8 +184,10 @@ class ReceiptFileState extends State<ReceiptFile> {
               padding: const EdgeInsets.all(0),
             ),
             onPressed: () {
-              if(type == 0) {
-                handleRemoveReceipt(runMutation);
+              if (type == 0) {
+                handleRemoveReceipt(data);
+              } else {
+                handleDownload(data);
               }
             },
             child: Image.asset(

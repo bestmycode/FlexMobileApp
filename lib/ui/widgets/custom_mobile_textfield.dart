@@ -189,7 +189,7 @@ class CustomMobileTextFieldState extends State<CustomMobileTextField> {
             children: [
               SizedBox(
                 width: wScale(20),
-                height: hScale(10),
+                height: wScale(12),
                 child: CountryPickerUtils.getDefaultFlagImage(country),
               ),
               SizedBox(width: wScale(16)),
@@ -209,7 +209,7 @@ class CustomMobileTextFieldState extends State<CustomMobileTextField> {
         children: [
           SizedBox(
             width: wScale(20),
-            height: hScale(10),
+            height: wScale(10),
             child: CountryPickerUtils.getDefaultFlagImage(country),
           ),
           SizedBox(width: wScale(5)),

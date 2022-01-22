@@ -4,7 +4,6 @@ import 'package:co/utils/basedata.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 
 class Token {
   getClientToken() async {

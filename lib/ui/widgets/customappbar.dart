@@ -5,8 +5,8 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+    double height = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.height;
+    double width = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width;
     return Material(
       child: Container(
         height: height / 10,

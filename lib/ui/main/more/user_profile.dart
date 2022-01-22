@@ -77,24 +77,24 @@ class UserProfileState extends State<UserProfile> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: wScale(60),
-              height: wScale(60),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(wScale(30)),
-                  topRight: Radius.circular(wScale(30)),
-                  bottomLeft: Radius.circular(wScale(30)),
-                  bottomRight: Radius.circular(wScale(30)),
-                ),
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: Image.asset(
-                'assets/user.png',
-                fit: BoxFit.contain,
-                width: wScale(60),
-              ),
-            ),
+            // Container(
+            //   width: wScale(60),
+            //   height: wScale(60),
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(wScale(30)),
+            //       topRight: Radius.circular(wScale(30)),
+            //       bottomLeft: Radius.circular(wScale(30)),
+            //       bottomRight: Radius.circular(wScale(30)),
+            //     ),
+            //   ),
+            //   clipBehavior: Clip.hardEdge,
+            //   child: Image.asset(
+            //     'assets/user.png',
+            //     fit: BoxFit.contain,
+            //     width: wScale(60),
+            //   ),
+            // ),
             SizedBox(width: wScale(20)),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,

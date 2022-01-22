@@ -1,4 +1,3 @@
-import 'package:co/ui/widgets/custom_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -200,11 +199,11 @@ class MyCardsState extends State<MyCards> {
                   children: [
                     Text('Valid Thru',
                         style:
-                            TextStyle(color: Colors.white, fontSize: fSize(8))),
+                            TextStyle(color: Colors.white, fontSize: fSize(12))),
                     Text('12/20',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: fSize(8),
+                            fontSize: fSize(12),
                             fontWeight: FontWeight.bold))
                   ],
                 ),
@@ -214,11 +213,11 @@ class MyCardsState extends State<MyCards> {
                   children: [
                     Text('CVV',
                         style:
-                            TextStyle(color: Colors.white, fontSize: fSize(8))),
+                            TextStyle(color: Colors.white, fontSize: fSize(12))),
                     Text('214',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: fSize(8),
+                            fontSize: fSize(12),
                             fontWeight: FontWeight.bold))
                   ],
                 ),

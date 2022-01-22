@@ -1,14 +1,9 @@
-import 'package:co/ui/main/transactions/all_transaction_header.dart';
 import 'package:co/ui/widgets/billing_item.dart';
-import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:co/ui/widgets/transaction_item.dart';
-import 'package:co/ui/widgets/virtual_my_transaction_search_filed%20copy.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -22,8 +17,7 @@ class CreditBillTypeSectionItem extends StatefulWidget {
       CreditBillTypeSectionItemState();
 }
 
-class CreditBillTypeSectionItemState
-    extends State<CreditBillTypeSectionItem> {
+class CreditBillTypeSectionItemState extends State<CreditBillTypeSectionItem> {
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -41,8 +35,10 @@ class CreditBillTypeSectionItemState
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String readBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
-  String billedUnbilledTransactions = Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
+  String billedUnbilledTransactions =
+      Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
   String billingStatementsTable = Queries.QUERY_BILLING_STATEMENTTABLE;
+  String billDownloadQuery = Queries.QUERY_BILL_DOWNLOAD;
 
   handleTransactionType(type) {
     setState(() {
@@ -87,33 +83,36 @@ class CreditBillTypeSectionItemState
           if (result.isLoading) {
             return Container(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
           }
-          var listUserFinanceAccounts = result.data!['readBusinessAcccountSummary'];
+          var listUserFinanceAccounts =
+              result.data!['readBusinessAcccountSummary'];
           var flaId = listUserFinanceAccounts['data']['creditLine']['id'];
-      return Query(
-        options: QueryOptions(
-          document: gql(billingStatementsTable),
-          variables: {
-            "fplId": flaId
-          },
-          // pollInterval: const Duration(seconds: 10),
-        ),
-        builder: (QueryResult billedResult,
-            {VoidCallback? refetch, FetchMore? fetchMore}) {
-          if (billedResult.hasException) {
-            return Text(billedResult.exception.toString());
-          }
+          return Query(
+              options: QueryOptions(
+                document: gql(billingStatementsTable),
+                variables: {"fplId": flaId},
+                // pollInterval: const Duration(seconds: 10),
+              ),
+              builder: (QueryResult billedResult,
+                  {VoidCallback? refetch, FetchMore? fetchMore}) {
+                if (billedResult.hasException) {
+                  return Text(billedResult.exception.toString());
+                }
 
-          if (billedResult.isLoading) {
-            return Container(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
-          }
-          var listBills = billedResult.data!['listBills'];
-          return mainHome(listBills);
+                if (billedResult.isLoading) {
+                  return Container(
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFF60C094))));
+                }
+                var listBills = billedResult.data!['listBills'];
+                return mainHome(listBills);
+              });
         });
-      });
   }
 
   Widget mainHome(listBills) {
@@ -126,17 +125,39 @@ class CreditBillTypeSectionItemState
             fit: BoxFit.contain, width: wScale(327))
         : Column(
             children: arr.map<Widget>((item) {
-            return BillingItem(
-                statementDate: DateFormat('dd-MM-yyyy | hh:mm a').format(
-                    DateTime.fromMillisecondsSinceEpoch(item['statementDate'])),
-                totalAmount: item['totalAmountDue'].toString(),
-                dueDate: item['dueDate'] == null
-                    ? "-"
-                    : DateFormat('dd-MM-yyyy | hh:mm a').format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                            item['statementDate'])),
-                status: item['status'],
-                documentLink: item['documentLink']);
+            return Query(
+                options: QueryOptions(
+                  document: gql(billDownloadQuery),
+                  variables: {"fileId": item['documentLink']},
+                  // pollInterval: const Duration(seconds: 10),
+                ),
+                builder: (QueryResult result,
+                    {VoidCallback? refetch, FetchMore? fetchMore}) {
+                  if (result.hasException) {
+                    return Text(result.exception.toString());
+                  }
+
+                  if (result.isLoading) {
+                    return Container(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF60C094))));
+                  }
+
+                  print(result.data!['downloadBillStatement']);
+
+                  return BillingItem(
+                      index: arr.indexOf(item),
+                      statementDate:
+                          '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['statementDate']))}',
+                      totalAmount: item['totalAmountDue'].toString(),
+                      dueDate: item['dueDate'] == null
+                          ? "N/A"
+                          : '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['dueDate']))}',
+                      status: item['status'],
+                      documentLink: result.data!['downloadBillStatement']);
+                });
           }).toList());
   }
 }

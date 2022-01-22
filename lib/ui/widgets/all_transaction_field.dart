@@ -1,7 +1,6 @@
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:co/utils/queries.dart';
-import 'package:co/utils/token.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';

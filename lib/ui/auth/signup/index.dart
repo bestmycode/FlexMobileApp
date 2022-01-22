@@ -141,14 +141,7 @@ class SignUpScreenState extends State<SignUpScreen> {
 
       // var jwtbody = json.decode(jwtTokenResponse.body);
       // var jwttoken = jwtbody["access_token"];
-      
-      // print("----------------");
-      // print(token);
-      // print("----------------");
-      // print(jwtbody);
-      // print("----------------");
-      // print(jwttoken);
-
+    
       // await tokenStorage.setItem('jwt_token', jwttoken);
       
       Navigator.of(context).push(

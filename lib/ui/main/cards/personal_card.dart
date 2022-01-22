@@ -206,11 +206,11 @@ class PersonalCardState extends State<PersonalCard> {
                   children: [
                     Text('Valid Thru',
                         style:
-                            TextStyle(color: Colors.white, fontSize: fSize(8))),
+                            TextStyle(color: Colors.white, fontSize: fSize(12))),
                     Text('12/20',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: fSize(8),
+                            fontSize: fSize(12),
                             fontWeight: FontWeight.bold))
                   ],
                 ),
@@ -220,11 +220,11 @@ class PersonalCardState extends State<PersonalCard> {
                   children: [
                     Text('CVV',
                         style:
-                            TextStyle(color: Colors.white, fontSize: fSize(8))),
+                            TextStyle(color: Colors.white, fontSize: fSize(12))),
                     Text('214',
                         style: TextStyle(
                             color: Colors.white,
-                            fontSize: fSize(8),
+                            fontSize: fSize(12),
                             fontWeight: FontWeight.bold))
                   ],
                 ),

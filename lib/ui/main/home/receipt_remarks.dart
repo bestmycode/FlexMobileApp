@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

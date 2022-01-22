@@ -60,7 +60,7 @@ class _ReceiptTransactionType extends State<ReceiptTransactionType> {
           children: [
             transactionTypeField(),
             transactionType == 1
-                ? ReceiptFile(data: widget.data, isRemoved: isRemoved, handleRemoved: handleRemoved())
+                ? ReceiptFile(data: widget.data, isRemoved: isRemoved, handleRemoved: handleRemoved)
                 : transactionType == 2
                     ? ReceiptDetails(data: widget.data)
                     : ReceiptRemarks(data: widget.data['remarkData']),

@@ -43,14 +43,14 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
   String myVirtualCardsListQuery = Queries.QUERY_MY_VIRTUAL_CARD_LIST;
   String searchText = "";
   var sortArr = [
-    {'sortType': 'card holder', 'subType1': 'Fixed', 'subType2': 'Recurring'},
+    {'sortType': 'Card Type', 'subType1': 'Fixed', 'subType2': 'Recurring'},
     {
-      'sortType': 'available limit',
+      'sortType': 'Available Limit',
       'subType1': 'Highest to lowest',
       'subType2': 'Lowest to highest'
     },
     {
-      'sortType': 'date issued',
+      'sortType': 'Date Issued',
       'subType1': 'Newest to oldest',
       'subType2': 'Oldest to newest'
     },
@@ -355,7 +355,7 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
           children: [
             Text('${data['cardName']}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text('${data["permanentAccountNumber"]} | ${data['accountType']}',
+            Text('${data["permanentAccountNumber"]} | ${data['cardType'] == "RECURRING" ? "Recurring" : "Fixed"}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
         ));
@@ -448,7 +448,7 @@ class VirtualMyCardsState extends State<VirtualMyCards> {
                     type != 3
                         ? Text('$symbol ',
                             style: TextStyle(
-                                fontSize: fSize(8),
+                                fontSize: fSize(12),
                                 fontWeight: FontWeight.w500,
                                 height: 1,
                                 color: type == 1

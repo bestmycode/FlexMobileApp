@@ -109,7 +109,7 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
 
   Widget logo() {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
         height: hScale(300),
         decoration: const BoxDecoration(
           image: DecorationImage(

@@ -14,17 +14,6 @@ class FXRMutations {
   }
 ''';
 
-// static const MUTATION_STATUS_QUERY = r'''
-//   mutation statusQuery {
-//     status(input: { email: $email })
-//       @rest(type: "success", path: "/verificationEmail", method: "POST") {
-//       success
-//       message
-//       statusCode
-//     }
-//   }
-// ''';
-
 static const MUTATION_SEND_USER_VERIFICATION_EMAIL = r'''
   mutation sendUserVerificationEmailMutation {
     sendUserVerificationEmail {
@@ -459,4 +448,31 @@ mutation financeAccountLimitMutation($orgId: Int!, $financeAccountId: String!, $
   )
 }
 ''';
+
+static const MUTATION_CREATE_USER_DEVICE = r'''
+mutation createUserDevicesMutation($deviceToken: String!, $enabledNotification: Boolean, $platform: String!, $description: String!, $deviceId: String!){
+  createUserDevices(
+    deviceToken: $deviceToken,
+    enabledNotification: $enabledNotification,
+    platform: $platform,
+    deviceId: $deviceId,
+    description: $description,
+  ) {
+    success
+    statusCode
+    message
+  }
+}''';
+
+static const MUTATION_ENABLE_DISABLE_NOTIFICATION = r'''
+mutation enableDisableNotificationMuation($deviceToken: String!, $enabledNotification: Boolean) {
+  enableDisableNotification(
+    deviceToken: $deviceToken,
+    enabledNotification: $enabledNotification,
+  ) {
+    success
+    statusCode
+    message
+  }
+}''';
 }

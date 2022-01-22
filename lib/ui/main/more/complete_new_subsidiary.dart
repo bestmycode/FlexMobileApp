@@ -177,7 +177,7 @@ Thanks.''';
 
   Widget cardValanceField() {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
         padding: EdgeInsets.all(hScale(24)),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(hScale(10)),

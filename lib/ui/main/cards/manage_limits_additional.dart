@@ -5,6 +5,7 @@ import 'package:co/utils/scale.dart';
 
 class ManageLimitsAdditional extends StatefulWidget {
   final data;
+  final availableLimitValue;
   final transactionLimitValue;
   final varianceLimitValue;
   final isSwitchedArr;
@@ -12,17 +13,18 @@ class ManageLimitsAdditional extends StatefulWidget {
   final setTransactionLimitValue;
   final setVarianceLimitValue;
   final isSwitchedTransactionLimit;
-  const ManageLimitsAdditional({
-    Key? key, 
-    this.data,
-    this.transactionLimitValue,
-    this.varianceLimitValue,
-    this.isSwitchedArr,
-    // this.handleSwitch,
-    this.setTransactionLimitValue,
-    this.isSwitchedTransactionLimit,
-    this.setVarianceLimitValue
-    }) : super(key: key);
+  const ManageLimitsAdditional(
+      {Key? key,
+      this.data,
+      this.transactionLimitValue,
+      this.availableLimitValue,
+      this.varianceLimitValue,
+      this.isSwitchedArr,
+      // this.handleSwitch,
+      this.setTransactionLimitValue,
+      this.isSwitchedTransactionLimit,
+      this.setVarianceLimitValue})
+      : super(key: key);
   @override
   ManageLimitsAdditionalState createState() => ManageLimitsAdditionalState();
 }
@@ -46,11 +48,13 @@ class ManageLimitsAdditionalState extends State<ManageLimitsAdditional> {
   final cardLimitCtl = TextEditingController();
   final limitRefreshCtl = TextEditingController();
   final expiryDateCtl = TextEditingController();
-  final transactionLimitCtl = TextEditingController(text: 'SGD 0.00');
-  final varianceLimitCtl = TextEditingController(text: '0%');
+  final transactionLimitCtl = TextEditingController();
+  final varianceLimitCtl = TextEditingController();
 
   bool isSwitchedMerchant = true;
-  bool isSwitchedTransactionLimit = false;
+  bool isSwitchedTransactionLimit = true;
+  double transactionLimitValue = 0.0;
+  double varianceLimitValue = 0.0;
   List<bool> isSwitchedArr = [
     true,
     true,
@@ -78,6 +82,7 @@ class ManageLimitsAdditionalState extends State<ManageLimitsAdditional> {
   @override
   void initState() {
     super.initState();
+    print(widget.data);
     if (widget.data != null) {
       List<bool> istempSwitchedArr = [];
       widget.data['allowedCategories'].forEach((item) {
@@ -85,6 +90,14 @@ class ManageLimitsAdditionalState extends State<ManageLimitsAdditional> {
       });
       setState(() {
         isSwitchedArr = istempSwitchedArr;
+        transactionLimitCtl.text = 'SGD ${widget.transactionLimitValue}';
+        varianceLimitCtl.text = '${widget.varianceLimitValue}%';
+        transactionLimitValue = widget.transactionLimitValue;
+        varianceLimitValue = widget.varianceLimitValue;
+        isSwitchedTransactionLimit = widget.transactionLimitValue == null &&
+                widget.varianceLimitValue == null
+            ? false
+            : true;
       });
     }
   }
@@ -209,9 +222,8 @@ class ManageLimitsAdditionalState extends State<ManageLimitsAdditional> {
           Opacity(
               opacity: isSwitchedTransactionLimit ? 1 : 0.4,
               child: Column(
-                
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -248,18 +260,29 @@ class ManageLimitsAdditionalState extends State<ManageLimitsAdditional> {
                           RoundSliderOverlayShape(overlayRadius: hScale(12)),
                     ),
                     child: Slider(
-                      value: widget.transactionLimitValue,
+                      value: transactionLimitValue /
+                          widget.availableLimitValue *
+                          100,
                       min: 0.0,
                       max: 100.0,
                       divisions: 100,
                       activeColor: const Color(0xFF3BD8A3),
                       inactiveColor: const Color(0xFF1A2831).withOpacity(0.1),
                       onChanged: (double newValue) {
+                        print(widget.availableLimitValue);
                         setState(() {
-                          transactionLimitCtl.text =
-                              'SGD ' + (newValue * 100).toStringAsFixed(2);
+                          transactionLimitValue =
+                              newValue * widget.availableLimitValue / 100;
+                          if (varianceLimitValue > (100 / newValue - 1) * 100) {
+                            varianceLimitValue = (100 / newValue - 1) * 100;
+                            varianceLimitCtl.text =
+                                varianceLimitValue.toStringAsFixed(0) + "%";
+                          }
+                          transactionLimitCtl.text = 'SGD ' +
+                              (newValue * widget.availableLimitValue / 100)
+                                  .toStringAsFixed(2);
                         });
-                        widget.setTransactionLimitValue(newValue);
+                        // widget.setTransactionLimitValue(newValue);
                       },
                     ),
                   ),
@@ -280,17 +303,30 @@ class ManageLimitsAdditionalState extends State<ManageLimitsAdditional> {
                           RoundSliderOverlayShape(overlayRadius: hScale(12)),
                     ),
                     child: Slider(
-                      value: widget.varianceLimitValue,
+                      value: varianceLimitValue,
                       min: 0.0,
                       max: 100.0,
                       divisions: 100,
                       activeColor: const Color(0xFF3BD8A3),
                       inactiveColor: const Color(0xFF1A2831).withOpacity(0.1),
-                      onChanged:  (double newValue) {
+                      onChanged: (double newValue) {
                         setState(() {
-                          varianceLimitCtl.text = newValue.toString() + '%';
+                          varianceLimitValue = newValue;
+                          if (transactionLimitValue /
+                                  widget.availableLimitValue *
+                                  100 >
+                              (100 / (100 + newValue) * 100)) {
+                            transactionLimitValue =
+                                (100 / (100 + newValue) * 100) /
+                                    100 *
+                                    widget.availableLimitValue;
+                            transactionLimitCtl.text = 'SGD ' +
+                                transactionLimitValue.toStringAsFixed(0);
+                          }
+                          varianceLimitCtl.text =
+                              newValue.toInt().toString() + '%';
                         });
-                        widget.setVarianceLimitValue(newValue);
+                        // widget.setVarianceLimitValue(newValue);
                       },
                     ),
                   ),

@@ -1,5 +1,4 @@
 import 'package:co/ui/main/cards/virtual_personal_card.dart';
-import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/physical_team_header.dart';
 import 'package:co/ui/widgets/physical_team_subsort.dart';
@@ -11,7 +10,6 @@ import 'package:co/utils/scale.dart';
 import 'package:expandable/expandable.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
-import 'package:intl/date_time_patterns.dart';
 import 'package:localstorage/localstorage.dart';
 
 class VirtualTeamCards extends StatefulWidget {
@@ -46,14 +44,14 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
   String listCardNamesQuery = Queries.QUERY_LIST_CARDNAME;
   String teamVirtualCardsListQuery = Queries.QUERY_TEAM_CARD_LIST;
   var sortArr = [
-    {'sortType': 'card holder', 'subType1': 'Fixed', 'subType2': 'Recurring'},
+    {'sortType': 'Card Type', 'subType1': 'Fixed', 'subType2': 'Recurring'},
     {
-      'sortType': 'available limit',
+      'sortType': 'Available Limit',
       'subType1': 'Highest to lowest',
       'subType2': 'Lowest to highest'
     },
     {
-      'sortType': 'date issued',
+      'sortType': 'Date Issued',
       'subType1': 'Newest to oldest',
       'subType2': 'Oldest to newest'
     },
@@ -460,7 +458,7 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
           children: [
             Text(data['cardName'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text('${data["permanentAccountNumber"]} | ${data['accountType']}',
+            Text('${data["permanentAccountNumber"]} | ${data['cardType'] == "RECURRING" ? "Recurring" : "Fixed"}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
         ));
@@ -526,7 +524,15 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                     top: hScale(5),
                     bottom: hScale(5)),
                 decoration: BoxDecoration(
-                  color: type != 2 ? const Color(0xFFDEFEE9) : Colors.white,
+                  color: type == 3
+                      ? value == "ACTIVE"
+                          ? Color(0xFFDEFEE9)
+                          : value == "SUSPENDED"
+                              ? Color(0xFFc9e8fb)
+                              : Color(0xFFffdfd5)
+                      : type != 2
+                          ? const Color(0xFFDEFEE9)
+                          : Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(hScale(16)),
                     topRight: Radius.circular(hScale(16)),
@@ -535,28 +541,40 @@ class VirtualTeamCardsState extends State<VirtualTeamCards> {
                   ),
                 ),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    type != 3
-                        ? Text('$symbol ',
-                            style: TextStyle(
-                                fontSize: fSize(8),
-                                fontWeight: FontWeight.w500,
-                                height: 1,
-                                color: type == 1
-                                    ? const Color(0xFF30E7A9)
-                                    : const Color(0xFF1A2831)))
-                        : const SizedBox(),
-                    Text(value,
-                        style: TextStyle(
-                            fontSize: fSize(14),
-                            fontWeight: FontWeight.w500,
-                            height: 1,
-                            color: type == 2
-                                ? const Color(0xFF1A2831)
-                                : const Color(0xFF30E7A9)))
-                  ],
-                ))
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      type != 3
+                          ? Text('$symbol ',
+                              style: TextStyle(
+                                  fontSize: fSize(12),
+                                  fontWeight: FontWeight.w500,
+                                  height: 1,
+                                  color: type == 1
+                                      ? const Color(0xFF30E7A9)
+                                      : const Color(0xFF1A2831)))
+                          : const SizedBox(),
+                      Text(
+                          type == 3
+                              ? value == "ACTIVE"
+                                  ? "Active"
+                                  : value == "SUSPENDED"
+                                      ? "Frozen"
+                                      : "Cancelled"
+                              : value,
+                          style: TextStyle(
+                              fontSize: fSize(14),
+                              fontWeight: FontWeight.w500,
+                              height: 1,
+                              color: type == 3
+                                  ? value == "ACTIVE"
+                                      ? Color(0xFF30E7A9)
+                                      : value == "SUSPENDED"
+                                          ? Color(0xFF2f7bfa)
+                                          : Color(0xFFeb5757)
+                                  : type == 2
+                                      ? const Color(0xFF1A2831)
+                                      : const Color(0xFF30E7A9)))
+                    ]))
           ],
         ));
   }

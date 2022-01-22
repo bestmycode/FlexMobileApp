@@ -48,10 +48,13 @@ class CustomFCAUserState extends State<CustomFCAUser> {
           children: [
             Image.asset('assets/error.png',
                 fit: BoxFit.contain, width: wScale(20)),
-            Text(
-                'The Flex mobile app does not support \nfinancing and invoicing features. Please \nlog in with your browser to access.',
+            Container(
+              width: wScale(240),
+              child: Text(
+                'The Flex mobile app does not support financing and invoicing features. Please log in with your browser to access.',
                 style: TextStyle(
                     fontSize: fSize(16), fontWeight: FontWeight.w500)),
+            ),
             Container(
               width: wScale(20),
               height: wScale(20),

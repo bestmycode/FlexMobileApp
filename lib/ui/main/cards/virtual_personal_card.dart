@@ -10,6 +10,7 @@ import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
@@ -39,6 +40,8 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   int transactionStatus = 1;
   bool showCardDetail = true;
   bool freezeMode = false;
+  bool flagCopiedCVV = false;
+  bool flagCopiedAccount = false;
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String queryAllTransactions = Queries.QUERY_ALL_TRANSACTIONS;
@@ -61,6 +64,13 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   handleShowCardDetail() {
     setState(() {
       showCardDetail = !showCardDetail;
+    });
+  }
+
+  handleCopied(index, num) {
+    Clipboard.setData(ClipboardData(text: num));
+    setState(() {
+      index == 0 ? flagCopiedAccount = true : flagCopiedCVV = true;
     });
   }
 
@@ -143,36 +153,44 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
   }
 
   Widget cardDetailField() {
-    return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(
-          left: wScale(16),
-          right: wScale(16),
-          top: hScale(16),
-          bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
+    return Opacity(
+        opacity: widget.cardData['status'] == 'ACTIVE' ? 1 : 0.5,
+        child: Container(
+          width: wScale(327),
+          padding: EdgeInsets.only(
+              left: wScale(16),
+              right: wScale(16),
+              top: hScale(16),
+              bottom: hScale(16)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(hScale(10)),
+              topRight: Radius.circular(hScale(10)),
+              bottomLeft: Radius.circular(hScale(10)),
+              bottomRight: Radius.circular(hScale(10)),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.25),
+                spreadRadius: 4,
+                blurRadius: 20,
+                offset: const Offset(0, 1), // changes position of shadow
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [cardField(), const CustomSpacer(size: 14), cardValueField()],
-      ),
-    );
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              cardField(),
+              const CustomSpacer(size: 14),
+              widget.cardData['status'] == "ACTIVE"
+                  ? cardValueField()
+                  : cardNoActiveValueField(widget.cardData['status'])
+            ],
+          ),
+        ));
   }
 
   Widget cardField() {
@@ -191,8 +209,12 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [const SizedBox(), eyeIconField()],
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  cardTypeField(),
+                  SizedBox(width: wScale(10)),
+                  eyeIconField()
+                ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,8 +233,34 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(16))),
                     SizedBox(width: wScale(7)),
-                    const Icon(Icons.content_copy,
-                        color: Color(0xff30E7A9), size: 14.0)
+                    Container(
+                        width: wScale(14),
+                        height: hScale(14),
+                        alignment: Alignment.center,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            primary: const Color(0xff515151),
+                            padding: EdgeInsets.all(0),
+                            textStyle: TextStyle(
+                                fontSize: fSize(14),
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xff040415)),
+                          ),
+                          onPressed: () {
+                            handleCopied(
+                                0, widget.cardData['permanentAccountNumber']);
+                          },
+                          child: const Icon(Icons.content_copy,
+                              color: Color(0xff30E7A9), size: 14.0),
+                        )),
+                    SizedBox(width: wScale(4)),
+                    flagCopiedAccount
+                        ? Text('Copied',
+                            style: TextStyle(
+                                fontSize: fSize(14),
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xff30E7A9)))
+                        : const SizedBox(),
                   ]),
                 ],
               ),
@@ -248,8 +296,33 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                   ],
                 ),
                 SizedBox(width: wScale(6)),
-                const Icon(Icons.content_copy,
-                    color: Color(0xff30E7A9), size: 14.0)
+                Container(
+                    width: wScale(14),
+                    height: hScale(14),
+                    alignment: Alignment.center,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        primary: const Color(0xff515151),
+                        padding: EdgeInsets.all(0),
+                        textStyle: TextStyle(
+                            fontSize: fSize(14),
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff040415)),
+                      ),
+                      onPressed: () {
+                        handleCopied(1, widget.cardData['cvv']);
+                      },
+                      child: const Icon(Icons.content_copy,
+                          color: Color(0xff30E7A9), size: 14.0),
+                    )),
+                SizedBox(width: wScale(4)),
+                flagCopiedCVV
+                    ? Text('Copied',
+                        style: TextStyle(
+                            fontSize: fSize(14),
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff30E7A9)))
+                    : const SizedBox(),
               ])
             ]));
   }
@@ -278,7 +351,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                 children: [
                   Text('${widget.cardData['currencyCode']} ',
                       style: TextStyle(
-                          fontSize: fSize(8),
+                          fontSize: fSize(12),
                           fontWeight: FontWeight.w500,
                           height: 1,
                           color: Color(0xFF30E7A9))),
@@ -287,12 +360,70 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                               ['availableLimit']
                           .toStringAsFixed(2),
                       style: TextStyle(
-                          fontSize: fSize(8),
+                          fontSize: fSize(12),
                           fontWeight: FontWeight.w500,
                           height: 1,
                           color: Color(0xFF30E7A9))),
                 ]))
       ],
+    );
+  }
+
+  Widget cardNoActiveValueField(status) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Card Status',
+            style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
+        Container(
+            padding: EdgeInsets.only(
+                left: wScale(16),
+                right: wScale(16),
+                top: hScale(5),
+                bottom: hScale(5)),
+            decoration: BoxDecoration(
+              color: widget.cardData['status'] == "SUSPENDED"
+                  ? Color(0xFFC9E8FB)
+                  : Color(0xFFFFC3BD),
+              borderRadius: BorderRadius.all(
+                Radius.circular(hScale(16)),
+              ),
+            ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      widget.cardData['status'] == "SUSPENDED"
+                          ? "Frozen"
+                          : "Cancelled",
+                      style: TextStyle(
+                          fontSize: fSize(12),
+                          fontWeight: FontWeight.w500,
+                          height: 1,
+                          color: widget.cardData['status'] == "SUSPENDED"
+                              ? Color(0xFF2F7BFA)
+                              : Color(0xFFEB5757))),
+                ]))
+      ],
+    );
+  }
+
+  Widget cardTypeField() {
+    return Container(
+      padding:
+          EdgeInsets.symmetric(horizontal: wScale(10), vertical: hScale(3)),
+      decoration: BoxDecoration(
+          color: Color(0xFF21C990),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(hScale(17)),
+            topRight: Radius.circular(hScale(17)),
+            bottomLeft: Radius.circular(hScale(17)),
+            bottomRight: Radius.circular(hScale(17)),
+          )),
+      child: Text(
+          widget.cardData['cardType'] == "RECURRING" ? "Recurring" : "Fixed",
+          style: TextStyle(fontSize: fSize(12), color: Colors.white)),
     );
   }
 
@@ -325,90 +456,93 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     var limitData = widget.cardData['financeAccountLimits'][0];
     double percentage =
         (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
-    return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(
-          left: wScale(16),
-          right: wScale(16),
-          top: hScale(16),
-          bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Monthly Spend Limit',
-                  style: TextStyle(
-                      fontSize: fSize(14),
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A2831))),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${widget.cardData['currencyCode']} ',
-                        style: TextStyle(
-                            fontSize: fSize(10),
-                            fontWeight: FontWeight.w600,
-                            height: 1,
-                            color: const Color(0xFF1A2831))),
-                    Text(
-                        widget.cardData['financeAccountLimits'][0]['limitValue']
-                            .toStringAsFixed(2),
-                        style: TextStyle(
-                            fontSize: fSize(14),
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A2831))),
-                  ])
-            ],
-          ),
-          const CustomSpacer(size: 12),
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: LinearProgressIndicator(
-              value: percentage,
-              backgroundColor: const Color(0xFFF4F4F4),
-              color: percentage < 0.8
-                  ? const Color(0xFF30E7A9)
-                  : percentage < 0.9
-                      ? const Color(0xFFFEB533)
-                      : const Color(0xFFEB5757),
-              minHeight: hScale(10),
+    return Opacity(
+        opacity: widget.cardData['status'] == 'ACTIVE' ? 1 : 0.5,
+        child: Container(
+          width: wScale(327),
+          padding: EdgeInsets.only(
+              left: wScale(16),
+              right: wScale(16),
+              top: hScale(16),
+              bottom: hScale(16)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(hScale(10)),
+              topRight: Radius.circular(hScale(10)),
+              bottomLeft: Radius.circular(hScale(10)),
+              bottomRight: Radius.circular(hScale(10)),
             ),
-          ),
-          const CustomSpacer(size: 12),
-          Row(
-            children: [
-              Image.asset('assets/emoji1.png',
-                  fit: BoxFit.contain, width: wScale(18)),
-              SizedBox(width: wScale(10)),
-              Text('Great job, you are within your allocated limit!',
-                  style: TextStyle(
-                      fontSize: fSize(12), color: const Color(0xFF70828D))),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.25),
+                spreadRadius: 4,
+                blurRadius: 20,
+                offset: const Offset(0, 1), // changes position of shadow
+              ),
             ],
-          )
-        ],
-      ),
-    );
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Monthly Spend Limit',
+                      style: TextStyle(
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1A2831))),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${widget.cardData['currencyCode']} ',
+                            style: TextStyle(
+                                fontSize: fSize(10),
+                                fontWeight: FontWeight.w600,
+                                height: 1,
+                                color: const Color(0xFF1A2831))),
+                        Text(
+                            widget.cardData['financeAccountLimits'][0]
+                                    ['limitValue']
+                                .toStringAsFixed(2),
+                            style: TextStyle(
+                                fontSize: fSize(14),
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF1A2831))),
+                      ])
+                ],
+              ),
+              const CustomSpacer(size: 12),
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                child: LinearProgressIndicator(
+                  value: percentage,
+                  backgroundColor: const Color(0xFFF4F4F4),
+                  color: percentage < 0.8
+                      ? const Color(0xFF30E7A9)
+                      : percentage < 0.9
+                          ? const Color(0xFFFEB533)
+                          : const Color(0xFFEB5757),
+                  minHeight: hScale(10),
+                ),
+              ),
+              const CustomSpacer(size: 12),
+              Row(
+                children: [
+                  Image.asset('assets/emoji1.png',
+                      fit: BoxFit.contain, width: wScale(18)),
+                  SizedBox(width: wScale(10)),
+                  Text('Great job, you are within your allocated limit!',
+                      style: TextStyle(
+                          fontSize: fSize(12), color: const Color(0xFF70828D))),
+                ],
+              )
+            ],
+          ),
+        ));
   }
 
   Widget actionButton(imageUrl, text, type) {
@@ -421,17 +555,21 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         onPressed: () {
-          if (widget.cardData['status'] != "CLOSED") {
-            if (type == 0) {
-              _showFreezeModalDialog();
-            } else if (type == 1) {
-              Navigator.of(context).push(
-                CupertinoPageRoute(
-                    builder: (context) => ManageLimits(data: widget.cardData)),
-              );
-            } else {
-              _showRemoveModalDialog();
-            }
+          if (type == 0) {
+            widget.cardData['status'] == "ACTIVE" ||
+                    widget.cardData['status'] == "SUSPENDED"
+                ? _showFreezeModalDialog()
+                : null;
+          } else if (type == 1) {
+            widget.cardData['status'] == "ACTIVE"
+                ? Navigator.of(context).push(CupertinoPageRoute(
+                    builder: (context) => ManageLimits(data: widget.cardData)))
+                : null;
+          } else {
+            widget.cardData['status'] == "ACTIVE" ||
+                    widget.cardData['status'] == "SUSPENDED"
+                ? _showRemoveModalDialog()
+                : null;
           }
         },
         child: SizedBox(
@@ -461,14 +599,26 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
     return SizedBox(
       width: wScale(327),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        actionButton(
-            'assets/free.png',
-            widget.cardData['status'] == 'ACTIVE'
-                ? 'Freeze Card'
-                : 'Unfreeze Card',
-            0),
-        actionButton('assets/limit.png', 'Edit Limit', 1),
-        actionButton('assets/cancel.png', 'Cancel Card', 2),
+        Opacity(
+            opacity: widget.cardData['status'] == 'ACTIVE' ||
+                    widget.cardData['status'] == 'SUSPENDED'
+                ? 1
+                : 0.5,
+            child: actionButton(
+                'assets/free.png',
+                widget.cardData['status'] != 'SUSPENDED'
+                    ? 'Freeze Card'
+                    : 'Unfreeze Card',
+                0)),
+        Opacity(
+            opacity: widget.cardData['status'] == 'ACTIVE' ? 1 : 0.5,
+            child: actionButton('assets/limit.png', 'Edit Limit', 1)),
+        Opacity(
+            opacity: widget.cardData['status'] == 'ACTIVE' ||
+                    widget.cardData['status'] == 'SUSPENDED'
+                ? 1
+                : 0.5,
+            child: actionButton('assets/cancel.png', 'Cancel Card', 2)),
       ]),
     );
   }
@@ -698,7 +848,7 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                 status: item['status'],
                 userName: item['merchantName'],
                 cardNum: item['pan'],
-                value: item['billAmount'].toString(),
+                value: item['fxrBillAmount'].toStringAsFixed(2),
                 receiptStatus: item['fxrBillAmount'] >= 0
                     ? 0
                     : item['receiptStatus'] == "PAID"
@@ -803,15 +953,28 @@ class VirtualPersonalCardState extends State<VirtualPersonalCard> {
                       borderRadius: BorderRadius.circular(12.0)),
                   child: CustomResultModal(
                       status: success,
-                      title: success ? "Success" : "Failed",
-                      message: message)));
+                      title: widget.cardData['status'] == "ACTIVE"
+                          ? success
+                              ? "Card frozen successfully"
+                              : "Card frozen failed"
+                          : success
+                              ? "Card reactivated successfully"
+                              : "Card reactive failed",
+                      message: widget.cardData['status'] == "ACTIVE"
+                          ? success
+                              ? "The card has been frozen and is temporarily deactivated. To resume usage, please unfreeze it."
+                              : message
+                          : success
+                              ? "Your card is active. You can now proceed to make payments."
+                              : message)));
         });
   }
 
   Widget freezeModalField(runMutation) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Container(
-          padding: EdgeInsets.symmetric(vertical: hScale(25), horizontal: wScale(16)),
+          padding: EdgeInsets.symmetric(
+              vertical: hScale(25), horizontal: wScale(16)),
           child: Column(children: [
             Image.asset('assets/snow_icon.png',
                 fit: BoxFit.contain, height: wScale(30)),

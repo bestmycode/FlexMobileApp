@@ -7,8 +7,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:open_file/open_file.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CreditDirectDebitScreen extends StatefulWidget {
   final data;
@@ -37,13 +38,13 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
   double progress = 0.0;
 
   handleDownload(type) async {
-    String path = type == 0
-        ? "/storage/emulated/0/Download/DDA.docx"
-        : '/storage/emulated/0/Download/DDA.pdf';
+    final Directory? download = await getApplicationDocumentsDirectory();
+    final String downloadPath = download!.path;
+    String path =
+        type == 0 ? "${downloadPath}/DDA.docx" : '${downloadPath}/DDA.pdf';
     options = DownloaderUtils(
       progressCallback: (current, total) {
         progress = (current / total) * 100;
-        print('Downloading: $progress');
 
         setState(() {
           progress = (current / total);
@@ -55,8 +56,7 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
         setState(() {
           progress = 0.0;
         });
-        OpenFile.open(path).then((value) {
-        });
+        OpenFile.open(path).then((value) {});
       },
       deleteOnCancel: true,
     );

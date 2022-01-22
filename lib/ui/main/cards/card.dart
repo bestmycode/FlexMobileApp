@@ -1,7 +1,5 @@
 import 'package:co/ui/main/cards/my_card.dart';
 import 'package:co/ui/main/cards/team_card.dart';
-import 'package:co/ui/main/home/home.dart';
-import 'package:co/ui/widgets/custom_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

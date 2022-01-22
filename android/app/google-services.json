@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "243257614357",
+    "project_id": "flex-by-finaxar",
+    "storage_bucket": "flex-by-finaxar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243257614357:android:9fcba40bc627356345ee1c",
+        "android_client_info": {
+          "package_name": "flexnow.co"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "243257614357-claon0dfe4mggs8ja6buflir2k1t0m8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdVEj8cDOx9ubvMTPSRgjkuxcmEBMhxqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "243257614357-claon0dfe4mggs8ja6buflir2k1t0m8f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "243257614357-daae4boidh8gl6ub5i5ikirlsdkgebsr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "flexnow.co"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

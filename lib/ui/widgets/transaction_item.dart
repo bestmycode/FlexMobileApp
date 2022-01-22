@@ -9,6 +9,7 @@ class TransactionItem extends StatefulWidget {
   final String? transactionId;
   final String date;
   final String transactionName;
+  final String subTransactionName;
   final String status;
   final String userName;
   final String cardNum;
@@ -22,6 +23,7 @@ class TransactionItem extends StatefulWidget {
       this.transactionId,
       this.date = '9 Nov 2021',
       this.transactionName = 'Flex Transaction Name',
+      this.subTransactionName = '',
       this.status = 'complete',
       this.userName = 'Justin Curtis',
       this.cardNum = '0000',
@@ -48,6 +50,7 @@ class TransactionItemState extends State<TransactionItem> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.subTransactionName);
     return Container(
         width: wScale(327),
         padding: EdgeInsets.all(hScale(16)),
@@ -76,13 +79,14 @@ class TransactionItemState extends State<TransactionItem> {
                   children: [
                     transactionTimeField(widget.date),
                     transactionStatus(widget.transactionName, widget.status),
+                    widget.subTransactionName != "" ? transactionStatus('', widget.subTransactionName): SizedBox(),
                     transactionUser(widget.userName, widget.cardNum),
                     moneyValue(
                         '',
                         widget.value,
                         14.0,
                         FontWeight.w700,
-                        widget.status != 4
+                        widget.status != 4 && double.parse(widget.value) >= 0
                             ? const Color(0xff60C094)
                             : const Color(0xFF1A2831)),
                   ],
@@ -140,7 +144,7 @@ class TransactionItemState extends State<TransactionItem> {
         children: [
           TextSpan(text: name),
           TextSpan(
-            text: ' ($status)',
+            text: status == '' ? '' : ' (${status == "FCA_APPROVED" ? "PENDING" : status})',
             style: TextStyle(
                 fontSize: fSize(12),
                 fontStyle: FontStyle.italic,

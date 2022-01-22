@@ -1,10 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:co/ui/main/home/receipt_screen.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/basedata.dart';
 import 'package:co/utils/mutations.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/utils/token.dart';
@@ -13,7 +14,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 
@@ -44,14 +47,35 @@ class _ReceiptCapture extends State<ReceiptCapture> {
   }
 
   bool takeFlag = false;
+  bool cropFlag = false;
   final LocalStorage storage = LocalStorage('token');
+  final LocalStorage userStorage = LocalStorage('user_info');
   String docUploadMutation = FXRMutations.MUTATION_DOC_UPLOAD;
 
   handleUpload(runMutation) async {    
-    // Uri upload_base_url = Uri.parse("https://gql.staging.fxr.one/v1/file/document_files?v4=true");
-    // var upload_result = await http.post(upload_base_url,
-    //       headers: {"Content-Type": "application/json"},
-    //       body: json.encode(data));
+    Uri upload_base_url = Uri.parse("https://gql.staging.fxr.one/v1/file/document_files?v4=true");
+    String formattedDate = DateFormat('yyyyMMdd').format(DateTime.now());
+    String formattedTime = DateFormat('HHmmss').format(DateTime.now());
+    print(formattedDate);
+    var bodyData = {
+      "conditions":[
+        {"acl":"private"},
+        {"Content-Type":"image/png"},
+        {"success_action_status":"200"},
+        {"x-amz-algorithm":"AWS4-HMAC-SHA256"},
+        {"key": widget.transactionID},
+        {"x-amz-credential":"${BaseData.AWS_FXR_ASSETS_ACCESS_KEY}/${formattedDate}/${BaseData.FILE_API_REGION}/s3/aws4_request"},
+        {"x-amz-date":"${formattedDate}T${formattedTime}Z"},
+        {"Content-Disposition":"attachment; filename=receipt_444447_${DateTime.now().millisecondsSinceEpoch}.png"},
+        {"x-amz-meta-entity":"document_files"},
+        {"x-amz-meta-orgid": userStorage.getItem('orgId')},
+        {"x-amz-meta-qqfilename":"receipt_444447_${DateTime.now().millisecondsSinceEpoch}.png"}],
+      "expiration":"${DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now())}Z"};
+    var upload_result = await http.post(upload_base_url,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": storage.getItem("jwt_token"),},
+          body: bodyData);
 
     // Uri upload_amazon_url = Uri.parse("https://fxrassetsstaging.s3-accelerate.amazonaws.com");
     // var upload_amazon_result = await http.post(upload_amazon_url,
@@ -68,13 +92,12 @@ class _ReceiptCapture extends State<ReceiptCapture> {
     //   'orgIntegrationId': 1,
     //   'secondaryDocumentId': uploadResult['fields']['key'],
     // });
-    print(widget.accountID);
-    print(widget.transactionID);
-    Navigator.of(context).push(CupertinoPageRoute(
-      builder: (context) => ReceiptScreen(
-          imageFile: new XFile(imageFile!.path),
-          accountID: widget.accountID,
-          transactionID: widget.transactionID)));
+
+    // Navigator.of(context).push(CupertinoPageRoute(
+    //   builder: (context) => ReceiptScreen(
+    //       imageFile: new XFile(imageFile!.path),
+    //       accountID: widget.accountID,
+    //       transactionID: widget.transactionID)));
   }
 
   void _onImageButtonPressed(ImageSource source,
@@ -186,7 +209,7 @@ class _ReceiptCapture extends State<ReceiptCapture> {
                           )
                         : _previewImages(),
                     const CustomSpacer(size: 31),
-                    takeFlag == false ? takeButton() : buttonField(runMutation),
+                    takeFlag == false ? takeButton() : cropFlag == false? cropButton() : buttonField(runMutation),
                     const CustomSpacer(size: 30),
                   ],
                 )))));
@@ -237,6 +260,29 @@ class _ReceiptCapture extends State<ReceiptCapture> {
             _settingModalBottomSheet(context);
           },
           child: Text("Upload",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w700)),
+        ));
+  }
+
+  Widget cropButton() {
+    return Container(
+        width: wScale(256),
+        height: hScale(56),
+        margin: EdgeInsets.only(left: wScale(8), right: wScale(8)),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          onPressed: () {
+            _cropImage();
+          },
+          child: Text("Crop",
               style: TextStyle(
                   color: Colors.white,
                   fontSize: fSize(16),
@@ -326,6 +372,44 @@ class _ReceiptCapture extends State<ReceiptCapture> {
               image: const DecorationImage(
                   image: AssetImage('assets/empty_transaction.png'),
                   fit: BoxFit.contain)));
+    }
+  }
+
+  Future<Null> _cropImage() async {
+    File? croppedFile =  await ImageCropper.cropImage(
+        sourcePath: imageFile!.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          title: 'Cropper',
+        ));
+    if (croppedFile != null) {
+      setState(() {
+        imageFile = new XFile( croppedFile.path);
+        cropFlag = true;
+      });
     }
   }
 }

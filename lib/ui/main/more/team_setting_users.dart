@@ -48,10 +48,9 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
   }
 
   handleChangeRole(runMutation, data) async {
-    
     await runMutation({
       "orgId": data['orgId'],
-      "role": userRole == 0 ? "admin": "user",
+      "role": userRole == 0 ? "admin" : "user",
       "userId": data['userId'],
     });
     Navigator.of(context).pop();
@@ -240,8 +239,7 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
         });
   }
 
-  
-  Widget userRoleModalField(setState,runMutation, data) {
+  Widget userRoleModalField(setState, runMutation, data) {
     return Container(
       width: wScale(295),
       padding:
@@ -376,7 +374,6 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
     );
   }
 
-
   Widget userRoles(setState) {
     return Container(
       decoration: BoxDecoration(
@@ -384,18 +381,17 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
         borderRadius: const BorderRadius.all(Radius.circular(10)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1)
-          ),
+              color: Colors.black.withOpacity(0.04),
+              spreadRadius: 4,
+              blurRadius: 20,
+              offset: const Offset(0, 1)),
         ],
       ),
       child: Column(
           children: [userRoleButton(0, setState), userRoleButton(1, setState)]),
     );
   }
-  
+
   Widget userRoleButton(index, setState) {
     return SizedBox(
         width: wScale(265),
@@ -418,13 +414,16 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
                             ? const Color(0xFF29C490)
                             : const Color(0xFF1A2831))),
             child: Text(
-              index == -1
-                  ? 'Select Role'
-                  : index == 0
-                      ? 'Admin'
-                      : 'User',
-              textAlign: TextAlign.left,
-            ),
+                index == -1
+                    ? 'Select Role'
+                    : index == 0
+                        ? 'Admin'
+                        : 'User',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: fSize(14),
+                  fontWeight: FontWeight.w400,
+                )),
             onPressed: () {
               setState(() {
                 userRole = index;
@@ -518,21 +517,24 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
             return cache;
           },
           onCompleted: (resultData) {
-            if(type == 0) {
-              resultData['revokeInvitation: '] != null ?
-              setState(() {
-                mutationResult = true;
-              }): null;
+            if (type == 0) {
+              resultData['revokeInvitation: '] != null
+                  ? setState(() {
+                      mutationResult = true;
+                    })
+                  : null;
             } else if (type == 1) {
-              resultData['changeRoleInOrganization'] == true ?
-              setState(() {
-                mutationResult = true;
-              }) : null;
+              resultData['changeRoleInOrganization'] == true
+                  ? setState(() {
+                      mutationResult = true;
+                    })
+                  : null;
             } else {
-              resultData['removeUserFromOrganization'] != null ? 
-              setState(() {
-                mutationResult = true;
-              }): null;
+              resultData['removeUserFromOrganization'] != null
+                  ? setState(() {
+                      mutationResult = true;
+                    })
+                  : null;
             }
           },
         ),
@@ -557,9 +559,9 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
                     : const Color(0xFFEB5757)),
           ),
           onPressed: () {
-            if(type == 0) {
+            if (type == 0) {
               handleRevoke(runMutation, data);
-            } else if(type == 1) {
+            } else if (type == 1) {
               _showUserRoleModal(context, runMutation, data);
             } else {
               handleDeactive(runMutation, data);

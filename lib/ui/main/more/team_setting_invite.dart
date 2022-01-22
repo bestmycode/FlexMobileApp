@@ -370,6 +370,10 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
                       ? 'Admin'
                       : 'User',
               textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: fSize(14),
+                  fontWeight: FontWeight.w400,
+                )
             ),
             onPressed: () {
               setState(() {

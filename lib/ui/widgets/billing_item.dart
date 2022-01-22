@@ -1,20 +1,27 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:flowder/flowder.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class BillingItem extends StatefulWidget {
+  final index;
   final String statementDate;
   final String totalAmount;
   final String dueDate;
   final String status; // 0: unpaid, 1: overdue, 2: paid
   final String documentLink;
-  const BillingItem({
-    Key? key,
-    this.statementDate = '30 Jan 2021',
-    this.totalAmount = '0.00',
-    this.dueDate = '05 Mar 2021',
-    this.status = '',
-    this.documentLink = ""
-  }) : super(key: key);
+  const BillingItem(
+      {Key? key,
+      this.index,
+      this.statementDate = '30 Jan 2021',
+      this.totalAmount = '0.00',
+      this.dueDate = '05 Mar 2021',
+      this.status = '',
+      this.documentLink = ""})
+      : super(key: key);
   @override
   BillingItemState createState() => BillingItemState();
 }
@@ -30,6 +37,41 @@ class BillingItemState extends State<BillingItem> {
 
   fSize(double size) {
     return Scale().fSize(context, size);
+  }
+
+  late DownloaderUtils options;
+  late DownloaderCore core;
+  late final String path;
+  double progress = 0.0;
+
+  handleDownload() async {
+    /*
+    final Directory? download = Platform.isAndroid
+        ? Directory('/storage/emulated/0/Download')
+        : await getApplicationDocumentsDirectory();
+    */
+    final Directory? download = await getApplicationDocumentsDirectory();
+    final String downloadPath = download!.path;
+    String path = "${downloadPath}/FXCII_${widget.index}.pdf";
+    options = DownloaderUtils(
+      progressCallback: (current, total) {
+        progress = (current / total) * 100;
+
+        setState(() {
+          progress = (current / total);
+        });
+      },
+      file: File(path),
+      progress: ProgressImplementation(),
+      onDone: () {
+        setState(() {
+          progress = 0.0;
+        });
+        OpenFile.open(path).then((value) {});
+      },
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(widget.documentLink, options);
   }
 
   @override
@@ -125,7 +167,7 @@ class BillingItemState extends State<BillingItem> {
             children: [
               Text('SGD ',
                   style: TextStyle(
-                      fontSize: fSize(8),
+                      fontSize: fSize(12),
                       fontWeight: FontWeight.w500,
                       color: valueColor,
                       height: 1)),
@@ -196,22 +238,35 @@ class BillingItemState extends State<BillingItem> {
 
   Widget downloadField() {
     return TextButton(
-        child: Container(
-            padding: EdgeInsets.symmetric(vertical: hScale(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset('assets/paper_download.png',
-                    fit: BoxFit.cover, width: wScale(10)),
-                SizedBox(width: wScale(8)),
-                const Text('Statement Download',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1DA7FF))),
-              ],
-            )),
-        onPressed: () {});
+        child: Stack(
+          children: [
+            Container(
+                padding: EdgeInsets.symmetric(vertical: hScale(10)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/paper_download.png',
+                        fit: BoxFit.cover, width: wScale(10)),
+                    SizedBox(width: wScale(8)),
+                    const Text('Statement Download',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF1DA7FF))),
+                  ],
+                )),
+            Positioned(
+              top: hScale(5),
+              right: wScale(20),
+              child: Text(progress == 0
+                  ? ""
+                  : '${(progress * 100).toStringAsFixed(0)} %'),
+            )
+          ],
+        ),
+        onPressed: () {
+          handleDownload();
+        });
   }
 }

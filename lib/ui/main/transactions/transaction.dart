@@ -1,11 +1,6 @@
-import 'dart:async';
-
-import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
-import 'package:co/ui/widgets/custom_textfield.dart';
 
 class Transactions extends StatefulWidget {
   const Transactions({Key? key}) : super(key: key);

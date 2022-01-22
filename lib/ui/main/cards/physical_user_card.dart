@@ -3,12 +3,15 @@ import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
 class PhysicalUserCard extends StatefulWidget {
@@ -34,6 +37,8 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
   int cardType = 1;
   int transactionStatus = 1;
   bool showCardDetail = true;
+  bool flagCopiedAccount = false;
+  bool flagCopiedCVV = false;
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
@@ -69,6 +74,13 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
     });
   }
 
+  handleCopied(index, num) {
+    Clipboard.setData(ClipboardData(text: num));
+    setState(() {
+      index == 0 ? flagCopiedAccount = true : flagCopiedCVV = true;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -99,8 +111,8 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                   if (accountResult.isLoading) {
                     return CustomLoading();
                   }
-                  var userAccountSummary =
-                      accountResult.data!['readUserFinanceAccountSummary']['data'];
+                  var userAccountSummary = accountResult
+                      .data!['readUserFinanceAccountSummary']['data'];
                   return Query(
                       options: QueryOptions(
                         document: gql(getRecentTransactions),
@@ -121,7 +133,8 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                           return CustomLoading();
                         }
                         var listTransactions =
-                            transactionResult.data!['listTransactions']['financeAccountTransactions'];
+                            transactionResult.data!['listTransactions']
+                                ['financeAccountTransactions'];
                         return mainHome(userAccountSummary, listTransactions);
                       });
                 })));
@@ -212,7 +225,10 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(cardData == null ? "" : cardData['physicalCard']['accountName'],
+                  Text(
+                      cardData == null
+                          ? ""
+                          : cardData['physicalCard']['accountName'],
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w300,
@@ -221,13 +237,44 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                   Row(children: [
                     Text(
                         showCardDetail
-                            ? cardData == null ? "" : cardData['physicalCard']['permanentAccountNumber']
+                            ? cardData == null
+                                ? ""
+                                : cardData['physicalCard']
+                                    ['permanentAccountNumber']
                             : '* * * *  * * * *  * * * *  * * * *',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(16))),
                     SizedBox(width: wScale(7)),
-                    const Icon(Icons.content_copy,
-                        color: Color(0xff30E7A9), size: 14.0)
+                    Container(
+                        width: wScale(14),
+                        height: hScale(14),
+                        alignment: Alignment.center,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            primary: const Color(0xff515151),
+                            padding: EdgeInsets.all(0),
+                            textStyle: TextStyle(
+                                fontSize: fSize(14),
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xff040415)),
+                          ),
+                          onPressed: () {
+                            handleCopied(
+                                0,
+                                cardData['physicalCard']
+                                    ['permanentAccountNumber']);
+                          },
+                          child: const Icon(Icons.content_copy,
+                              color: Color(0xff30E7A9), size: 14.0),
+                        )),
+                    SizedBox(width: wScale(4)),
+                    flagCopiedAccount
+                        ? Text('Copied',
+                            style: TextStyle(
+                                fontSize: fSize(14),
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xff30E7A9)))
+                        : const SizedBox(),
                   ]),
                 ],
               ),
@@ -238,7 +285,12 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                     Text('Valid Thru',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ?  cardData == null ? "" : cardData['physicalCard']['expiryDate'] : 'MM / DD',
+                    Text(
+                        showCardDetail
+                            ? cardData == null
+                                ? ""
+                                : cardData['physicalCard']['expiryDate']
+                            : 'MM / DD',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -252,7 +304,12 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                     Text('CVV',
                         style: TextStyle(
                             color: Colors.white, fontSize: fSize(10))),
-                    Text(showCardDetail ?  cardData == null ? "" : cardData['physicalCard']['cvv'] : '* * *',
+                    Text(
+                        showCardDetail
+                            ? cardData == null
+                                ? ""
+                                : cardData['physicalCard']['cvv']
+                            : '* * *',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: fSize(11),
@@ -260,8 +317,33 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                   ],
                 ),
                 SizedBox(width: wScale(6)),
-                const Icon(Icons.content_copy,
-                    color: Color(0xff30E7A9), size: 14.0)
+                Container(
+                    width: wScale(14),
+                    height: hScale(14),
+                    alignment: Alignment.center,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        primary: const Color(0xff515151),
+                        padding: EdgeInsets.all(0),
+                        textStyle: TextStyle(
+                            fontSize: fSize(14),
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff040415)),
+                      ),
+                      onPressed: () {
+                        handleCopied(1, cardData['physicalCard']['cvv']);
+                      },
+                      child: const Icon(Icons.content_copy,
+                          color: Color(0xff30E7A9), size: 14.0),
+                    )),
+                SizedBox(width: wScale(4)),
+                flagCopiedCVV
+                    ? Text('Copied',
+                        style: TextStyle(
+                            fontSize: fSize(14),
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xff30E7A9)))
+                    : const SizedBox(),
               ])
             ]));
   }
@@ -288,20 +370,26 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(cardData == null ? "" : cardData['physicalCard']['currencyCode'],
-                      style: TextStyle(
-                        fontSize: fSize(8),
-                        fontWeight: FontWeight.w500,
-                        height: 1,
-                      )),
                   Text(
-                      cardData == null ? "" : cardData['physicalCard']['financeAccountLimits'][0]['availableLimit']
-                          .toString(),
+                      cardData == null
+                          ? ""
+                          : cardData['physicalCard']['currencyCode'],
                       style: TextStyle(
-                        fontSize: fSize(8),
-                        fontWeight: FontWeight.w500,
-                        height: 1,
-                      )),
+                          fontSize: fSize(12),
+                          fontWeight: FontWeight.w500,
+                          height: 1,
+                          color: Color(0xFF30E7A9))),
+                  Text(
+                      cardData == null
+                          ? ""
+                          : cardData['physicalCard']['financeAccountLimits'][0]
+                                  ['availableLimit']
+                              .toString(),
+                      style: TextStyle(
+                          fontSize: fSize(12),
+                          fontWeight: FontWeight.w500,
+                          height: 1,
+                          color: Color(0xFF30E7A9))),
                 ]))
       ],
     );
@@ -336,9 +424,12 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
   }
 
   Widget spendLimitField(cardData) {
-    var limitData = cardData == null ? "" : cardData['physicalCard']['financeAccountLimits'][0];
-    double percentage = cardData == null ? 0:
-        (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
+    var limitData = cardData == null
+        ? ""
+        : cardData['physicalCard']['financeAccountLimits'][0];
+    double percentage = cardData == null
+        ? 0
+        : (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
     return Container(
       width: wScale(327),
       padding: EdgeInsets.only(
@@ -379,14 +470,20 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(cardData == null ? "" : cardData['physicalCard']['currencyCode'],
+                    Text(
+                        cardData == null
+                            ? ""
+                            : cardData['physicalCard']['currencyCode'],
                         style: TextStyle(
-                            fontSize: fSize(8),
+                            fontSize: fSize(12),
                             fontWeight: FontWeight.w500,
                             color: Color(0xFF1A2831))),
                     Text(
-                        cardData == null ? "" : cardData['physicalCard']['financeAccountLimits'][0]['limitValue']
-                            .toString(),
+                        cardData == null
+                            ? ""
+                            : cardData['physicalCard']['financeAccountLimits']
+                                    [0]['limitValue']
+                                .toString(),
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w600,
@@ -401,10 +498,10 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
               value: percentage,
               backgroundColor: const Color(0xFFF4F4F4),
               color: percentage < 0.8
-                      ? const Color(0xFF30E7A9)
-                      : percentage < 0.9
-                          ? const Color(0xFFFEB533)
-                          : const Color(0xFFEB5757),
+                  ? const Color(0xFF30E7A9)
+                  : percentage < 0.9
+                      ? const Color(0xFFFEB533)
+                      : const Color(0xFFEB5757),
               minHeight: hScale(10),
             ),
           ),
@@ -487,7 +584,7 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
       width: wScale(327),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         actionButton('assets/free.png', 'Freeze Card', 0),
-        actionButton('assets/limit.png', 'View Limit', 1),
+        actionButton('assets/limit.png', 'View \nLimit', 1),
         actionButton('assets/cancel.png', 'Cancel Card', 2),
       ]),
     );
@@ -679,13 +776,26 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
   }
 
   Widget getTransactionArrWidgets(arr) {
-    return arr.length == 0 ?
-    Image.asset('assets/empty_transaction.png',
-                  fit: BoxFit.contain, width: wScale(327)):
-    Column(
-        children: arr.map<Widget>((item) {
-      return transactionField(
-          item['date'], item['transactionName'], item['value']);
-    }).toList());
+    return arr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: arr.map<Widget>((item) {
+            return TransactionItem(
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                transactionName: item['description'],
+                status: item['status'],
+                userName: item['merchantName'],
+                cardNum: item['pan'],
+                value: item['billAmount'].toString(),
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
+          }).toList());
   }
 }

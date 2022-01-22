@@ -3,11 +3,9 @@ import 'package:co/ui/main/cards/physical_team_card.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:co/utils/queries.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
-import 'package:localstorage/localstorage.dart';
 
 class PhysicalCards extends StatefulWidget {
   final defaultType;
@@ -28,12 +26,6 @@ class PhysicalCardsState extends State<PhysicalCards> {
   fSize(double size) {
     return Scale().fSize(context, size);
   }
-
-  final LocalStorage storage = LocalStorage('token');
-  final LocalStorage userStorage = LocalStorage('user_info');
-  String getBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
-  String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
-  String getRecentTransactions = Queries.QUERY_RECENT_TRANSACTIONS;
 
   int cardType = 0;
 

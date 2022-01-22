@@ -122,7 +122,7 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
             children: [
               detail(
                   widget.data["businessAccount"]["virtualAccountNumber"] == null
-                      ? "-"
+                      ? "885123001190"
                       : widget.data["businessAccount"]["virtualAccountNumber"]),
               SizedBox(width: wScale(10)),
               widget.data["businessAccount"]["virtualAccountNumber"] == null
@@ -161,7 +161,7 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
           title('Account Name'),
           const CustomSpacer(size: 8),
           detail(widget.data["businessAccount"]["bankAccountName"] == null
-              ? "-"
+              ? "FXR Business Services Pte Ltd"
               : widget.data["businessAccount"]["bankAccountName"]),
           const CustomSpacer(size: 25),
           Container(

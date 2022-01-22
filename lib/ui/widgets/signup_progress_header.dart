@@ -40,7 +40,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
 
   Widget logo(prev) {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
         height: hScale(174),
         padding: EdgeInsets.only(top: hScale(44)),
         decoration: const BoxDecoration(
@@ -51,7 +51,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
         ),
         child: Column(children: [
           SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
               height: hScale(40),
               child: Stack(alignment: Alignment.center, children: [
                 Container(
@@ -73,7 +73,7 @@ class _SignupProgressHeader extends State<SignupProgressHeader> {
 
   Widget signUpProgressField() {
     return (SizedBox(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
       height: hScale(32),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

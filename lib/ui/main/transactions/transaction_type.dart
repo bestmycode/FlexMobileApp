@@ -12,9 +12,10 @@ import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
 class TransactionTypeSection extends StatefulWidget {
+  static final GlobalKey<TransactionTypeSectionState> globalKey = GlobalKey();
   const TransactionTypeSection({
-    Key? key,
-  }) : super(key: key);
+    Key? globalKey,
+  }) : super(key: globalKey);
 
   @override
   TransactionTypeSectionState createState() => TransactionTypeSectionState();
@@ -55,6 +56,7 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
   handleSearch() {
     setState(() {
       searchText = searchCtl.text;
+      showDateRange = false;
     });
   }
 
@@ -80,6 +82,13 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
     }
   }
 
+  setHideDateRange() {
+    print('sdksksk');
+    setState(() {
+      showDateRange = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -92,50 +101,54 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
   }
 
   Widget home() {
-    return Indexer(
-      children: [
-        Indexed(
-            index: 100,
-            child: AllTransactionHeader(
-              dateType: dateType,
-              sortType: sortType,
-              transactionStatus: transactionStatus,
-              handleTransactionStatus: handleTransactionStatus,
-              setDateType: setDateType,
-              setSortType: setSortType,
-            )),
-        Indexed(
-            index: 50,
-            child: Column(children: [
-              const CustomSpacer(size: 105),
-              Indexer(children: [
-                Indexed(
-                    index: 100,
-                    child: VirtualMyTransactionSearchField(
-                      searchCtl: searchCtl,
-                      dateType: dateType,
-                      handleExport: handleExport,
-                      handleSearch: handleSearch,
-                      setDateType: setDateType,
-                    )),
-                Indexed(
-                    index: 50,
-                    child: Column(
-                      children: [
-                        const CustomSpacer(size: 40),
-                        showDateRange
-                            ? const CustomSpacer(size: 30)
-                            : const SizedBox(),
-                        showDateRange ? dateRangeField() : const SizedBox(),
-                        const CustomSpacer(size: 20),
-                        transactions(),
-                        const CustomSpacer(size: 88),
-                      ],
-                    )),
-              ]),
-            ]))
-      ],
-    );
+    return GestureDetector(
+        onTap: () {
+          setHideDateRange();
+        },
+        child: Indexer(
+          children: [
+            Indexed(
+                index: 100,
+                child: AllTransactionHeader(
+                  dateType: dateType,
+                  sortType: sortType,
+                  transactionStatus: transactionStatus,
+                  handleTransactionStatus: handleTransactionStatus,
+                  setDateType: setDateType,
+                  setSortType: setSortType,
+                )),
+            Indexed(
+                index: 50,
+                child: Column(children: [
+                  const CustomSpacer(size: 105),
+                  Indexer(children: [
+                    Indexed(
+                        index: 100,
+                        child: VirtualMyTransactionSearchField(
+                          searchCtl: searchCtl,
+                          dateType: dateType,
+                          handleExport: handleExport,
+                          handleSearch: handleSearch,
+                          setDateType: setDateType,
+                        )),
+                    Indexed(
+                        index: 50,
+                        child: Column(
+                          children: [
+                            const CustomSpacer(size: 40),
+                            showDateRange
+                                ? const CustomSpacer(size: 30)
+                                : const SizedBox(),
+                            showDateRange ? dateRangeField() : const SizedBox(),
+                            const CustomSpacer(size: 20),
+                            transactions(),
+                            const CustomSpacer(size: 88),
+                          ],
+                        )),
+                  ]),
+                ]))
+          ],
+        ));
   }
 
   Widget dateRangeField() {
@@ -205,7 +218,8 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
                       enabledBorder: const OutlineInputBorder(
                           borderSide:
                               BorderSide(color: Colors.white, width: 1.0)),
-                      hintText: 'Select Date of Birth',
+                      hintText:
+                          type == 1 ? 'Select Start Date' : 'Select End Date',
                       hintStyle: TextStyle(
                           color: const Color(0xffBFBFBF), fontSize: fSize(14)),
                       focusedBorder: const OutlineInputBorder(
@@ -310,7 +324,9 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
           if (result.isLoading) {
             return Container(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
           }
           var listTransactions = result.data!['listTransactions'];
           return getTransactionArrWidgets(
@@ -328,9 +344,8 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
           .toString()
           .compareTo(b['transactionDate'].toString()));
     } else {
-      arr.sort((a, b) => b['transactionType']
-          .toString()
-          .compareTo(a['transactionType'].toString()));
+      arr.sort(
+          (a, b) => b['status'].toString().compareTo(a['status'].toString()));
     }
 
     var tempArr = [];
@@ -392,13 +407,18 @@ class TransactionTypeSectionState extends State<TransactionTypeSection> {
             return TransactionItem(
                 accountId: item['txnFinanceAccId'],
                 transactionId: item['sourceTransactionId'],
-                date: '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
+                date:
+                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
                 transactionName: item['merchantName'],
                 userName: item['cardName'],
                 cardNum: item['pan'],
                 value: item['fxrBillAmount'].toStringAsFixed(2),
                 status: item['status'],
-                receiptStatus: item['fxrBillAmount'] >= 0 ? 0: item['receiptStatus'] == "PAID" ? 2 : 1);
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
           }).toList());
   }
 }

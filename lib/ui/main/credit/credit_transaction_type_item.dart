@@ -1,20 +1,17 @@
-import 'package:co/ui/main/transactions/all_transaction_header.dart';
-import 'package:co/ui/widgets/billing_item.dart';
-import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
-import 'package:co/ui/widgets/virtual_my_transaction_search_filed%20copy.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
 class CreditTransactionTypeSectionItem extends StatefulWidget {
+  final billedType;
   const CreditTransactionTypeSectionItem({
     Key? key,
+    this.billedType
   }) : super(key: key);
 
   @override
@@ -36,25 +33,11 @@ class CreditTransactionTypeSectionItemState
     return Scale().fSize(context, size);
   }
 
-  int transactionType = 1;
-  int billedType = 1;
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String readBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
   String billedUnbilledTransactions = Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
   String billingStatementsTable = Queries.QUERY_BILLING_STATEMENTTABLE;
-
-  handleTransactionType(type) {
-    setState(() {
-      transactionType = type;
-    });
-  }
-
-  handleBilledType(type) {
-    setState(() {
-      billedType = type;
-    });
-  }
 
   @override
   void initState() {
@@ -96,7 +79,7 @@ class CreditTransactionTypeSectionItemState
           document: gql(billedUnbilledTransactions),
           variables: {
             "orgId": orgId, 
-            "status": billedType == 1 ? "BILLED" : "UNBILLED",
+            "status": widget.billedType != 1 ? "BILLED" : "PENDING_OR_UNBILLED",
             "flaId": flaId
           },
           // pollInterval: const Duration(seconds: 10),
@@ -133,10 +116,11 @@ class CreditTransactionTypeSectionItemState
               transactionId: item['sourceTransactionId'],
               date: '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
               transactionName: item['description'],
+              subTransactionName: item['qualifiers'] == null ? "" : item['qualifiers'],
               status: item['status'],
               userName: item['merchantName'],
               cardNum: item['pan'],
-              value: item['fxrBillAmount'].toString());
+              value: item['fxrBillAmount'].toStringAsFixed(2));
           }).toList());
   }
 }

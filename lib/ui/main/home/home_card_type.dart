@@ -39,6 +39,17 @@ class HomeCardTypeState extends State<HomeCardType> {
 
   int cardType = 0;
 
+  handleCard(type) {
+    widget.mobileVerified
+        ? Navigator.of(context).push(
+            CupertinoPageRoute(
+                builder: (context) => type == "physical"
+                    ? PhysicalCards(defaultType: cardType)
+                    : VirtualCards(defaultType: cardType + 1)),
+          )
+        : null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -213,13 +224,21 @@ class HomeCardTypeState extends State<HomeCardType> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(10)),
-          child: Image.asset(imageURL,
-              color: value == 0
-                  ? Colors.white.withOpacity(0.5)
-                  : Colors.white.withOpacity(1),
-              colorBlendMode: BlendMode.modulate,
-              fit: BoxFit.contain,
-              width: wScale(142)),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                primary: Colors.white,
+              ),
+              child: Image.asset(imageURL,
+                  color: value == 0
+                      ? Colors.white.withOpacity(0.5)
+                      : Colors.white.withOpacity(1),
+                  colorBlendMode: BlendMode.modulate,
+                  fit: BoxFit.contain,
+                  width: wScale(142)),
+              onPressed: () {
+                value == 0 ? null : handleCard(type);
+              }),
         ),
         const CustomSpacer(size: 8),
         Row(
@@ -229,11 +248,23 @@ class HomeCardTypeState extends State<HomeCardType> {
                     fontSize: fSize(12),
                     fontWeight: FontWeight.w500,
                     color: const Color(0xff465158))),
-            Text('  ($value)  ',
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xff30E7A9))),
+            Container(
+              width: wScale(20),
+              height: hScale(12),
+              child: TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.all(0),
+              ),
+              child: Text('($value)',
+                  style: TextStyle(
+                      fontSize: fSize(12),
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xff30E7A9))),
+              onPressed: () {
+                value == 0 ? null : handleCard(type);
+              },
+            )
+            ),
             value == 0
                 ? SizedBox()
                 : Container(
@@ -248,15 +279,7 @@ class HomeCardTypeState extends State<HomeCardType> {
                         child: Icon(Icons.arrow_forward_rounded,
                             color: Color(0xff70828D), size: wScale(12)),
                         onPressed: () {
-                          widget.mobileVerified
-                              ? Navigator.of(context).push(
-                                  CupertinoPageRoute(
-                                      builder: (context) => type == "physical"
-                                          ? PhysicalCards(defaultType: cardType)
-                                          : VirtualCards(
-                                              defaultType: cardType + 1)),
-                                )
-                              : null;
+                          handleCard(type);
                         })),
           ],
         ),

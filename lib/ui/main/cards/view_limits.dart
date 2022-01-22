@@ -50,8 +50,8 @@ class ViewLimitsState extends State<ViewLimits> {
     true,
     false
   ];
-  double transactionLimitValue = 10;
-  double varianceLimitValue = 30;
+  double transactionLimitValue = 0;
+  double varianceLimitValue = 0;
 
   handleCloneSetting() {}
 

@@ -1,4 +1,3 @@
-import 'package:co/ui/main/credit/qr_view.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:flutter/cupertino.dart';

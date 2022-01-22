@@ -6,7 +6,14 @@ class CustomResultModal extends StatelessWidget {
   final bool status;
   final String title;
   final String message;
-  const CustomResultModal( {Key? key, required this.status, required this.title, required this.message}) : super(key: key);
+  final handleOKClick;
+  const CustomResultModal({
+    Key? key,
+    required this.status,
+    required this.title,
+    required this.message,
+    this.handleOKClick = null
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +28,13 @@ class CustomResultModal extends StatelessWidget {
     fSize(double size) {
       return Scale().fSize(context, size);
     }
-
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-            padding: EdgeInsets.symmetric(vertical: hScale(25), horizontal: wScale(10)),
+            padding: EdgeInsets.symmetric(
+                vertical: hScale(25), horizontal: wScale(10)),
             child: Column(children: [
               Text(title,
                   style: TextStyle(
@@ -53,9 +61,10 @@ class CustomResultModal extends StatelessWidget {
                             fontSize: fSize(16),
                             color: const Color(0xff30E7A9)),
                       ),
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true)
-                              .pop('dialog'),
+                      onPressed: () {
+                        handleOKClick != null ? handleOKClick(): Navigator.of(context, rootNavigator: true)
+                            .pop('dialog');
+                      },
                       child: const Text('Ok'),
                     ))
               ],

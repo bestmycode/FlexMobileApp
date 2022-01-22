@@ -1,10 +1,7 @@
 import 'package:co/ui/auth/signin/signin.dart';
-import 'package:co/ui/auth/signup/index.dart';
-import 'package:co/ui/auth/signup/signup_web.dart';
 import 'package:co/utils/scale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:co/constants/constants.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,8 +55,8 @@ class SplashScreenState extends State<SplashScreen> {
       children: <Widget>[
         Image.asset(
           "assets/splash_background.png",
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.height,
+          width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
           fit: BoxFit.cover,
         ),
         Scaffold(

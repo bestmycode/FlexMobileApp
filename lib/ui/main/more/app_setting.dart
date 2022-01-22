@@ -109,7 +109,9 @@ class AppSettingState extends State<AppSetting> {
           if (result.isLoading) {
             return Container(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
           }
           var organizationApps = result.data!['organizationApps'];
           return mainHome(organizationApps);
@@ -141,8 +143,10 @@ class AppSettingState extends State<AppSetting> {
   Widget connectedApp(organizationApps) {
     var appsList = organizationApps['installedApps'];
     return organizationApps['installedApps'].length == 0
-        ? Image.asset('assets/empty_transaction.png',
-            fit: BoxFit.contain, width: wScale(159))
+        ? Container(
+            alignment: Alignment.center,
+            child: Image.asset('assets/empty_transaction.png',
+                fit: BoxFit.contain, width: wScale(159)))
         : Column(
             children: appsList.map<Widget>((item) {
             return connectedAppField(item);
@@ -249,10 +253,7 @@ class AppSettingState extends State<AppSetting> {
               },
               onCompleted: (resultData) {
                 if (resultData['partnerSync']['status'] == "success") {
-                  print("success");
-                } else {
-                  print('failed');
-                }
+                } else {}
               },
             ),
             builder: (RunMutation runMutation, QueryResult? result) {
@@ -305,9 +306,7 @@ class AppSettingState extends State<AppSetting> {
               update: (GraphQLDataProxy cache, QueryResult? result) {
                 return cache;
               },
-              onCompleted: (resultData) {
-                print(resultData);
-              },
+              onCompleted: (resultData) {},
             ),
             builder: (RunMutation runMutation, QueryResult? result) {
               return removeActionButton(runMutation);

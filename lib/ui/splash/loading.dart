@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:co/ui/splash/first_loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/constants/constants.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -53,13 +51,13 @@ class LoadingScreenState extends State<LoadingScreen>
 
   @override
   Widget build(BuildContext context) {
-    double widthRatio = MediaQuery.of(context).size.width / 375;
+    double widthRatio = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width / 375;
     return Stack(
       children: <Widget>[
         Image.asset(
           "assets/loading_background.png",
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
+          height: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.height,
+          width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
           fit: BoxFit.cover,
         ),
         Scaffold(

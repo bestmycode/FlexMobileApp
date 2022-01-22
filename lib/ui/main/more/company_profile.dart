@@ -311,8 +311,6 @@ class CompanyProfileState extends State<CompanyProfile> {
                 return cache;
               },
               onCompleted: (resultData) {
-                print(resultData['updateOrganization']['id']);
-                print(userStorage.getItem('orgId'));
                 if (resultData['updateOrganization']['id'] ==
                     userStorage.getItem("orgId")) {
                   showDialog(

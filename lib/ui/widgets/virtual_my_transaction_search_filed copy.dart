@@ -80,31 +80,31 @@ class VirtualMyTransactionSearchFieldState extends State<VirtualMyTransactionSea
                 },
               ),
             ),
-            SizedBox(
-              width: wScale(40),
-              height: hScale(36),
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff29C490),
-                  padding: const EdgeInsets.all(0),
-                  textStyle: TextStyle(
-                      fontSize: fSize(12),
-                      color: const Color(0xff29C490),
-                      decoration: TextDecoration.underline),
-                ),
-                onPressed: () {
-                  widget.handleExport();
-                },
-                child: const Text('Export'),
-              ),
-            )
+            // SizedBox(
+            //   width: wScale(40),
+            //   height: hScale(36),
+            //   child: TextButton(
+            //     style: TextButton.styleFrom(
+            //       primary: const Color(0xff29C490),
+            //       padding: const EdgeInsets.all(0),
+            //       textStyle: TextStyle(
+            //           fontSize: fSize(12),
+            //           color: const Color(0xff29C490),
+            //           decoration: TextDecoration.underline),
+            //     ),
+            //     onPressed: () {
+            //       widget.handleExport();
+            //     },
+            //     child: const Text('Export'),
+            //   ),
+            // )
           ],
         ));
   }
 
   Widget searchField() {
     return Container(
-        width: wScale(212),
+        width: wScale(265),
         height: hScale(36),
         padding: EdgeInsets.only(left: wScale(15), right: wScale(15)),
         decoration: BoxDecoration(
@@ -198,7 +198,7 @@ class VirtualMyTransactionSearchFieldState extends State<VirtualMyTransactionSea
     return TextButton(
       style: TextButton.styleFrom(
         primary: widget.dateType == type ? const Color(0xFF29C490) : Colors.black,
-        // padding: const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
+        padding: const EdgeInsets.only(left: 16),
         textStyle: TextStyle(fontSize: fSize(14), color: Colors.black),
       ),
       onPressed: () {

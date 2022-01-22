@@ -248,7 +248,6 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
                   int.parse(endDateCtl.text.split("/")[0]))
               .millisecondsSinceEpoch;
       arr.forEach((item) {
-        print(item['transactionDate']);
         if (item['transactionDate'] >= start && item['transactionDate'] <= end)
           tempArr.add(item);
       });
@@ -262,6 +261,7 @@ class VirtualMyTransactionsState extends State<VirtualMyTransactions> {
           item['cardName'].toLowerCase().indexOf(searchText.toLowerCase()) >= 0)
         resultArr.add(item);
     });
+
 
     return resultArr.length == 0
         ? Image.asset('assets/empty_transaction.png',

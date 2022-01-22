@@ -353,7 +353,7 @@ Thanks.''';
           moneyValue(
               'Total Amount Due',
               creditLine['currencyCode'],
-              creditLine['creditUsage'].toStringAsFixed(2),
+              (creditLine['creditUsage'] - creditLine['totalUnbilledAmount']).toStringAsFixed(2),
               20.0,
               FontWeight.bold,
               const Color(0xff30E7A9)),

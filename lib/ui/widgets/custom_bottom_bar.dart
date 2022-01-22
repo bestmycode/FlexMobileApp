@@ -18,9 +18,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomBottomBar extends StatefulWidget {
   final int active;
-  final bool mobileVerified;
-  const CustomBottomBar(
-      {Key? key, this.active = 0, this.mobileVerified = true})
+  final bool noFlex;
+  const CustomBottomBar({Key? key, this.active = 0, this.noFlex = false})
       : super(key: key);
 
   @override
@@ -43,6 +42,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
 
   handleTabItem(active) {
     bool isAdmin = userStorage.getItem("isAdmin");
+    bool mobileVerified = userStorage.getItem('mobileVerified');
     if (widget.active % 10 == active % 10 &&
         active % 10 != 1 &&
         active % 10 != 4) {
@@ -50,12 +50,16 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     } else if (active == 0) {
       Navigator.of(context).pushReplacementNamed(HOME_SCREEN);
     } else if (active % 10 == 1) {
-      widget.mobileVerified ? _openCardTypeDialog() : null;
+      mobileVerified ? _openCardTypeDialog() : null;
     } else if (active == 2) {
-      widget.mobileVerified ? Navigator.of(context)
-          .pushReplacementNamed(isAdmin ? TRANSACTION_ADMIN : TRANSACTION_USER): null;
+      mobileVerified
+          ? Navigator.of(context).pushReplacementNamed(
+              isAdmin ? TRANSACTION_ADMIN : TRANSACTION_USER)
+          : null;
     } else if (active == 3) {
-      widget.mobileVerified ? Navigator.of(context).pushReplacementNamed(CREDIT_SCREEN): null;
+      mobileVerified
+          ? Navigator.of(context).pushReplacementNamed(CREDIT_SCREEN)
+          : null;
     } else if (active == 4) {
       _openMenuDialog();
     }
@@ -100,7 +104,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
     }
     if (type == 'physical_card') {
       Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const PhysicalCards()),
+        CupertinoPageRoute(builder: (context) => isAdmin ? const PhysicalCards(): const PhysicalUserCard()),
       );
     }
     if (type == 'virtual_card') {
@@ -131,7 +135,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
       );
     }
     if (type == "logout") {
-      Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN);
+      _showLogoutModalDialog();
     }
   }
 
@@ -139,84 +143,80 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   Widget build(BuildContext context) {
     bool isAdmin = userStorage.getItem("isAdmin");
     bool isCredit = userStorage.getItem("isCredit");
+    bool mobileVerified = userStorage.getItem('mobileVerified');
     return Container(
-        width: MediaQuery.of(context).size.width,
-        height: hScale(88),
+        width: wScale(375),
         color: Colors.white,
-        child: Column(
+        alignment: Alignment.center,
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+            navItem(
+                widget.active == 0
+                    ? 'assets/green_home.png'
+                    : 'assets/grey_home.png',
+                AppLocalizations.of(context)!.home,
+                0),
+            if (!widget.noFlex && mobileVerified)
+              navItem(
+                  widget.active % 10 == 1
+                      ? 'assets/green_card.png'
+                      : 'assets/grey_card.png',
+                  AppLocalizations.of(context)!.cards,
+                  1),
+            if (!widget.noFlex && mobileVerified)
+              navItem(
+                  widget.active == 2
+                      ? 'assets/green_transaction.png'
+                      : 'assets/grey_transaction.png',
+                  AppLocalizations.of(context)!.transactions,
+                  2),
+            if (!widget.noFlex && mobileVerified)
+              if (isAdmin && isCredit)
                 navItem(
-                    widget.active == 0
-                        ? 'assets/green_home.png'
-                        : 'assets/grey_home.png',
-                    AppLocalizations.of(context)!.home,
-                    0),
-                navItem(
-                    widget.active % 10 == 1
-                        ? 'assets/green_card.png'
-                        : 'assets/grey_card.png',
-                    AppLocalizations.of(context)!.cards,
-                    1),
-                navItem(
-                    widget.active == 2
-                        ? 'assets/green_transaction.png'
-                        : 'assets/grey_transaction.png',
-                    AppLocalizations.of(context)!.transactions,
-                    2),
-                isAdmin && isCredit
-                    ? navItem(
-                        widget.active == 3
-                            ? 'assets/green_credit.png'
-                            : 'assets/grey_credit.png',
-                        AppLocalizations.of(context)!.credit,
-                        3)
-                    : SizedBox(),
-                navItem(
-                    widget.active % 10 == 4
-                        ? 'assets/green_more.png'
-                        : 'assets/grey_more.png',
-                    AppLocalizations.of(context)!.more,
-                    4),
-              ],
-            )
+                    widget.active == 3
+                        ? 'assets/green_credit.png'
+                        : 'assets/grey_credit.png',
+                    AppLocalizations.of(context)!.credit,
+                    3),
+            navItem(
+                widget.active % 10 == 4
+                    ? 'assets/green_more.png'
+                    : 'assets/grey_more.png',
+                AppLocalizations.of(context)!.more,
+                4),
           ],
         ));
   }
 
   Widget navItem(icon, title, active) {
-    bool isAdmin = userStorage.getItem("isAdmin");
-    return Container(
-        width: isAdmin
-            ? MediaQuery.of(context).size.width / 5
-            : MediaQuery.of(context).size.width / 4,
-        alignment: Alignment.center,
-        child: TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xFFFFFFFF),
-              padding: EdgeInsets.symmetric(horizontal: wScale(0)),
-            ),
-            onPressed: () {
-              handleTabItem(active);
-            },
-            child: Column(
-              children: [
-                Image.asset(icon, height: hScale(18), fit: BoxFit.contain),
-                const CustomSpacer(size: 8),
-                Text(title,
-                    style: TextStyle(
-                        fontSize: fSize(12),
-                        fontWeight: FontWeight.w400,
-                        color: active == widget.active % 10
-                            ? const Color(0xFF29C490)
-                            : const Color(0xFFBFBFBF)))
-              ],
-            )));
+    return Expanded(
+        flex: 1,
+        child: Container(
+            height: hScale(88),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xFFFFFFFF),
+                  padding: EdgeInsets.symmetric(horizontal: wScale(0)),
+                ),
+                onPressed: () {
+                  handleTabItem(active);
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(icon, height: hScale(18), fit: BoxFit.contain),
+                    const CustomSpacer(size: 8),
+                    Text(title,
+                        style: TextStyle(
+                            fontSize: fSize(12),
+                            fontWeight: FontWeight.w400,
+                            color: active == widget.active % 10
+                                ? const Color(0xFF29C490)
+                                : const Color(0xFFBFBFBF)))
+                  ],
+                ))));
   }
 
   void _openCardTypeDialog() => showModalBottomSheet<void>(
@@ -243,9 +243,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Platform.isAndroid
-                          ? const CustomSpacer(size: 35)
-                          : const CustomSpacer(size: 67),
+                      const CustomSpacer(size: 67),
                       modalItem(
                           AppLocalizations.of(context)!.physicalcards,
                           'assets/green_card.png',
@@ -276,8 +274,15 @@ class CustomBottomBarState extends State<CustomBottomBar> {
         builder: (BuildContext context) {
           bool isAdmin = userStorage.getItem("isAdmin");
           bool isCredit = userStorage.getItem("isCredit");
+          bool mobileVerified = userStorage.getItem('mobileVerified');
           return Container(
-              height: !widget.mobileVerified ? hScale(366) : isAdmin ? hScale(621) : hScale(474),
+              height: !mobileVerified
+                  ? hScale(365)
+                  : widget.noFlex
+                      ? hScale(365)
+                      : isAdmin
+                          ? hScale(621)
+                          : hScale(490),
               padding: EdgeInsets.symmetric(horizontal: hScale(24)),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -292,85 +297,72 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                   // mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CustomSpacer(size: 52),
+                    const CustomSpacer(size: 43),
                     modalItem(
                         AppLocalizations.of(context)!.home,
                         'assets/green_home.png',
                         'assets/white_home.png',
                         () => handleMenu('home', 0),
                         0),
-                    Platform.isAndroid
-                        ? const CustomSpacer(size: 0)
-                        : const CustomSpacer(size: 18),
-                    widget.mobileVerified ? Column(
-                      children: [
-                        modalItem(
-                            AppLocalizations.of(context)!.physicalcards,
-                            'assets/green_card.png',
-                            'assets/white_card.png',
-                            () => handleMenu('physical_card', 1),
-                            1),
-                        Platform.isAndroid
-                            ? const CustomSpacer(size: 0)
-                            : const CustomSpacer(size: 18),
-                        modalItem(
-                            AppLocalizations.of(context)!.virtualcards,
-                            'assets/issue_virtual_card.png',
-                            'assets/white_virtual_card.png',
-                            () => handleMenu('virtual_card', 11),
-                            11),
-                        Platform.isAndroid
-                            ? const CustomSpacer(size: 0)
-                            : const CustomSpacer(size: 18),
-                        modalItem(
-                            AppLocalizations.of(context)!.transactions,
-                            'assets/green_transaction.png',
-                            'assets/white_transaction.png',
-                            () => handleMenu('transaction', 2),
-                            2),
-                        isAdmin
-                            ? Platform.isAndroid
-                                ? const CustomSpacer(size: 0)
-                                : const CustomSpacer(size: 18)
-                            : SizedBox(),
-                        isAdmin && isCredit
-                            ? modalItem(
-                                AppLocalizations.of(context)!.flexpluscredit,
-                                'assets/green_credit.png',
-                                'assets/white_credit.png',
-                                () => handleMenu('credit', 3),
-                                3)
-                            : SizedBox(),
-                      ],
-                    ) : SizedBox(),
-                    const CustomSpacer(size: 31),
+                    const CustomSpacer(size: 18),
+                    if (mobileVerified && !widget.noFlex)
+                      Column(
+                        children: [
+                          modalItem(
+                              AppLocalizations.of(context)!.physicalcards,
+                              'assets/green_card.png',
+                              'assets/white_card.png',
+                              () => handleMenu('physical_card', 1),
+                              1),
+                          const CustomSpacer(size: 18),
+                          modalItem(
+                              AppLocalizations.of(context)!.virtualcards,
+                              'assets/issue_virtual_card.png',
+                              'assets/white_virtual_card.png',
+                              () => handleMenu('virtual_card', 11),
+                              11),
+                          const CustomSpacer(size: 18),
+                          modalItem(
+                              AppLocalizations.of(context)!.transactions,
+                              'assets/green_transaction.png',
+                              'assets/white_transaction.png',
+                              () => handleMenu('transaction', 2),
+                              2),
+                          isAdmin
+                              ? const CustomSpacer(size: 18)
+                              : SizedBox(),
+                          isAdmin && isCredit
+                              ? modalItem(
+                                  AppLocalizations.of(context)!.flexpluscredit,
+                                  'assets/green_credit.png',
+                                  'assets/white_credit.png',
+                                  () => handleMenu('credit', 3),
+                                  3)
+                              : SizedBox(),
+                        ],
+                      ),
+                    const CustomSpacer(size: 30),
                     Container(
                         width: wScale(327),
                         height: 1,
                         color: const Color(0xFFDAE3E9)),
                     const CustomSpacer(size: 30),
-                    isAdmin
-                        ? modalItem(
-                            AppLocalizations.of(context)!.companysettings,
-                            'assets/green_company_setting.png',
-                            'assets/white_company_setting.png',
-                            () => handleMenu('company_setting', 4),
-                            4)
-                        : SizedBox(),
-                    isAdmin
-                        ? Platform.isAndroid
-                            ? const CustomSpacer(size: 0)
-                            : const CustomSpacer(size: 18)
-                        : SizedBox(),
+                    if (isAdmin)
+                      modalItem(
+                          AppLocalizations.of(context)!.companysettings,
+                          'assets/green_company_setting.png',
+                          'assets/white_company_setting.png',
+                          () => handleMenu('company_setting', 4),
+                          4),
+                    if (isAdmin)
+                      const CustomSpacer(size: 18),
                     modalItem(
                         AppLocalizations.of(context)!.accountsettings,
                         'assets/green_user_setting.png',
                         'assets/white_user_setting.png',
                         () => handleMenu('account_setting', 14),
                         14),
-                    Platform.isAndroid
-                        ? const CustomSpacer(size: 0)
-                        : const CustomSpacer(size: 18),
+                    const CustomSpacer(size: 18),
                     modalItem(
                         AppLocalizations.of(context)!.logout,
                         'assets/green_logout.png',
@@ -386,6 +378,7 @@ class CustomBottomBarState extends State<CustomBottomBar> {
   Widget modalItem(title, inactiveIcon, activeIcon, event, activeNum) {
     return Container(
         margin: EdgeInsets.zero,
+        height: hScale(46),
         child: TextButton(
             style: TextButton.styleFrom(
                 primary: const Color(0xFFFFFFFF), padding: EdgeInsets.zero),
@@ -432,5 +425,78 @@ class CustomBottomBarState extends State<CustomBottomBar> {
                 )
               ],
             )));
+  }
+
+  _showLogoutModalDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: logoutModalField()));
+        });
+  }
+
+  Widget logoutModalField() {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(
+              vertical: hScale(25), horizontal: wScale(16)),
+          child: Column(children: [
+            Row(
+              children: [
+                Image.asset('assets/green_logout.png',
+                    fit: BoxFit.contain, height: wScale(20)),
+                const SizedBox(width: 5),
+                Text('Log out',
+                    style: TextStyle(
+                        fontSize: fSize(18), fontWeight: FontWeight.w700)),
+              ],
+            ),
+            const CustomSpacer(size: 20),
+            Text(
+              'Are you sure you want to log out?',
+              style:
+                  TextStyle(fontSize: fSize(16), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('No'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN);
+                    },
+                    child: const Text('Yes'),
+                  ))
+            ],
+          ))
+    ]);
   }
 }

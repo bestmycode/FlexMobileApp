@@ -1,15 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// ------------------------------
-/// ┌─┐┬ ┬ ┬┌─┐┬ ┬
-/// ├┤ │ └┬┘│ ││ │
-/// └  ┴─┘┴ └─┘└─┘
-/// Author       : fzl flyou
-/// Date         : 2018/10/12 0012
-/// ProjectName  : test1
-/// Description  :
-/// Version      : V1.0
-/// ------------------------------
 class CircleProgressBar extends StatefulWidget {
   final Color backgroundColor;
   final Color foreColor;

@@ -1,15 +1,10 @@
 import 'package:co/ui/main/credit/credit_bill_type_item.dart';
-import 'package:co/ui/main/transactions/all_transaction_header.dart';
 import 'package:co/ui/widgets/billing_item.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
-import 'package:co/ui/widgets/virtual_my_transaction_search_filed%20copy.dart';
 import 'package:co/utils/queries.dart';
-import 'package:co/utils/token.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -73,7 +68,7 @@ class CreditTransactionTypeSectionState
         transactionType == 1 ? billedTypeField() : const SizedBox(),
         const CustomSpacer(size: 15),
         transactionType == 1
-            ? CreditTransactionTypeSectionItem()
+            ? CreditTransactionTypeSectionItem(billedType:billedType)
             : CreditBillTypeSectionItem(),
       ],
     );
@@ -108,43 +103,6 @@ class CreditTransactionTypeSectionState
         cardGroupButton('Billed', 2),
       ]),
     );
-  }
-
-  Widget getTransactionArrWidgets(arr) {
-    return arr.length == 0
-        ? Image.asset('assets/empty_transaction.png',
-            fit: BoxFit.contain, width: wScale(327))
-        : Column(
-            children: arr.map<Widget>((item) {
-            return TransactionItem(
-              date: item['date'],
-              transactionName: item['transactionName'],
-              userName: item['userName'],
-              cardNum: item['cardNum'],
-              value: item['value'],
-              status: 'COMPLETE',
-            );
-          }).toList());
-  }
-
-  Widget getBillingArrWidgets(arr) {
-    return arr.length == 0
-        ? Image.asset('assets/empty_transaction.png',
-            fit: BoxFit.contain, width: wScale(327))
-        : Column(
-            children: arr.map<Widget>((item) {
-            return BillingItem(
-                statementDate: DateFormat('dd-MM-yyyy | hh:mm a').format(
-                    DateTime.fromMillisecondsSinceEpoch(item['statementDate'])),
-                totalAmount: item['totalAmountDue'].toString(),
-                dueDate: item['dueDate'] == null
-                    ? "-"
-                    : DateFormat('dd-MM-yyyy | hh:mm a').format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                            item['statementDate'])),
-                status: item['status'],
-                documentLink: item['documentLink']);
-          }).toList());
   }
 
   Widget activeButton(title, type) {

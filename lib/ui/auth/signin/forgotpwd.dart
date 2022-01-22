@@ -120,7 +120,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
 
   Widget header() {
     return Container(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
         height: hScale(109),
         padding: EdgeInsets.only(top: hScale(49)),
         decoration: const BoxDecoration(
@@ -131,7 +131,7 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
         ),
         child: Column(children: [
           SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
               height: hScale(40),
               child: Stack(alignment: Alignment.center, children: [
                 Text(AppLocalizations.of(context)!.forgotPassword,

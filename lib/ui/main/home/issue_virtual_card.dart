@@ -1,16 +1,14 @@
 import 'dart:ui';
 
 import 'package:co/ui/main/cards/name_on_card.dart';
-import 'package:co/ui/widgets/custom_loading.dart';
+import 'package:co/ui/main/cards/virtual_card.dart';
+import 'package:co/ui/main/home/issue_spend_control_main.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/utils/mutations.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
-import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
@@ -18,7 +16,6 @@ import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
-import 'dart:math' as math;
 
 class IssueVirtaulCard extends StatefulWidget {
   const IssueVirtaulCard({Key? key}) : super(key: key);
@@ -46,13 +43,15 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
   final companyNameCtl = TextEditingController();
 
   final cardHolderNameCtl = TextEditingController();
-  final cardTypeCtl = TextEditingController();
+  final cardTypeCtl = TextEditingController(text: "Fixed Card");
   final monthlySpendLimitCtl = TextEditingController();
   final limitRefreshCtl = TextEditingController();
   final expiryDateCtl = TextEditingController();
 
   bool isSwitchedMerchant = false;
+  bool isMerchantChange = false;
   bool isSwitchedTransactionLimit = false;
+  bool isTransactionLimitChange = false;
   var isSwitchedArr = [
     true,
     true,
@@ -66,22 +65,25 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
     true
   ];
   var cardTypeArr = ["Fixed Card", "Recurring Card"];
-  double transactionLimitValue = 10;
-  double varianceLimitValue = 30;
+  double transactionLimitValue = 0;
+  double varianceLimitValue = 0;
 
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
-  String queryGetCompanySetting = Queries.QUERY_GET_COMPANY_SETTING;
-  String queryListEligibleUserCard = Queries.QUERY_LIST_ELIGIBLE_USER_CARD;
   String queryListMerchantGroup = Queries.QUERY_LIST_MERCHANT_GROUP;
   String mutationIssueVirtaulCardSpend =
       FXRMutations.MUTATION_REQUEST_CARD_SPEND;
   late var seletedEligible;
   String companyNameText = '';
   var cardHolders = [];
+  var cardNameHolders = [];
   bool showCardDetail = false;
   int cardType = 0; // 0 => Fixed Card, 1 => Recurring Card
-  handleCloneSetting() {}
+  bool errorCardHolder = false;
+  bool errorExpireDate = false;
+  bool errorLimitRefresh = false;
+  bool errorMonthlySpend = false;
+  bool checkCardName = false;
 
   handleSwitch(index, v) {
     setState(() {
@@ -89,79 +91,127 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
     });
   }
 
+  handleIsSwitchedMerchant(value) {
+    setState(() {
+      isSwitchedMerchant = value;
+      isMerchantChange = value;
+    });
+  }
+
+  handleIisSwitchedTransactionLimit(value) {
+    setState(() {
+      isSwitchedTransactionLimit = value.length == 0 ? false : true;
+      transactionLimitCtl.text = "SGD " + value;
+      transactionLimitValue = 100;
+      isTransactionLimitChange = value.length == 0 ? false : true;
+    });
+  }
+
+  callbackCardHolder(data) {
+    setState(() {
+      cardHolders = data;
+      errorCardHolder = data.length > 0 ? false : true;
+    });
+  }
+
   handleSave(runMutation) {
-    var expiryDate = '${expiryDateCtl.text.split("/")[2]}-${expiryDateCtl.text.split("/")[1]}-${expiryDateCtl.text.split("/")[0]}';
-    if (cardHolders.length != 0) {
-      if(cardType == 0) {
-        runMutation({
-          "accountSubtype": "VIRTUAL",
-          "cardHolders": cardHolders,
-          "cardLimit": int.parse(monthlySpendLimitCtl.text),
-          "cardType": "ONE_TIME",
-          "controls": {
-            "allowedCategories": [
-              {"categoryName": "AIRLINES", "isAllowed": isSwitchedArr[0]},
-              {"categoryName": "CAR_RENTAL", "isAllowed": isSwitchedArr[1]},
-              {"categoryName": "TRANSPORTATION", "isAllowed": isSwitchedArr[2]},
-              {"categoryName": "HOTELS", "isAllowed": isSwitchedArr[3]},
-              {"categoryName": "PETROL", "isAllowed": isSwitchedArr[4]},
-              {
-                "categoryName": "DEPARTMENT_STORES",
-                "isAllowed": isSwitchedArr[5]
-              },
-              {"categoryName": "PARKING", "isAllowed": isSwitchedArr[6]},
-              {
-                "categoryName": "FOOD_AND_BEVERAGES",
-                "isAllowed": isSwitchedArr[7]
-              },
-              {"categoryName": "TAXIS", "isAllowed": isSwitchedArr[8]},
-              {"categoryName": "OTHERS", "isAllowed": isSwitchedArr[9]},
-            ],
-            "transactionLimit": transactionLimitValue *
-                int.parse(monthlySpendLimitCtl.text) /
-                100,
-            "variancePercentage": varianceLimitValue,
-          },
-          "expiryDate": expiryDate,
-          "orgId": userStorage.getItem('orgId'),
-          "remarks": remarksCtl.text,
-        });
+    setState(() {
+      errorExpireDate = expiryDateCtl.text == '' ? true : false;
+      errorLimitRefresh = limitRefreshCtl.text == '' ? true : false;
+      errorMonthlySpend = monthlySpendLimitCtl.text == "" ? true : false;
+      errorCardHolder = cardHolders.length == 0 ? true : false;
+    });
+    bool isNoError = (cardType == 0
+            ? expiryDateCtl.text != ''
+            : limitRefreshCtl.text != '') &&
+        monthlySpendLimitCtl.text != "" &&
+        cardHolders.length != 0;
+
+    if (isNoError) {
+      if (checkCardName == false) {
+        _showCardNameModalDialog(context);
       } else {
-        runMutation({
-          "accountSubtype": "VIRTUAL",
-          "cardHolders": cardHolders,
-          "cardLimit": int.parse(monthlySpendLimitCtl.text),
-          "cardType": "RECURRING",
-          "controls": {
-            "allowedCategories": [
-              {"categoryName": "AIRLINES", "isAllowed": isSwitchedArr[0]},
-              {"categoryName": "CAR_RENTAL", "isAllowed": isSwitchedArr[1]},
-              {"categoryName": "TRANSPORTATION", "isAllowed": isSwitchedArr[2]},
-              {"categoryName": "HOTELS", "isAllowed": isSwitchedArr[3]},
-              {"categoryName": "PETROL", "isAllowed": isSwitchedArr[4]},
-              {
-                "categoryName": "DEPARTMENT_STORES",
-                "isAllowed": isSwitchedArr[5]
-              },
-              {"categoryName": "PARKING", "isAllowed": isSwitchedArr[6]},
-              {
-                "categoryName": "FOOD_AND_BEVERAGES",
-                "isAllowed": isSwitchedArr[7]
-              },
-              {"categoryName": "TAXIS", "isAllowed": isSwitchedArr[8]},
-              {"categoryName": "OTHERS", "isAllowed": isSwitchedArr[9]},
-            ],
-            "transactionLimit": transactionLimitValue *
-                int.parse(monthlySpendLimitCtl.text) /
-                100,
-            "variancePercentage": varianceLimitValue,
-          },
-          "orgId": userStorage.getItem('orgId'),
-          "remarks": remarksCtl.text,
-          "renewalFrequency": "MONTHLY",
-        });
+        if (cardType == 0) {
+          var expiryDate =
+              '${expiryDateCtl.text.split("/")[2]}-${expiryDateCtl.text.split("/")[1]}-${expiryDateCtl.text.split("/")[0]}';
+          runMutation({
+            "accountSubtype": "VIRTUAL",
+            "cardHolders": cardHolders,
+            "cardLimit": int.parse(monthlySpendLimitCtl.text),
+            "cardType": "ONE-TIME",
+            "controls": {
+              "allowedCategories": [
+                {"categoryName": "AIRLINES", "isAllowed": isSwitchedArr[0]},
+                {"categoryName": "CAR_RENTAL", "isAllowed": isSwitchedArr[1]},
+                {
+                  "categoryName": "TRANSPORTATION",
+                  "isAllowed": isSwitchedArr[2]
+                },
+                {"categoryName": "HOTELS", "isAllowed": isSwitchedArr[3]},
+                {"categoryName": "PETROL", "isAllowed": isSwitchedArr[4]},
+                {
+                  "categoryName": "DEPARTMENT_STORES",
+                  "isAllowed": isSwitchedArr[5]
+                },
+                {"categoryName": "PARKING", "isAllowed": isSwitchedArr[6]},
+                {
+                  "categoryName": "FOOD_AND_BEVERAGES",
+                  "isAllowed": isSwitchedArr[7]
+                },
+                {"categoryName": "TAXIS", "isAllowed": isSwitchedArr[8]},
+                {"categoryName": "OTHERS", "isAllowed": isSwitchedArr[9]},
+              ],
+              "transactionLimit": (transactionLimitValue *
+                      int.parse(monthlySpendLimitCtl.text) /
+                      100)
+                  .round(),
+              "variancePercentage": varianceLimitValue.round(),
+            },
+            "expiryDate": expiryDate,
+            "orgId": userStorage.getItem('orgId'),
+            "remarks": remarksCtl.text,
+          });
+        } else {
+          print('0000000000000');
+          runMutation({
+            "accountSubtype": "VIRTUAL",
+            "cardHolders": cardHolders,
+            "cardLimit": int.parse(monthlySpendLimitCtl.text),
+            "cardType": "RECURRING",
+            "controls": {
+              "allowedCategories": [
+                {"categoryName": "AIRLINES", "isAllowed": isSwitchedArr[0]},
+                {"categoryName": "CAR_RENTAL", "isAllowed": isSwitchedArr[1]},
+                {
+                  "categoryName": "TRANSPORTATION",
+                  "isAllowed": isSwitchedArr[2]
+                },
+                {"categoryName": "HOTELS", "isAllowed": isSwitchedArr[3]},
+                {"categoryName": "PETROL", "isAllowed": isSwitchedArr[4]},
+                {
+                  "categoryName": "DEPARTMENT_STORES",
+                  "isAllowed": isSwitchedArr[5]
+                },
+                {"categoryName": "PARKING", "isAllowed": isSwitchedArr[6]},
+                {
+                  "categoryName": "FOOD_AND_BEVERAGES",
+                  "isAllowed": isSwitchedArr[7]
+                },
+                {"categoryName": "TAXIS", "isAllowed": isSwitchedArr[8]},
+                {"categoryName": "OTHERS", "isAllowed": isSwitchedArr[9]},
+              ],
+              "transactionLimit": (transactionLimitValue *
+                      int.parse(monthlySpendLimitCtl.text) /
+                      100)
+                  .round(),
+              "variancePercentage": varianceLimitValue.round(),
+            },
+            "orgId": userStorage.getItem('orgId'),
+            "remarks": remarksCtl.text,
+            "renewalFrequency": "MONTHLY",
+          });
+        }
       }
-      
     }
   }
 
@@ -169,10 +219,43 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
     _showSimpleModalDialog(context);
   }
 
-  handleAddCardHolderName() {
-    Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => const NameOnCard()),
+  handleNamesOnCard() async {
+    var cardNameHolders = [];
+    cardHolders.forEach((element) {
+      cardNameHolders.add(element['preferredCardName']);
+    });
+
+    var result = await Navigator.of(context).push(
+      CupertinoPageRoute(
+          builder: (context) => NameOnCard(cardNameHolders: cardNameHolders)),
     );
+    var tempCardHolders = [];
+    cardHolders.forEach((item) {
+      tempCardHolders.add({
+        "userId": item['userId'],
+        "preferredCardholderName": '',
+        "preferredCardName": result[cardHolders.indexOf(item)],
+        "applySpendControls": true
+      });
+    });
+
+    setState(() {
+      cardNameHolders = result;
+      cardHolders = tempCardHolders;
+      checkCardName = true;
+    });
+  }
+
+  handleCheckCardName() {
+    setState(() {
+      checkCardName = true;
+    });
+  }
+
+  handleCardType(type) {
+    setState(() {
+      cardType = type;
+    });
   }
 
   @override
@@ -192,7 +275,20 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
         const CustomSpacer(size: 38),
         cardDetailField(),
         const CustomSpacer(size: 20),
-        getSpendControlMainField(),
+        IssueSpendControlMain(
+            monthlySpendLimitCtl: monthlySpendLimitCtl,
+            limitRefreshCtl: limitRefreshCtl,
+            expiryDateCtl: expiryDateCtl,
+            errorCardHolder: errorCardHolder,
+            errorExpireDate: errorExpireDate,
+            errorLimitRefresh: errorLimitRefresh,
+            errorMonthlySpend: errorMonthlySpend,
+            callbackCardHolder: callbackCardHolder,
+            handleCardType: handleCardType,
+            handleIsSwitchedMerchant: handleIsSwitchedMerchant,
+            handleIisSwitchedTransactionLimit:
+                handleIisSwitchedTransactionLimit,
+            handleCheckCardName: handleCheckCardName),
         const CustomSpacer(size: 15),
         getAdditionalField(),
         Opacity(
@@ -266,7 +362,7 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
             ],
           ),
           const CustomSpacer(size: 12),
-          Text('Unlimited virtual cards for users on advanced \nsubscription.',
+          Text('Unlimited virtual cards for users on advanced subscription.',
               style: TextStyle(fontSize: fSize(12), color: Color(0xFF70828D))),
           const CustomSpacer(size: 12),
           cardField(),
@@ -319,236 +415,6 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
         ));
   }
 
-  Widget getSpendControlMainField() {
-    String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(
-        client: Token().getLink(accessToken),
-        child: Query(
-            options: QueryOptions(
-              document: gql(queryListEligibleUserCard),
-              variables: {
-                'orgId': userStorage.getItem('orgId'),
-                "accountSubtype": "VIRTUAL"
-              },
-              // pollInterval: const Duration(seconds: 10),
-            ),
-            builder: (QueryResult eligibleResult,
-                {VoidCallback? refetch, FetchMore? fetchMore}) {
-              if (eligibleResult.hasException) {
-                return Text(eligibleResult.exception.toString());
-              }
-
-              if (eligibleResult.isLoading) {
-                return spendControlMainField([]);
-              }
-
-              var eligibleUsers = eligibleResult
-                  .data!['listEligibleUsersForCard']['eligibleUsers'];
-              return spendControlMainField(eligibleUsers);
-            }));
-  }
-
-  Widget spendControlMainField(eligibleUsers) {
-    return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(
-          left: wScale(16),
-          right: wScale(16),
-          top: hScale(16),
-          bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Spend Control Main',
-              style: TextStyle(
-                  fontSize: fSize(16),
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1A2831))),
-          const CustomSpacer(size: 22),
-          cardHolderNameField(eligibleUsers),
-          cardHolderArr(eligibleUsers),
-          const CustomSpacer(size: 32),
-          cardTypeField(),
-          const CustomSpacer(size: 32),
-          CustomTextField(
-              ctl: monthlySpendLimitCtl,
-              hint: 'Enter Monthly Spend Limit',
-              label: 'Monthly Spend Limit',
-              onChanged: (text) {
-                setState(() {
-                  isSwitchedTransactionLimit = isSwitchedMerchant && text.length > 0 ? true: false;
-                });
-              },
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
-          const CustomSpacer(size: 32),
-          cardType == 1 ? limitRefreshField() : dateField(),
-        ],
-      ),
-    );
-  }
-
-  Widget cardHolderNameField(eligibleUsers) {
-    List<String> eligibleUserArr = [];
-    eligibleUsers.forEach((item) {
-      eligibleUserArr.add("${item['firstName']} ${item['lastName']}");
-    });
-    return Stack(
-      children: [
-        Container(
-          width: wScale(295),
-          height: hScale(56),
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(top: hScale(8)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                  child: TextField(
-                style: TextStyle(
-                    fontSize: fSize(16),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF040415)),
-                controller: cardHolderNameCtl,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
-                  hintText: 'Enter Cardholder Name',
-                  hintStyle: TextStyle(
-                      color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                  focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
-                ),
-              )),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.add, color: const Color(0xFFBFBFBF)),
-                onSelected: (String value) {
-                  cardHolderNameCtl.text = value;
-                  var index = eligibleUserArr.indexOf(value);
-                  
-                    cardHolders.add({
-                      "userId": eligibleUsers[index]['id'],
-                      "preferredCardholderName":
-                          '${eligibleUsers[index]['firstName']} ${eligibleUsers[index]['firstName']}',
-                      "preferredCardName": ""
-                    });
-                  //   setState(() {
-                  //   isSwitchedMerchant = true;
-                  // });
-                },
-                itemBuilder: (BuildContext context) {
-                  return eligibleUserArr
-                      .map<PopupMenuItem<String>>((String value) {
-                    return PopupMenuItem(
-                      child: Text(value),
-                      value: value,
-                      textStyle: TextStyle(
-                          fontSize: fSize(16),
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF040415)),
-                    );
-                  }).toList();
-                },
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: wScale(10),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
-            color: Colors.white,
-            child: Text('Company Type',
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFBFBFBF))),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget cardHolderArr(eligibleUsers) {
-    return eligibleUsers.length == 0
-        ? SizedBox()
-        : Container(
-            padding: EdgeInsets.only(top: 5),
-            child: Wrap(
-                spacing: 5,
-                runSpacing: 5,
-                // direction: Axis.vertical,
-                children: cardHolders.map<Widget>((item) {
-                  return cardholder(cardHolders.indexOf(item), item);
-                }).toList())
-                );
-  }
-
-  Widget cardholder(index, item) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children:[
-    Row(children: [
-        Container(
-          // width: wScale(90),
-          height: hScale(26),
-          padding: EdgeInsets.all(hScale(5)),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE5EDEA),
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-          ),
-          child: Row(
-            children: [
-              Text(item['preferredCardholderName'],
-                  style: TextStyle(
-                      fontSize: fSize(12),
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF040415))),
-              Container(
-                width: wScale(12),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      cardHolders.removeAt(index);
-                      isSwitchedMerchant = cardHolders.length > 0 ? true : false;
-                    });
-                  },
-                  child: Icon(Icons.close_rounded,
-                      color: Color(0xFF040415), size: 12),
-                ),
-              )
-            ],
-          ),
-        )
-    ])]);
-  }
-
   Widget getAdditionalField() {
     String accessToken = storage.getItem("jwt_token");
     return GraphQLProvider(
@@ -574,6 +440,54 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
 
               return additionalField();
             }));
+  }
+
+  Widget cardHolderArr() {
+    return Container(
+        padding: EdgeInsets.only(top: 5),
+        child: Wrap(spacing: 5, runSpacing: 5, children: [
+          for (var i = 0; i < cardHolders.length; i++)
+            cardholder(i, cardHolders[i])
+        ]));
+  }
+
+  Widget cardholder(index, item) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Row(children: [
+        Container(
+          height: hScale(26),
+          padding: EdgeInsets.all(hScale(5)),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE5EDEA),
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ),
+          child: Row(
+            children: [
+              Text(item['preferredCardName'],
+                  style: TextStyle(
+                      fontSize: fSize(12),
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF040415))),
+              Container(
+                width: wScale(12),
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      cardHolders.removeAt(index);
+                    });
+                  },
+                  child: Icon(Icons.close_rounded,
+                      color: Color(0xFF040415), size: 12),
+                ),
+              )
+            ],
+          ),
+        )
+      ])
+    ]);
   }
 
   Widget additionalField() {
@@ -617,6 +531,7 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                   fit: BoxFit.contain, width: wScale(22))
             ],
           ),
+          cardHolderArr(),
           Opacity(
               opacity: isSwitchedMerchant ? 1 : 0.4,
               child: Column(
@@ -629,19 +544,25 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                           style: TextStyle(
                               fontSize: fSize(14),
                               color: const Color(0xFF1A2831))),
-                      SizedBox(
-                        width: wScale(32),
-                        height: hScale(18),
-                        child: Transform.scale(
-                          scale: 0.5,
-                          child: CupertinoSwitch(
-                            trackColor: const Color(0xFFDFDFDF),
-                            activeColor: const Color(0xFF3BD8A3),
-                            value: isSwitchedMerchant,
-                            onChanged: (v) =>
-                                setState(() => isSwitchedMerchant = v),
-                         ),
-                        ),
+                      TextButton(
+                        onPressed: () {
+                          isMerchantChange
+                              ? setState(() =>
+                                  isSwitchedMerchant = !isSwitchedMerchant)
+                              : null;
+                        },
+                        child: Container(
+                            width: wScale(32),
+                            height: hScale(18),
+                            child: Transform.scale(
+                              scale: 0.5,
+                              child: CupertinoSwitch(
+                                trackColor: const Color(0xFFDFDFDF),
+                                activeColor: const Color(0xFF3BD8A3),
+                                value: isSwitchedMerchant,
+                                onChanged: (v) {},
+                              ),
+                            )),
                       )
                     ],
                   ),
@@ -673,30 +594,30 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                       ],
                     ),
                   ),
-                  const CustomSpacer(size: 24),
+                  const CustomSpacer(size: 20),
                   customSwitchControl(0, 'assets/air_lines.png', 'Airlines'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(1, 'assets/car_rental.png', 'Car Rental'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(
                       2, 'assets/transportation.png', 'Transportation'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(3, 'assets/hotels.png', 'Hotels'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(4, 'assets/petrol.png', 'Petrol'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(
                       5, 'assets/department_stores.png', 'Department Stores'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(6, 'assets/parking.png', 'Parking'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(
                       7, 'assets/fandb.png', 'F&B (Restaurants & Groceries)'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(8, 'assets/taxis.png', 'Taxis'),
-                  const CustomSpacer(size: 20),
+                  // const CustomSpacer(size: 14),
                   customSwitchControl(9, 'assets/others.png', 'Others'),
-                  const CustomSpacer(size: 34),
+                  const CustomSpacer(size: 30),
                 ],
               )),
           Opacity(
@@ -721,8 +642,9 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                             trackColor: const Color(0xFFDFDFDF),
                             activeColor: const Color(0xFF3BD8A3),
                             value: isSwitchedTransactionLimit,
-                            onChanged: (v) =>
-                                setState(() => isSwitchedTransactionLimit = v),
+                            onChanged: (v) => isTransactionLimitChange
+                                ? setState(() => isSwitchedTransactionLimit = v)
+                                : null,
                           ),
                         ),
                       )
@@ -750,12 +672,20 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                           ? (double newValue) {
                               setState(() {
                                 transactionLimitValue = newValue;
+                                if (varianceLimitValue >
+                                    (100 / newValue - 1) * 100) {
+                                  varianceLimitValue =
+                                      (100 / newValue - 1) * 100;
+                                  varianceLimitCtl.text =
+                                      varianceLimitValue.toStringAsFixed(0) +
+                                          "%";
+                                }
                                 transactionLimitCtl.text = 'SGD ' +
                                     (newValue *
                                             int.parse(
                                                 monthlySpendLimitCtl.text) /
                                             100)
-                                        .toStringAsFixed(2);
+                                        .toStringAsFixed(0);
                               });
                             }
                           : null,
@@ -788,8 +718,19 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                           ? (double newValue) {
                               setState(() {
                                 varianceLimitValue = newValue;
+                                if (transactionLimitValue >
+                                    (100 / (100 + newValue) * 100)) {
+                                  transactionLimitValue =
+                                      (100 / (100 + newValue) * 100);
+                                  transactionLimitCtl.text = 'SGD ' +
+                                      (transactionLimitValue *
+                                              int.parse(
+                                                  monthlySpendLimitCtl.text) /
+                                              100)
+                                          .toStringAsFixed(0);
+                                }
                                 varianceLimitCtl.text =
-                                    newValue.toStringAsFixed(2) + '%';
+                                    newValue.toStringAsFixed(0) + '%';
                               });
                             }
                           : null,
@@ -822,18 +763,24 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
   }
 
   Widget customSwitch(index) {
-    return SizedBox(
-      width: wScale(26),
-      height: hScale(15),
-      child: Transform.scale(
-        scale: 0.4,
-        child: CupertinoSwitch(
-            trackColor: const Color(0xFFEB5757),
-            activeColor: const Color(0xFF3BD8A3),
-            value: isSwitchedArr[index],
-            onChanged: (v) => handleSwitch(index, v)),
-      ),
-    );
+    return Container(
+        height: wScale(30),
+        width: wScale(38),
+        child: TextButton(
+          onPressed: () {
+            isMerchantChange
+                ? setState(() => isSwitchedArr[index] = !isSwitchedArr[index])
+                : null;
+          },
+          child: Transform.scale(
+            scale: 0.4,
+            child: CupertinoSwitch(
+                trackColor: const Color(0xFFEB5757),
+                activeColor: const Color(0xFF3BD8A3),
+                value: isSwitchedArr[index],
+                onChanged: (v) {}),
+          ),
+        ));
   }
 
   Widget readonlyTextFiled(ctl, hint, label) {
@@ -996,40 +943,45 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
               update: (GraphQLDataProxy cache, QueryResult? result) {
                 return cache;
               },
-              onCompleted: (resultData) {
-                resultData['createFinanceAccountFLASpendControl']
-                    ? showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Padding(
-                              padding:
-                                  EdgeInsets.symmetric(horizontal: wScale(40)),
-                              child: Dialog(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12.0)),
-                                  child: CustomResultModal(
-                                      status: true,
-                                      title: "Request sent successfully",
-                                      message:
-                                          "Your request has been sent. You will receive a confirmation e-mail shortly.")));
-                        })
-                    : showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Padding(
-                              padding:
-                                  EdgeInsets.symmetric(horizontal: wScale(40)),
-                              child: Dialog(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12.0)),
-                                  child: CustomResultModal(
-                                      status: true,
-                                      title: "Request sent faild",
-                                      message: "")));
-                        });
-                print(resultData);
+              onCompleted: (resultData) async {
+                if (resultData['createFinanceAccountFLASpendControl']) {
+                  var result = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                  status: true,
+                                  title: "Request sent successfully",
+                                  message:
+                                      "Your request has been sent. You will receive a confirmation e-mail shortly.",
+                                )));
+                      });
+
+                  result == 'dialog'
+                      ? Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (context) => const VirtualCards()))
+                      : null;
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "Request sent faild",
+                                    message: "")));
+                      });
+                }
               },
             ),
             builder: (RunMutation runMutation, QueryResult? result) {
@@ -1046,6 +998,19 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                   borderRadius: BorderRadius.circular(12.0)),
               insetPadding: EdgeInsets.all(hScale(0)),
               child: modalField());
+        });
+  }
+
+  _showCardNameModalDialog(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: cardNameModalField()));
         });
   }
 
@@ -1092,6 +1057,63 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
             children: [modalBackButton('Back'), modalSaveButton('Update')],
           )
         ]));
+  }
+
+  Widget cardNameModalField() {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(
+              vertical: hScale(25), horizontal: wScale(16)),
+          child: Column(children: [
+            Image.asset('assets/warning_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text('You have not indicated Card Name(s)',
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              'If you wish to name your virtual cards, please select Card Name(s) before you select Issue Card.',
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                      handleNamesOnCard();
+                    },
+                    child: const Text('Proceed'),
+                  ))
+            ],
+          ))
+    ]);
   }
 
   Widget modalBackButton(title) {
@@ -1142,243 +1164,5 @@ class IssueVirtaulCardState extends State<IssueVirtaulCard> {
                   fontSize: fSize(16),
                   fontWeight: FontWeight.w700)),
         ));
-  }
-
-  Widget cardTypeField() {
-    return Stack(
-      children: [
-        Container(
-          width: wScale(295),
-          height: hScale(56),
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(top: hScale(8)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                  child: TextField(
-                readOnly: true,
-                style: TextStyle(
-                    fontSize: fSize(16),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF040415)),
-                controller: cardTypeCtl,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
-                  hintText: 'Select Card Types',
-                  hintStyle: TextStyle(
-                      color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                  focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
-                ),
-              )),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.keyboard_arrow_down_rounded,
-                    color: const Color(0xFFBFBFBF)),
-                onSelected: (String value) {
-                  cardTypeCtl.text = value;
-                  setState(() {
-                    cardType = value == "Fixed Card" ? 0 : 1;
-                  });
-                },
-                itemBuilder: (BuildContext context) {
-                  return cardTypeArr.map<PopupMenuItem<String>>((String value) {
-                    return PopupMenuItem(
-                      child: Text(value),
-                      value: value,
-                      textStyle: TextStyle(
-                          fontSize: fSize(16),
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF040415)),
-                    );
-                  }).toList();
-                },
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: wScale(10),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
-            color: Colors.white,
-            child: Text('Card Type*',
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFBFBFBF))),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget limitRefreshField() {
-    return Stack(
-      children: [
-        Container(
-          width: wScale(295),
-          height: hScale(56),
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(top: hScale(8)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                  child: TextField(
-                readOnly: true,
-                style: TextStyle(
-                    fontSize: fSize(16),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF040415)),
-                controller: limitRefreshCtl,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
-                  hintText: 'Enter Limit Refresh',
-                  hintStyle: TextStyle(
-                      color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                  focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white, width: 1.0)),
-                ),
-              )),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.keyboard_arrow_down_rounded,
-                    color: const Color(0xFFBFBFBF)),
-                onSelected: (String value) {
-                  limitRefreshCtl.text = value;
-                },
-                itemBuilder: (BuildContext context) {
-                  return ["Monthly"].map<PopupMenuItem<String>>((String value) {
-                    return PopupMenuItem(
-                      child: Text(value),
-                      value: value,
-                      textStyle: TextStyle(
-                          fontSize: fSize(16),
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF040415)),
-                    );
-                  }).toList();
-                },
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: wScale(10),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
-            color: Colors.white,
-            child: Text('Limit Refresh',
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFBFBFBF))),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget dateField() {
-    return Stack(
-      children: [
-        Container(
-          width: wScale(295),
-          height: hScale(56),
-          alignment: Alignment.center,
-          margin: EdgeInsets.only(top: hScale(8)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
-          child: TextButton(
-              style: TextButton.styleFrom(
-                // primary: const Color(0xffF5F5F5).withOpacity(0.4),
-                padding: const EdgeInsets.all(0),
-              ),
-              onPressed: () {
-                _openDatePicker();
-              },
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                      child: TextField(
-                    style: TextStyle(
-                        fontSize: fSize(16),
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF040415)),
-                    controller: expiryDateCtl,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      enabledBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 1.0)),
-                      hintText: 'DD/MM/YYYY',
-                      hintStyle: TextStyle(
-                          color: const Color(0xffBFBFBF), fontSize: fSize(14)),
-                      focusedBorder: const OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.white, width: 1.0)),
-                    ),
-                    readOnly: true,
-                    onTap: () {
-                      _openDatePicker();
-                    },
-                  )),
-                  Container(
-                      margin: EdgeInsets.only(right: wScale(20)),
-                      child: Image.asset('assets/calendar.png',
-                          fit: BoxFit.contain, width: wScale(18)))
-                ],
-              )),
-        ),
-        Positioned(
-          top: 0,
-          left: wScale(10),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: wScale(8)),
-            color: Colors.white,
-            child: Text('Expiry Date',
-                style: TextStyle(
-                    fontSize: fSize(12),
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xFFBFBFBF))),
-          ),
-        )
-      ],
-    );
-  }
-
-  void _openDatePicker() async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(
-            2000), //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2101));
-
-    if (pickedDate != null) {
-      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
-      setState(() {
-        expiryDateCtl.text = formattedDate;
-      });
-    } else {
-      print("Date is not selected");
-    }
   }
 }
