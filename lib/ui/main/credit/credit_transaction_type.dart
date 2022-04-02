@@ -1,17 +1,20 @@
 import 'package:co/ui/main/credit/credit_bill_type_item.dart';
-import 'package:co/ui/widgets/billing_item.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:co/utils/queries.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
-import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'credit_transaction_type_item.dart';
 
 class CreditTransactionTypeSection extends StatefulWidget {
+  final billedTrans;
+  final unbilledTrans;
+  final listBills;
   const CreditTransactionTypeSection({
+    this.billedTrans,
+    this.unbilledTrans,
+    this.listBills,
     Key? key,
   }) : super(key: key);
 
@@ -39,7 +42,8 @@ class CreditTransactionTypeSectionState
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String readBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
-  String billedUnbilledTransactions = Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
+  String billedUnbilledTransactions =
+      Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
   String billingStatementsTable = Queries.QUERY_BILLING_STATEMENTTABLE;
 
   handleTransactionType(type) {
@@ -64,12 +68,12 @@ class CreditTransactionTypeSectionState
     return Column(
       children: [
         transactionTypeField(),
-        transactionType == 1 ? const CustomSpacer(size: 15) : const SizedBox(),
-        transactionType == 1 ? billedTypeField() : const SizedBox(),
         const CustomSpacer(size: 15),
         transactionType == 1
-            ? CreditTransactionTypeSectionItem(billedType:billedType)
-            : CreditBillTypeSectionItem(),
+            ? CreditTransactionTypeSectionItem(
+                unbilledTrans: widget.unbilledTrans,
+                billedTrans: widget.billedTrans)
+            : CreditBillTypeSectionItem(listBills: widget.listBills),
       ],
     );
   }
@@ -77,30 +81,10 @@ class CreditTransactionTypeSectionState
   Widget transactionTypeField() {
     return Container(
       alignment: Alignment.topCenter,
+      padding: EdgeInsets.symmetric(horizontal: wScale(24)),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         activeButton('Transactions', 1),
         activeButton('Billing Statements', 2),
-      ]),
-    );
-  }
-
-  Widget billedTypeField() {
-    return Container(
-      width: wScale(327),
-      height: hScale(40),
-      padding: EdgeInsets.all(hScale(2)),
-      decoration: BoxDecoration(
-        color: const Color(0xfff5f5f6),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(20)),
-          topRight: Radius.circular(hScale(20)),
-          bottomLeft: Radius.circular(hScale(20)),
-          bottomRight: Radius.circular(hScale(20)),
-        ),
-      ),
-      child: Row(children: [
-        cardGroupButton('Unbilled', 1),
-        cardGroupButton('Billed', 2),
       ]),
     );
   }
@@ -138,62 +122,5 @@ class CreditTransactionTypeSectionState
         ),
       ),
     );
-  }
-
-  Widget cardGroupButton(cardName, type) {
-    return type == billedType
-        ? Container(
-            width: wScale(160),
-            height: hScale(35),
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(260),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 4,
-                  blurRadius: 20,
-                  offset: const Offset(0, 1), // changes position of shadow
-                ),
-              ],
-            ),
-            child: TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xFFFFFFFF),
-                  padding: const EdgeInsets.all(0),
-                ),
-                child: Text(
-                  cardName,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: fSize(14), color: const Color(0xff1A2831)),
-                ),
-                onPressed: () {
-                  handleBilledType(type);
-                }),
-          )
-        : TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(
-                  fontSize: fSize(14), color: const Color(0xff70828D)),
-            ),
-            onPressed: () {
-              handleBilledType(type);
-            },
-            child: Container(
-              width: wScale(160),
-              height: hScale(35),
-              alignment: Alignment.center,
-              child: Text(
-                cardName,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: fSize(14), color: const Color(0xff70828D)),
-              ),
-            ),
-          );
   }
 }

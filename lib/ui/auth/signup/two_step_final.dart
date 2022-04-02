@@ -74,7 +74,7 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
               options: QueryOptions(
                 document: gql(getUserInfo),
                 variables: {},
-                // pollInterval: const Duration(seconds: 10),
+                
               ),
               builder: (QueryResult result,
                   {VoidCallback? refetch, FetchMore? fetchMore}) {
@@ -179,9 +179,9 @@ class TwoStepFinalScreenState extends State<TwoStepFinalScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],

@@ -10,6 +10,7 @@ import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class ForgotPwdScreen extends StatefulWidget {
   const ForgotPwdScreen({Key? key}) : super(key: key);
@@ -42,9 +43,9 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
 
   handleSubmit() async {
     String? valid = Validator().validateEmail(emailCtr.text);
-    if(valid != "") {
+    if (valid != "") {
       setState(() {
-        isErrorEmailCtl = true;  
+        isErrorEmailCtl = true;
       });
     } else {
       Uri url = Uri.parse('${BaseData.BASE_URL}/dbconnections/change_password');
@@ -55,14 +56,20 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
         "connection": "Username-Password-Authentication",
         "email": emailCtr.text
       };
+      try {
+        await http.post(url,
+            headers: {"Content-Type": "application/json"},
+            body: json.encode(data));
 
-      await http.post(url,
-          headers: {"Content-Type": "application/json"},
-          body: json.encode(data));
-            
-      setState(() {
-        flagSubmit = true;
-      });
+        setState(() {
+          flagSubmit = true;
+        });
+      } catch (error) {
+        print("===== Error : Forgot Password Error =====");
+        print(error);
+        await Sentry.captureException(error);
+        return null;
+      }
     }
   }
 
@@ -93,25 +100,26 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
                     isError: isErrorEmailCtl,
                     onChanged: (text) {
                       setState(() {
-                        isErrorEmailCtl = 
-                          Validator().validateEmail(text) == ""
-                          ? false : true;
+                        isErrorEmailCtl = Validator().validateEmail(text) == ""
+                            ? false
+                            : true;
                       });
                     },
                     hint: AppLocalizations.of(context)!.enterEmailAddress,
                     label: AppLocalizations.of(context)!.email),
                 isErrorEmailCtl
-                  ? Container(
-                      height: hScale(32),
-                      width: wScale(295),
-                      padding: EdgeInsets.only(top: hScale(5)),
-                      child: Text(Validator().validateEmail(emailCtr.text).toString(),
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: fSize(12),
-                              color: Color(0xFFEB5757),
-                              fontWeight: FontWeight.w400)))
-                  : const CustomSpacer(size: 32),
+                    ? Container(
+                        height: hScale(32),
+                        width: wScale(295),
+                        padding: EdgeInsets.only(top: hScale(5)),
+                        child: Text(
+                            Validator().validateEmail(emailCtr.text).toString(),
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: fSize(12),
+                                color: Color(0xFFEB5757),
+                                fontWeight: FontWeight.w400)))
+                    : const CustomSpacer(size: 32),
               ],
             ),
       customButton(flagSubmit)
@@ -120,7 +128,9 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
 
   Widget header() {
     return Container(
-        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+            .size
+            .width,
         height: hScale(109),
         padding: EdgeInsets.only(top: hScale(49)),
         decoration: const BoxDecoration(
@@ -131,7 +141,9 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
         ),
         child: Column(children: [
           SizedBox(
-              width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
+              width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+                  .size
+                  .width,
               height: hScale(40),
               child: Stack(alignment: Alignment.center, children: [
                 Text(AppLocalizations.of(context)!.forgotPassword,
@@ -228,7 +240,10 @@ class ForgotPwdScreenState extends State<ForgotPwdScreen> {
           onPressed: () {
             !flag ? handleSubmit() : handleLogin();
           },
-          child: Text(!flag ? AppLocalizations.of(context)!.submit : AppLocalizations.of(context)!.loginSpace,
+          child: Text(
+              !flag
+                  ? AppLocalizations.of(context)!.submit
+                  : AppLocalizations.of(context)!.loginSpace,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: fSize(16),

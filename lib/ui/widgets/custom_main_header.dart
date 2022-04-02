@@ -44,12 +44,15 @@ class CustomMainHeader extends StatelessWidget {
               Navigator.of(context).pop();
             }),
       ),
-      SizedBox(width: wScale(15)),
-      Text(title,
-          style: TextStyle(
-              fontSize: fSize(20),
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A2831)))
+      // SizedBox(width: wScale(15)),
+      Container(
+        width: wScale(280),
+        child: Text(title,
+            style: TextStyle(
+                fontSize: fSize(20),
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF1A2831))),
+      )
     ]);
   }
 }

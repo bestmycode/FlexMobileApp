@@ -1,4 +1,3 @@
-import 'package:co/ui/auth/signup/company_detail.dart';
 import 'package:co/ui/auth/signup/main_contact_person.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
@@ -6,7 +5,6 @@ import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:co/constants/constants.dart';
 import 'package:co/utils/scale.dart';
 import 'package:co/ui/widgets/custom_textfield.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
@@ -88,7 +86,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
                 options: QueryOptions(
                   document: gql(getCountryQuery),
                   variables: {"countryId": storage.getItem("country")},
-                  // pollInterval: const Duration(seconds: 10),
+                  
                 ),
                 builder: (QueryResult countryResult,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
@@ -165,9 +163,9 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -252,7 +250,7 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         margin: EdgeInsets.only(left: wScale(8), right: wScale(8)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xffc9c9c9).withOpacity(0.1),
+            primary: const Color(0xff1A2831).withOpacity(0.1),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
@@ -307,9 +305,9 @@ class RegisteredAddressScreenState extends State<RegisteredAddressScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],

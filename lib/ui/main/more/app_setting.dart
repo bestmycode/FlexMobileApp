@@ -98,7 +98,7 @@ class AppSettingState extends State<AppSetting> {
         options: QueryOptions(
           document: gql(getCompanySettingQuery),
           variables: {'orgId': orgId},
-          // pollInterval: const Duration(seconds: 10),
+          
         ),
         builder: (QueryResult result,
             {VoidCallback? refetch, FetchMore? fetchMore}) {
@@ -165,7 +165,7 @@ class AppSettingState extends State<AppSetting> {
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1), // changes position of shadow
             ),
           ],
@@ -428,7 +428,7 @@ class AppSettingState extends State<AppSetting> {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -468,7 +468,6 @@ class AppSettingState extends State<AppSetting> {
                 return cache;
               },
               onCompleted: (resultData) {
-                print(resultData);
               },
             ),
             builder: (RunMutation runMutation, QueryResult? result) {

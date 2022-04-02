@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:dio/dio.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class CreditDirectDebitScreen extends StatefulWidget {
   final data;
@@ -39,33 +41,36 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
 
   handleDownload(type) async {
     final Directory? download = await getApplicationDocumentsDirectory();
-    final String downloadPath = download!.path;
-    String path =
-        type == 0 ? "${downloadPath}/DDA.docx" : '${downloadPath}/DDA.pdf';
-    options = DownloaderUtils(
-      progressCallback: (current, total) {
-        progress = (current / total) * 100;
+    final String downloadPath1 = download!.path + "/DDA.docx'";
+    final String downloadPath2 = download.path + "/DDA.pdf'";
 
+    downloadFile(
+        type == 0
+            ? 'https://app.staging.fxr.one/flex/static/media/DDA.c359397a.docx'
+            : 'https://app.staging.fxr.one/flex/static/media/DDA.00f8db8e.pdf',
+        type == 0 ? downloadPath1 : downloadPath2);
+  }
+
+  Future<void> downloadFile(documentLink, docPath) async {
+    try {
+      Dio dio = Dio();
+      await dio.download(documentLink, docPath,
+          onReceiveProgress: (current, total) {
         setState(() {
-          progress = (current / total);
+          progress = (current / total) * 100;
+          setState(() {
+            progress = (current / total);
+          });
         });
-      },
-      file: File(path),
-      progress: ProgressImplementation(),
-      onDone: () {
-        setState(() {
-          progress = 0.0;
-        });
-        OpenFile.open(path).then((value) {});
-      },
-      deleteOnCancel: true,
-    );
-    core = await Flowder.download(
-      type == 0
-          ? 'https://app.staging.fxr.one/flex/static/media/DDA.c359397a.docx'
-          : 'https://app.staging.fxr.one/flex/static/media/DDA.00f8db8e.pdf',
-      options,
-    );
+      });
+      OpenFile.open(docPath).then((value) {});
+    } catch (error) {
+      print("===== Error : File Download  =====");
+      print("===== Function : dio.download =====");
+      print(error);
+      await Sentry.captureException(error);
+      return null;
+    }
   }
 
   @override
@@ -129,9 +134,9 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -143,7 +148,7 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
           Text('To help you make timely payments, download the DDA form',
               style: TextStyle(
                   fontSize: fSize(16),
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF1A2831))),
           const CustomSpacer(size: 42),
           Row(children: [
@@ -153,18 +158,36 @@ class CreditDirectDebitScreenState extends State<CreditDirectDebitScreen> {
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF1A2831))),
             SizedBox(width: wScale(24)),
-            downloadType('assets/excel.png', 0),
+            downloadType('assets/word.png', 0),
             SizedBox(width: wScale(15)),
             downloadType('assets/pdf.png', 1),
           ]),
-          const CustomSpacer(size: 23),
+          const CustomSpacer(size: 42),
+          Text('Please mail the filled form to the following address:',
+              style: TextStyle(
+                  fontSize: fSize(14),
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A2831))),
+          const CustomSpacer(size: 10),
+          Text('FXR Business Services Pte. Ltd.',
+              style: TextStyle(fontSize: fSize(14), color: Color(0xFF1A2831))),
+          const CustomSpacer(size: 10),
+          Text('230 Victoria Street, #15-01/08',
+              style: TextStyle(fontSize: fSize(14), color: Color(0xFF1A2831))),
+          const CustomSpacer(size: 10),
+          Text('Bugis Junction Tower',
+              style: TextStyle(fontSize: fSize(14), color: Color(0xFF1A2831))),
+          const CustomSpacer(size: 10),
+          Text('Singapore 188024',
+              style: TextStyle(fontSize: fSize(14), color: Color(0xFF1A2831))),
+          const CustomSpacer(size: 20),
           progress == 0.0
               ? SizedBox(height: 14)
               : Row(
                   children: [
                     Text('${(progress * 100).toStringAsFixed(0)} %'),
                     LinearPercentIndicator(
-                      width: wScale(260),
+                      width: wScale(250),
                       lineHeight: 14.0,
                       percent: progress,
                       backgroundColor: Colors.white,

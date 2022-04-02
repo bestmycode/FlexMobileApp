@@ -9,8 +9,11 @@ import 'package:flutter/rendering.dart';
 
 class ReceiptTransactionType extends StatefulWidget {
   final data;
+  final accountID;
+  final transactionID;
+  final initTransactionType;
   const ReceiptTransactionType(
-      {Key? key, this.data})
+      {Key? key, this.data, this.accountID, this.transactionID, this.initTransactionType})
       : super(key: key);
 
   @override
@@ -50,6 +53,9 @@ class _ReceiptTransactionType extends State<ReceiptTransactionType> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      transactionType = widget.initTransactionType;
+    });
   }
 
   @override
@@ -63,7 +69,7 @@ class _ReceiptTransactionType extends State<ReceiptTransactionType> {
                 ? ReceiptFile(data: widget.data, isRemoved: isRemoved, handleRemoved: handleRemoved)
                 : transactionType == 2
                     ? ReceiptDetails(data: widget.data)
-                    : ReceiptRemarks(data: widget.data['remarkData']),
+                    : ReceiptRemarks(data: widget.data['remarkData'], sourceTransactionId: widget.data['sourceTransactionId'], accountID: widget.accountID, transactionID: widget.transactionID),
             const CustomSpacer(size: 15),
             const CustomSpacer(size: 88),
           ],

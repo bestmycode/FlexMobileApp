@@ -153,9 +153,9 @@ class PersonalCardState extends State<PersonalCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -172,11 +172,14 @@ class PersonalCardState extends State<PersonalCard> {
     return Container(
         width: wScale(295),
         padding: EdgeInsets.all(hScale(10)),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/physical_card_detail.png"),
-            fit: BoxFit.fill,
+            colorFilter: new ColorFilter.mode(
+                Colors.black.withOpacity(0.5), BlendMode.dstATop),
+            fit: BoxFit.contain,
           ),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -205,8 +208,8 @@ class PersonalCardState extends State<PersonalCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Valid Thru',
-                        style:
-                            TextStyle(color: Colors.white, fontSize: fSize(12))),
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(12))),
                     Text('12/20',
                         style: TextStyle(
                             color: Colors.white,
@@ -219,8 +222,8 @@ class PersonalCardState extends State<PersonalCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('CVV',
-                        style:
-                            TextStyle(color: Colors.white, fontSize: fSize(12))),
+                        style: TextStyle(
+                            color: Colors.white, fontSize: fSize(12))),
                     Text('214',
                         style: TextStyle(
                             color: Colors.white,
@@ -282,9 +285,7 @@ class PersonalCardState extends State<PersonalCard> {
             color: Color(0xff30E7A9),
           ),
           iconSize: hScale(17),
-          onPressed: () {
-            
-          },
+          onPressed: () {},
         ));
   }
 
@@ -306,9 +307,9 @@ class PersonalCardState extends State<PersonalCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -502,9 +503,9 @@ class PersonalCardState extends State<PersonalCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],

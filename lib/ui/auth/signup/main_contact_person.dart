@@ -106,7 +106,6 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
           return cache;
         },
         onCompleted: (resultData) {
-          print(resultData);
         },
       ),
       builder: (RunMutation runMutation, QueryResult? result ) {
@@ -163,9 +162,9 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -227,8 +226,8 @@ class MainContactPersonScreenState extends State<MainContactPersonScreen> {
         margin: EdgeInsets.only(left: wScale(8), right: wScale(8)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xffc9c9c9),
-            side: const BorderSide(width: 0, color: Color(0xffc9c9c9)),
+            primary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),

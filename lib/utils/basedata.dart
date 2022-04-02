@@ -6,4 +6,6 @@ class BaseData {
   static const FINAXAR_GQL_URL = 'https://gql.staging.finaxar.com';
   static const AWS_FXR_ASSETS_ACCESS_KEY = 'AKIAIPE7CKHVXDU44B4A';
   static const FILE_API_REGION = 'ap-southeast-1';
+
+  static const G1_KEY = "4DF162C2490414FC8CF59D929FD3C979";
 }

@@ -1,3 +1,4 @@
+import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/mutations.dart';
 import 'package:co/utils/queries.dart';
@@ -10,6 +11,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:indexed/indexed.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class TeamSettingUsers extends StatefulWidget {
   final bool mobileVerified;
@@ -44,23 +46,28 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
   bool showUserRoles = false;
 
   handleRevoke(runMutation, data) {
-    runMutation({"id": data['id']});
+    _showRevokeModalDialog(runMutation, data);
   }
 
   handleChangeRole(runMutation, data) async {
-    await runMutation({
-      "orgId": data['orgId'],
-      "role": userRole == 0 ? "admin" : "user",
-      "userId": data['userId'],
-    });
-    Navigator.of(context).pop();
+    try {
+      await runMutation({
+        "orgId": data['orgId'],
+        "role": userRole == 0 ? "admin" : "user",
+        "userId": data['userId'],
+      });
+      Navigator.of(context).pop();
+    } catch (error) {
+      print("===== Error : revoke, change role, deactivate User Result =====");
+      print("===== Mutation : revokeInviteMutation, changeRole, deactivateUser =====");
+      print(error);
+      await Sentry.captureException(error);
+      return null;
+    }
   }
 
   handleDeactive(runMutation, data) {
-    runMutation({
-      "orgId": data['orgId'],
-      "userId": data['userId'],
-    });
+    _showFreezeModalDialog(runMutation, data);
   }
 
   @override
@@ -94,25 +101,29 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
   }
 
   Widget getUsersArrWidget(arr) {
-    return Column(
-        children: arr.map<Widget>((item) {
-      return collapseField(arr.indexOf(item), item);
-    }).toList());
+    return arr.length == 0
+        ? Image.asset('assets/empty_transaction.png',
+            fit: BoxFit.contain, width: wScale(327))
+        : Column(
+            children: arr.map<Widget>((item) {
+            return collapseField(arr.indexOf(item), item);
+          }).toList());
   }
 
   Widget collapseField(index, data) {
     return ExpandableNotifier(
       initialExpanded: index == 0 ? true : false,
       child: Container(
-        margin: EdgeInsets.only(bottom: hScale(5)),
+        margin:
+            EdgeInsets.symmetric(horizontal: wScale(24), vertical: hScale(4)),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.all(Radius.circular(10)),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.25),
+              color: Color(0xFF106549).withOpacity(0.1),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1), // changes position of shadow
             ),
           ],
@@ -163,7 +174,7 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(data['senderName'],
+            Text(data['email'],
                 style: TextStyle(
                     fontSize: fSize(12),
                     fontWeight: FontWeight.w500,
@@ -251,7 +262,7 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -383,7 +394,7 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
           BoxShadow(
               color: Colors.black.withOpacity(0.04),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1)),
         ],
       ),
@@ -530,11 +541,47 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
                     })
                   : null;
             } else {
-              resultData['removeUserFromOrganization'] != null
-                  ? setState(() {
-                      mutationResult = true;
-                    })
-                  : null;
+              resultData != null &&
+                      resultData['removeUserFromOrganization'] != null
+                  ? showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "Deactivated",
+                                    titleColor: Color(0xFF0F7855),
+                                    message:
+                                        'You’ve successfully deactivated \n“${data['email']}”',
+                                    handleOKClick: () {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop('dialog');
+                                      setState(() {
+                                        mutationResult = true;
+                                      });
+                                    })));
+                      })
+                  : showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "Unable to deactive user",
+                                    titleColor: Color(0xFFEB5757),
+                                    message:
+                                        "This user is currently having active card(s) running.\nPlease cancel the card(s) before deactivating this user.")));
+                      });
             }
           },
         ),
@@ -621,5 +668,149 @@ class TeamSettingUsersState extends State<TeamSettingUsers> {
                                   ? Color(0xff2ED47A)
                                   : Color(0xff3f505a))))
             ]));
+  }
+
+  _showFreezeModalDialog(runMutation, data) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: deactiveModalField(runMutation, data)));
+        });
+  }
+
+  _showRevokeModalDialog(runMutation, data) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: revokeModalField(runMutation, data)));
+        });
+  }
+
+  Widget deactiveModalField(runMutation, data) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(
+              vertical: hScale(25), horizontal: wScale(16)),
+          child: Column(children: [
+            Image.asset('assets/warning_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text("This action cannot be reversed",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              "By taking this action, user's access and permission will be permanently remove from this company",
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      runMutation({
+                        "orgId": data['orgId'],
+                        "userId": data['userId'],
+                      });
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Ok'),
+                  ))
+            ],
+          ))
+    ]);
+  }
+
+  Widget revokeModalField(runMutation, data) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(
+              vertical: hScale(25), horizontal: wScale(16)),
+          child: Column(children: [
+            Image.asset('assets/warning_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text("Revoke Invitation",
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              "Are you sure you want to revoke this invitation to ${data['email']} ?",
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Back'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      runMutation({"id": data['id']});
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Confirm'),
+                  ))
+            ],
+          ))
+    ]);
   }
 }

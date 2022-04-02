@@ -1,4 +1,3 @@
-import 'package:co/constants/constants.dart';
 import 'package:co/ui/auth/signup/company_detail.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/signup_progress_header.dart';
@@ -31,9 +30,10 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   fSize(double size) {
     return Scale().fSize(context, size);
   }
+
   final LocalStorage infoStorage = LocalStorage('sign_up_info1');
   final LocalStorage storage = LocalStorage('token');
-  
+
   final numCtl1 = TextEditingController(text: '');
   final numCtl2 = TextEditingController(text: '');
   final numCtl3 = TextEditingController(text: '');
@@ -44,13 +44,14 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   String verifyMutation = FXRMutations.MUTATION_VERIFY_CODE;
 
   handleVerify(runMutation) {
-    int verify_num = int.parse('${numCtl1.text}${numCtl2.text}${numCtl3.text}${numCtl4.text}${numCtl5.text}${numCtl6.text}');
+    int verify_num = int.parse(
+        '${numCtl1.text}${numCtl2.text}${numCtl3.text}${numCtl4.text}${numCtl5.text}${numCtl6.text}');
     runMutation({'verificationCode': verify_num});
     bool flag = verify_num == widget.verifyCode;
     setState(() {
       flagValid = flag;
       // if (flag) Navigator.of(context).pushReplacementNamed(COMPANY_DETAIL);
-      if(flag)
+      if (flag)
         Navigator.of(context).push(
           CupertinoPageRoute(builder: (context) => CompanyDetailScreen()),
         );
@@ -62,53 +63,49 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
   @override
   void initState() {
     setState(() {
-      // email = storage.getItem('companyEmail');  
+      // email = storage.getItem('companyEmail');
     });
     super.initState();
   }
 
-  
   @override
   Widget build(BuildContext context) {
     String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(
-        client: Token().getLink(accessToken), child: home());
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
   }
 
   Widget home() {
     return Material(
-      child: Scaffold(
-          body: Mutation(
-      options: MutationOptions(
-        document: gql(verifyMutation),
-        update: ( GraphQLDataProxy cache, QueryResult? result) {
-          return cache;
-        },
-        onCompleted: (resultData) {
-          print(resultData);
-        },
-      ),
-      builder: (RunMutation runMutation, QueryResult? result ) {
-        return mainHome(runMutation);
-      })));
+        child: Scaffold(
+            body: Mutation(
+                options: MutationOptions(
+                  document: gql(verifyMutation),
+                  update: (GraphQLDataProxy cache, QueryResult? result) {
+                    return cache;
+                  },
+                  onCompleted: (resultData) {},
+                ),
+                builder: (RunMutation runMutation, QueryResult? result) {
+                  return mainHome(runMutation);
+                })));
   }
 
   Widget mainHome(runMutation) {
     return SingleChildScrollView(
-      child: Column(children: [
-        const SignupProgressHeader(),
-        const CustomSpacer(size: 40),
-        mailIcon(),
-        const CustomSpacer(size: 28),
-        mailTitle(),
-        const CustomSpacer(size: 26),
-        mailSection(),
-        const CustomSpacer(size: 36),
-        verifyNumberSection(),
-        flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
-        subSection(),
-        verifyButton(runMutation),
-      ]));
+        child: Column(children: [
+      const SignupProgressHeader(),
+      const CustomSpacer(size: 40),
+      mailIcon(),
+      const CustomSpacer(size: 28),
+      mailTitle(),
+      const CustomSpacer(size: 26),
+      mailSection(),
+      const CustomSpacer(size: 36),
+      verifyNumberSection(),
+      flagValid ? const CustomSpacer(size: 14) : CustomSpacer(size: 0),
+      subSection(),
+      verifyButton(runMutation),
+    ]));
   }
 
   Widget mailIcon() {
@@ -127,8 +124,13 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('We have sent an OTP to ', style: TextStyle(fontSize: fSize(14), color: Color(0xFF515151))),
-        Text(infoStorage.getItem('companyEmail'), style: TextStyle(fontSize: fSize(14), color: Color(0xFF000000), fontWeight: FontWeight.bold)),
+        Text('We have sent an OTP to ',
+            style: TextStyle(fontSize: fSize(14), color: Color(0xFF515151))),
+        Text(infoStorage.getItem('companyEmail'),
+            style: TextStyle(
+                fontSize: fSize(14),
+                color: Color(0xFF000000),
+                fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -162,7 +164,9 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
       margin: EdgeInsets.only(right: wScale(4), left: wScale(4)),
       child: TextField(
         textInputAction: num != 6 ? TextInputAction.next : TextInputAction.done,
-        onChanged: (_) => num != 6 ? FocusScope.of(context).nextFocus() : FocusScope.of(context).unfocus(),
+        onChanged: (_) => num != 6
+            ? FocusScope.of(context).nextFocus()
+            : FocusScope.of(context).unfocus(),
         textAlign: TextAlign.center,
         controller: num == 1
             ? numCtl1
@@ -179,7 +183,8 @@ class MailVerifyScreenState extends State<MailVerifyScreen> {
           fontWeight: FontWeight.w600,
           fontSize: fSize(24),
         ),
-        keyboardType: TextInputType.number,
+        keyboardType:
+            const TextInputType.numberWithOptions(signed: true, decimal: true),
         inputFormatters: [
           LengthLimitingTextInputFormatter(1),
           FilteringTextInputFormatter.digitsOnly

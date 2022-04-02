@@ -1,4 +1,5 @@
-import 'package:co/ui/main/cards/Physical_card_detail.dart';
+import 'package:co/ui/main/cards/manage_user_limits.dart';
+import 'package:co/ui/main/cards/physical_card_detail.dart';
 import 'package:co/ui/main/cards/manage_limits.dart';
 import 'package:co/ui/widgets/all_transaction_field.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
@@ -9,9 +10,9 @@ import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
-import 'package:flutter/services.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class PhysicalMyCards extends StatefulWidget {
   const PhysicalMyCards({Key? key}) : super(key: key);
@@ -33,99 +34,113 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     return Scale().fSize(context, size);
   }
 
+  bool isLoading = false;
   bool freezeMode = false;
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
   String freezeMutation = FXRMutations.MUTATION_FREEZE_FINANCE_ACCOUNT;
   String unFreezeMutation = FXRMutations.MUTATION_UNFREEZE_FINANCE_ACCOUNT;
-
-  handleCloneSetting() {}
-
+  String removeMutation = FXRMutations.MUTATION_BLOCK_FINANCE_ACCOUNT;
+  var userAccount = {};
   handleMonthlySpendLimit() {}
 
-  handleAction(index, userAccountSummary) {
-    if (index == 0) _showFreezeModalDialog(context, userAccountSummary);
-    if (index == 1) {
+  handleAction(index) {
+    if (index == 0) {
+      _showFreezeModalDialog(context);
+    } else if (index == 1) {
       Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const ManageLimits()),
+        CupertinoPageRoute(
+            builder: (context) => userStorage.getItem("isAdmin")
+                ? ManageLimits(data: userAccount['data']['physicalCard'])
+                : ManageUserLimits(data: userAccount['data']['physicalCard'])),
       );
+    } else {
+      _showRemoveModalDialog(context);
+    }
+  }
+
+  Future<void> _fetchData() async {
+    isLoading = true;
+    var accessToken = storage.getItem("jwt_token");
+    final HttpLink httpLink =
+        HttpLink("https://gql.staging.fxr.one/v1/graphql");
+
+    final AuthLink authLink = AuthLink(getToken: () async => "$accessToken");
+    final Link link = authLink.concat(httpLink);
+    final client = GraphQLClient(cache: GraphQLCache(), link: link);
+    final orgId = userStorage.getItem('orgId');
+
+    final userAccountVars = {'orgId': orgId};
+
+    final userAccountOption = QueryOptions(
+        document: gql(getUserAccountSummary), variables: userAccountVars);
+    try {
+      final userAccountResult = await client.query(userAccountOption);
+      setState(() {
+        userAccount =
+            userAccountResult.data?['readUserFinanceAccountSummary'] ?? {};
+        isLoading = false;
+      });
+    } catch (error) {
+      print("===== Error : Get physical my card data =====");
+      print("===== Query : getUserFinanceAccountSummary =====");
+      print(error);
+      await Sentry.captureException(error);
+      return null;
     }
   }
 
   @override
   void initState() {
     super.initState();
+    _fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
-    String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+    return isLoading
+        ? Container(
+            margin: EdgeInsets.only(top: hScale(50)),
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))))
+        : Container(
+            child: SingleChildScrollView(
+                child: Container(
+                    margin: EdgeInsets.only(top: wScale(24)),
+                    child: Column(children: [
+                      const CustomSpacer(size: 10),
+                      PhysicalCardDetail(data: userAccount),
+                      const CustomSpacer(size: 10),
+                      Column(
+                        children: [
+                          spendLimitField(),
+                          const CustomSpacer(size: 20),
+                          actionButtonField(),
+                          const CustomSpacer(size: 20),
+                          userAccount['data']['physicalCard'] == null
+                              ? SizedBox()
+                              : AllTransaction(
+                                  cardID: userAccount['data']['physicalCard']
+                                      ['id']),
+                        ],
+                      )
+                    ]))));
   }
 
-  Widget home() {
-    var orgId = userStorage.getItem('orgId');
-    return Query(
-        options: QueryOptions(
-          document: gql(getUserAccountSummary),
-          variables: {'orgId': orgId},
-          // pollInterval: const Duration(seconds: 10),
-        ),
-        builder: (QueryResult result,
-            {VoidCallback? refetch, FetchMore? fetchMore}) {
-          if (result.hasException) {
-            return Text(result.exception.toString());
-          }
-
-          if (result.isLoading) {
-            return Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.only(top: hScale(30)),
-                child: CircularProgressIndicator(
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
-          }
-          var userAccountSummary =
-              result.data!['readUserFinanceAccountSummary'];
-          return mainHome(userAccountSummary);
-        });
-  }
-
-  Widget mainHome(userAccountSummary) {
-    return Container(
-        margin: EdgeInsets.symmetric(vertical: wScale(24)),
-        child: Column(children: [
-          const CustomSpacer(size: 10),
-          PhysicalCardDetail(data: userAccountSummary),
-          const CustomSpacer(size: 10),
-          Column(
-            children: [
-              spendLimitField(userAccountSummary),
-              const CustomSpacer(size: 20),
-              actionButtonField(userAccountSummary),
-              const CustomSpacer(size: 20),
-              userAccountSummary['data']['physicalCard'] == null
-                  ? SizedBox()
-                  : AllTransaction(
-                      cardID: userAccountSummary['data']['physicalCard']['id']),
-            ],
-          )
-        ]));
-  }
-
-  Widget spendLimitField(userAccountSummary) {
-    var limitData = userAccountSummary['data']['physicalCard'] == null
+  Widget spendLimitField() {
+    var limitData = userAccount['data']['physicalCard'] == null
         ? {"limitValue": 0}
-        : userAccountSummary['data']['physicalCard']['financeAccountLimits'][0];
-    double percentage = userAccountSummary['data']['physicalCard'] == null
+        : userAccount['data']['physicalCard']['financeAccountLimits'][0];
+    double percentage = userAccount['data']['physicalCard'] == null
         ? 0
         : (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
     return Opacity(
-        opacity:
-            userAccountSummary['data']['physicalCard']['status'] == 'ACTIVE'
-                ? 1
-                : 0.5,
+        opacity: userAccount['data']['physicalCard'] != null &&
+                userAccount['data']['physicalCard']['status'] == 'ACTIVE'
+            ? 1
+            : 0.5,
         child: Container(
           width: wScale(327),
           padding: EdgeInsets.only(
@@ -145,7 +160,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               BoxShadow(
                 color: const Color(0xFF106549).withOpacity(0.1),
                 spreadRadius: 4,
-                blurRadius: 20,
+                blurRadius: 10,
                 offset: const Offset(0, 1), // changes position of shadow
               ),
             ],
@@ -175,10 +190,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                userAccountSummary['data']['physicalCard'] ==
-                                        null
+                                userAccount['data']['physicalCard'] == null
                                     ? ""
-                                    : "${userAccountSummary['data']['physicalCard']['currencyCode']} ",
+                                    : "${userAccount['data']['physicalCard']['currencyCode']} ",
                                 style: TextStyle(
                                     fontSize: fSize(10),
                                     fontWeight: FontWeight.w600,
@@ -199,9 +213,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                     child: LinearProgressIndicator(
                       value: percentage,
                       backgroundColor: const Color(0xFFF4F4F4),
-                      color: percentage < 0.8
+                      color: percentage < 0.7
                           ? const Color(0xFF30E7A9)
-                          : percentage < 0.9
+                          : percentage < 1
                               ? const Color(0xFFFEB533)
                               : const Color(0xFFEB5757),
                       minHeight: hScale(10),
@@ -211,23 +225,26 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                   Row(
                     children: [
                       Image.asset(
-                          percentage < 0.8
+                          percentage < 0.7
                               ? 'assets/emoji1.png'
-                              : percentage < 0.9
+                              : percentage < 1
                                   ? 'assets/emoji2.png'
                                   : 'assets/emoji3.png',
                           fit: BoxFit.contain,
                           width: wScale(18)),
                       SizedBox(width: wScale(10)),
-                      Text(
-                          percentage < 0.8
-                              ? 'Great job, you are within your allocated limit!'
-                              : percentage < 0.9
-                                  ? 'Careful! You are almost at the limit.'
-                                  : 'You have reached the limit.',
-                          style: TextStyle(
-                              fontSize: fSize(12),
-                              color: const Color(0xFF70828D))),
+                      Container(
+                        width: wScale(260),
+                        child: Text(
+                            percentage < 0.7
+                                ? 'Great job, you are within your allocated limit!'
+                                : percentage < 1
+                                    ? 'Careful! You almost at limit. Consider adding more?'
+                                    : 'You have reached your limit! Add more?',
+                            style: TextStyle(
+                                fontSize: fSize(12),
+                                color: const Color(0xFF70828D))),
+                      ),
                       percentage >= 0.8
                           ? Container(
                               height: hScale(12),
@@ -247,7 +264,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
         ));
   }
 
-  Widget actionButton(imageUrl, text, index, userAccountSummary) {
+  Widget actionButton(imageUrl, text, index) {
     return Container(
         width: wScale(102),
         // height: hScale(82),
@@ -269,9 +286,19 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             style: TextButton.styleFrom(
                 primary: const Color(0xFFFFFFFF), padding: EdgeInsets.zero),
             onPressed: () {
-              userAccountSummary['data']['physicalCard']['status'] == 'ACTIVE'
-                  ? handleAction(index, userAccountSummary)
-                  : null;
+              if (userAccount['data']['physicalCard'] != null) {
+                if (index == 1) {
+                  userAccount['data']['physicalCard']['status'] == "ACTIVE"
+                      ? handleAction(index)
+                      : null;
+                } else {
+                  userAccount['data']['physicalCard']['status'] == "ACTIVE" ||
+                          userAccount['data']['physicalCard']['status'] ==
+                              "SUSPENDED"
+                      ? handleAction(index)
+                      : null;
+                }
+              }
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -298,30 +325,52 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
             )));
   }
 
-  Widget actionButtonField(userAccountSummary) {
-    String freezeText =
-        userAccountSummary['data']['physicalCard']['cardStatus'] == 'ACTIVE'
-            ? 'Freeze Card'
-            : 'Unfreeze Card';
+  Widget actionButtonField() {
+    String freezeText = userAccount['data']['physicalCard'] != null &&
+            userAccount['data']['physicalCard']['status'] == 'SUSPENDED'
+        ? 'Unfreeze Card'
+        : 'Freeze Card';
     return Opacity(
-        opacity:
-            userAccountSummary['data']['physicalCard']['status'] == 'ACTIVE'
-                ? 1
-                : 0.5,
+        opacity: userAccount['data']['physicalCard'] == null ? 0.5 : 1,
         child: SizedBox(
           width: wScale(327),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            actionButton('assets/free.png', freezeText, 0, userAccountSummary),
-            actionButton(
-                'assets/limit.png', 'Edit Limit', 1, userAccountSummary),
-            actionButton(
-                'assets/cancel.png', 'Cancel Card', 2, userAccountSummary),
+            Opacity(
+                opacity: userAccount['data']['physicalCard'] != null &&
+                        (userAccount['data']['physicalCard']['status'] ==
+                                'ACTIVE' ||
+                            userAccount['data']['physicalCard']['status'] ==
+                                'SUSPENDED')
+                    ? 1
+                    : 0.5,
+                child: actionButton('assets/free.png', freezeText, 0)),
+            Opacity(
+                opacity: userAccount['data']['physicalCard'] != null &&
+                        userAccount['data']['physicalCard']['status'] ==
+                            'ACTIVE'
+                    ? 1
+                    : 0.5,
+                child: actionButton(
+                    'assets/limit.png',
+                    userStorage.getItem("isAdmin")
+                        ? 'Edit Limit'
+                        : 'View Limit',
+                    1)),
+            Opacity(
+                opacity: userAccount['data']['physicalCard'] != null &&
+                        (userAccount['data']['physicalCard']['status'] ==
+                                'ACTIVE' ||
+                            userAccount['data']['physicalCard']['status'] ==
+                                'SUSPENDED')
+                    ? 1
+                    : 0.5,
+                child: actionButton('assets/cancel.png', 'Cancel Card', 2)),
           ]),
         ));
   }
 
-  _showFreezeModalDialog(context, userAccountSummary) {
+  _showFreezeModalDialog(context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -330,7 +379,20 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               child: Dialog(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0)),
-                  child: freezeMutationField(userAccountSummary)));
+                  child: freezeMutationField()));
+        });
+  }
+
+  _showRemoveModalDialog(context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: removeMutationField()));
         });
   }
 
@@ -344,38 +406,47 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0)),
                   child: CustomResultModal(
-                      status: success,
-                      title: freezeMode
-                          ? success
-                              ? "Card frozen successfully"
-                              : "Card frozen failed"
-                          : success
-                              ? "Card reactivated successfully"
-                              : "Card reactive failed",
-                      message: freezeMode
-                          ? success
-                              ? "The card has been frozen and is temporarily deactivated. To resume usage, please unfreeze it."
-                              : message
-                          : success
-                              ? "Your card is active. You can now proceed to make payments."
-                              : message)));
+                    status: success,
+                    title: userAccount['data']['physicalCard']['status'] ==
+                            "ACTIVE"
+                        ? success
+                            ? "Card frozen successfully"
+                            : "Card frozen failed"
+                        : success
+                            ? "Card reactivated successfully"
+                            : "Card reactive failed",
+                    message: userAccount['data']['physicalCard']['status'] ==
+                            "ACTIVE"
+                        ? success
+                            ? "The card has been frozen and is temporarily deactivated. To resume usage, please unfreeze it."
+                            : message
+                        : success
+                            ? "Your card is active. You can now proceed to make payments."
+                            : message,
+                  )));
         });
   }
 
-  Widget freezeModalField(runMutation, userAccountSummary) {
+  Widget freezeModalField(runMutation) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Container(
-          padding: EdgeInsets.symmetric(vertical: hScale(25)),
+          padding: EdgeInsets.symmetric(
+              vertical: hScale(25), horizontal: wScale(10)),
           child: Column(children: [
             Image.asset('assets/snow_icon.png',
                 fit: BoxFit.contain, height: wScale(30)),
             const CustomSpacer(size: 15),
-            Text('Freezing this card?',
+            Text(
+                userAccount['data']['physicalCard']['status'] == "ACTIVE"
+                    ? 'Freezing this card?'
+                    : "Unfreezing this card?",
                 style: TextStyle(
                     fontSize: fSize(14), fontWeight: FontWeight.w700)),
             const CustomSpacer(size: 10),
             Text(
-              "Once the card is frozen, the user won't be able to use the card until you reactivate it.",
+              userAccount['data']['physicalCard']['status'] == "ACTIVE"
+                  ? "Once the card is frozen, the user won't be able to use the card until you reactivate it."
+                  : "You will be able to use the card when you unfreeze it.",
               style:
                   TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
               textAlign: TextAlign.center,
@@ -409,8 +480,7 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
                     ),
                     onPressed: () {
                       var orgId = userStorage.getItem('orgId');
-                      var accountId =
-                          userAccountSummary['data']['physicalCard']['id'];
+                      var accountId = userAccount['data']['physicalCard']['id'];
                       runMutation(
                           {'financeAccountId': accountId, "orgId": orgId});
                       Navigator.of(context, rootNavigator: true).pop('dialog');
@@ -422,9 +492,9 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
     ]);
   }
 
-  Widget freezeMutationField(userAccountSummary) {
+  Widget freezeMutationField() {
     String accessToken = storage.getItem("jwt_token");
-    String cardStatus = userAccountSummary['data']['physicalCard']['status'];
+    String cardStatus = userAccount['data']['physicalCard']['status'];
     return GraphQLProvider(
         client: Token().getLink(accessToken),
         child: Mutation(
@@ -452,7 +522,95 @@ class PhysicalMyCardsState extends State<PhysicalMyCards> {
               },
             ),
             builder: (RunMutation runMutation, QueryResult? result) {
-              return freezeModalField(runMutation, userAccountSummary);
+              return freezeModalField(runMutation);
             }));
+  }
+
+  Widget removeMutationField() {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(removeMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                var success = resultData['blockFinanceAccount']['success'];
+                var message = resultData['blockFinanceAccount']['message'];
+                if (success)
+                  setState(() {
+                    freezeMode = true;
+                  });
+                _showResultModalDialog(context, success, message);
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return removeModalField(runMutation);
+            }));
+  }
+
+  Widget removeModalField(runMutation) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(vertical: hScale(25)),
+          child: Column(children: [
+            Image.asset('assets/warning_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text('This action cannot be reversed?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              'Once the card is cancelled, you won’t be able to reactivate it again.',
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      var orgId = userStorage.getItem('orgId');
+                      var accountId = userAccount['data']['physicalCard']['id'];
+                      runMutation({
+                        'financeAccountId': accountId,
+                        "orgId": orgId,
+                        "reason": "DESTROYED"
+                      });
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Confirm'),
+                  ))
+            ],
+          ))
+    ]);
   }
 }

@@ -51,9 +51,15 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
         SizedBox(height: hScale(10)),
         detailField(1),
         SizedBox(height: hScale(20)),
-        widget.data['receiptData']['uploadedAt'] == null ? SizedBox() : titleField('assets/paper.png', 'Receipt Details'),
-        widget.data['receiptData']['uploadedAt'] == null ? SizedBox() : SizedBox(height: hScale(10)),
-        widget.data['receiptData']['uploadedAt'] == null ? SizedBox() : detailField(2),
+        widget.data['receiptData']['uploadedAt'] == null
+            ? SizedBox()
+            : titleField('assets/paper.png', 'Receipt Details'),
+        widget.data['receiptData']['uploadedAt'] == null
+            ? SizedBox()
+            : SizedBox(height: hScale(10)),
+        widget.data['receiptData']['uploadedAt'] == null
+            ? SizedBox()
+            : detailField(2),
       ],
     );
   }
@@ -88,7 +94,7 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
             BoxShadow(
               color: const Color(0xFF106549).withOpacity(0.1),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1), // changes position of shadow
             ),
           ],
@@ -113,6 +119,8 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
         detail('Amount',
             "${widget.data['fxrBillAmount'].toStringAsFixed(2)} ${widget.data['billCurrency']}"),
         Container(height: 1, color: Color(0xFFF1F1F1)),
+        detail('Merchant Name', "${widget.data['merchantName']}"),
+        Container(height: 1, color: Color(0xFFF1F1F1)),
         statusDetail('Status', widget.data['status'])
       ],
     );
@@ -125,14 +133,16 @@ class ReceiptDetailsState extends State<ReceiptDetails> {
         Container(height: 1, color: Color(0xFFF1F1F1)),
         detail('Payment Method', widget.data['paymentMethod']),
         Container(height: 1, color: Color(0xFFF1F1F1)),
-        detail('Card Number', widget.data['pan']),
+        detail('Card Number',
+            "************${widget.data['pan'].split('******')[1]}"),
       ],
     );
   }
 
   Widget receiptDetailField() {
-    String date = "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(widget.data['receiptData']['uploadedAt']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(widget.data['receiptData']['uploadedAt']))}";
-    String name =  widget.data['receiptData']['uploadedByName'];
+    String date =
+        "${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(widget.data['receiptData']['uploadedAt']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(widget.data['receiptData']['uploadedAt']))}";
+    String name = widget.data['receiptData']['uploadedByName'];
     return Column(
       children: [
         detail('Uploaded by', name),

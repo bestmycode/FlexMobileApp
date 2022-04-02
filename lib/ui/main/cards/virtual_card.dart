@@ -3,10 +3,14 @@ import 'package:co/ui/main/cards/virtual_my_transaction.dart';
 import 'package:co/ui/main/cards/virtual_team_card.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_no_internet.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
+import 'package:co/utils/queries.dart';
+import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 
 class VirtualCards extends StatefulWidget {
@@ -30,7 +34,9 @@ class VirtualCardsState extends State<VirtualCards> {
   }
 
   int cardType = 0;
+  final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
+  String getUserInfoQuery = Queries.QUERY_DASHBOARD_LAYOUT;
 
   handleBack() {
     DefaultTabController.of(context)!.animateTo(1);
@@ -52,6 +58,37 @@ class VirtualCardsState extends State<VirtualCards> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    return Query(
+        options: QueryOptions(
+          document: gql(getUserInfoQuery),
+          variables: {},
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return Scaffold(body: CustomNoInternet(handleTryAgain: () {
+              Navigator.of(context)
+                  .push(new MaterialPageRoute(
+                      builder: (context) => VirtualCards(
+                            defaultType: cardType,
+                          )))
+                  .then((value) => setState(() => {}));
+            }));
+          }
+
+          if (result.isLoading) {
+            return mainHome();
+          }
+          return mainHome();
+        });
+  }
+
+  Widget mainHome() {
     return Material(
         child: Scaffold(
             body: Stack(children: [
@@ -63,14 +100,7 @@ class VirtualCardsState extends State<VirtualCards> {
           const CustomSpacer(size: 44),
           const CustomMainHeader(title: 'Virtual Cards'),
           const CustomSpacer(size: 38),
-          cardGroupField(),
-          // const CustomSpacer(size: 10),
-          cardType == 0
-              ? const VirtualMyTransactions()
-              : cardType == 1
-                  ? const VirtualMyCards()
-                  : const VirtualTeamCards(),
-          const CustomSpacer(size: 88),
+          tabView(),
         ]))),
       ),
       const Positioned(
@@ -79,6 +109,82 @@ class VirtualCardsState extends State<VirtualCards> {
         child: CustomBottomBar(active: 11),
       )
     ])));
+  }
+
+  Widget tabView() {
+    return DefaultTabController(
+      length: 3,
+      child: Container(
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                width: wScale(350),
+                height: hScale(40),
+                padding: EdgeInsets.all(hScale(2)),
+                decoration: BoxDecoration(
+                  color: const Color(0xfff5f5f6),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(hScale(20)),
+                    topRight: Radius.circular(hScale(20)),
+                    bottomLeft: Radius.circular(hScale(20)),
+                    bottomRight: Radius.circular(hScale(20)),
+                  ),
+                ),
+                child: TabBar(
+                  unselectedLabelColor: const Color(0xff70828D),
+                  labelPadding: const EdgeInsets.all(1),
+                  labelStyle: TextStyle(
+                    fontSize: fSize(12),
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  labelColor: Color(0xff1A2831),
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(260),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF040415).withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 1,
+                        offset:
+                            const Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  indicatorPadding: const EdgeInsets.all(1),
+                  indicatorWeight: 1,
+                  tabs: [
+                    Tab(
+                      text: 'My Transactions',
+                    ),
+                    Tab(
+                      text: 'My Cards',
+                    ),
+                    Tab(
+                      text: 'Team Cards',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              height: hScale(584),
+              // width: double.maxFinite,
+              child: TabBarView(
+                children: [
+                  VirtualMyTransactions(),
+                  VirtualMyCards(),
+                  VirtualTeamCards()
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget backButton() {
@@ -96,9 +202,9 @@ class VirtualCardsState extends State<VirtualCards> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -142,7 +248,7 @@ class VirtualCardsState extends State<VirtualCards> {
             child: Row(children: [
               cardGroupButton('My Transactions', 0),
               cardGroupButton('My Cards', 1),
-              isAdmin ? cardGroupButton('Team Cards', 2): SizedBox(),
+              isAdmin ? cardGroupButton('Team Cards', 2) : SizedBox(),
             ])));
   }
 
@@ -150,7 +256,7 @@ class VirtualCardsState extends State<VirtualCards> {
     var isAdmin = userStorage.getItem('isAdmin');
     return type == cardType
         ? Container(
-            width: wScale(isAdmin ? 130: 161),
+            width: wScale(isAdmin ? 130 : 161),
             height: hScale(35),
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
@@ -160,7 +266,7 @@ class VirtualCardsState extends State<VirtualCards> {
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1),
                   spreadRadius: 4,
-                  blurRadius: 20,
+                  blurRadius: 10,
                   offset: const Offset(0, 1), // changes position of shadow
                 ),
               ],
@@ -193,7 +299,7 @@ class VirtualCardsState extends State<VirtualCards> {
               handleCardType(type);
             },
             child: Container(
-              width: wScale(isAdmin?130: 161),
+              width: wScale(isAdmin ? 130 : 161),
               height: hScale(35),
               alignment: Alignment.center,
               child: Text(

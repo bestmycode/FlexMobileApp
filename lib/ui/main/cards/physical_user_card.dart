@@ -1,9 +1,16 @@
+import 'package:co/ui/main/cards/manage_limits.dart';
+import 'package:co/ui/main/cards/manage_user_limits.dart';
+import 'package:co/ui/main/cards/physical_card_detail.dart';
+import 'package:co/ui/main/cards/physical_my_card.dart';
 import 'package:co/ui/main/cards/view_limits.dart';
+import 'package:co/ui/widgets/all_transaction_field.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
+import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
+import 'package:co/utils/mutations.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,51 +41,30 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
     return Scale().fSize(context, size);
   }
 
-  int cardType = 1;
-  int transactionStatus = 1;
-  bool showCardDetail = true;
-  bool flagCopiedAccount = false;
-  bool flagCopiedCVV = false;
+  bool freezeMode = false;
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
-  String getRecentTransactions = Queries.QUERY_RECENT_TRANSACTIONS;
+  String freezeMutation = FXRMutations.MUTATION_FREEZE_FINANCE_ACCOUNT;
+  String unFreezeMutation = FXRMutations.MUTATION_UNFREEZE_FINANCE_ACCOUNT;
+  String removeMutation = FXRMutations.MUTATION_BLOCK_FINANCE_ACCOUNT;
 
-  handleBack() {}
+  handleMonthlySpendLimit() {}
 
-  handleCardType(type) {
-    setState(() {
-      cardType = type;
-    });
-  }
-
-  handleTransactionStatus(status) {
-    setState(() {
-      transactionStatus = status;
-    });
-  }
-
-  handleExport() {}
-
-  handleAction(index) {
-    if (index == 1) {
+  handleAction(index, userAccountSummary) {
+    if (index == 0) {
+      _showFreezeModalDialog(context, userAccountSummary);
+    } else if (index == 1) {
       Navigator.of(context).push(
-        CupertinoPageRoute(builder: (context) => const ViewLimits()),
+        CupertinoPageRoute(
+            builder: (context) => userStorage.getItem('isAdmin')
+                ? ManageLimits(data: userAccountSummary['data']['physicalCard'])
+                : ManageUserLimits(
+                    data: userAccountSummary['data']['physicalCard'])),
       );
+    } else {
+      _showRemoveModalDialog(context, userAccountSummary);
     }
-  }
-
-  handleShowCardDetail() {
-    setState(() {
-      showCardDetail = !showCardDetail;
-    });
-  }
-
-  handleCopied(index, num) {
-    Clipboard.setData(ClipboardData(text: num));
-    setState(() {
-      index == 0 ? flagCopiedAccount = true : flagCopiedCVV = true;
-    });
   }
 
   @override
@@ -100,62 +86,39 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                 options: QueryOptions(
                   document: gql(getUserAccountSummary),
                   variables: {'orgId': orgId},
-                  // pollInterval: const Duration(seconds: 10),
                 ),
-                builder: (QueryResult accountResult,
+                builder: (QueryResult result,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
-                  if (accountResult.hasException) {
-                    return Text(accountResult.exception.toString());
+                  if (result.hasException) {
+                    return Text(result.exception.toString());
                   }
 
-                  if (accountResult.isLoading) {
+                  if (result.isLoading) {
                     return CustomLoading();
                   }
-                  var userAccountSummary = accountResult
-                      .data!['readUserFinanceAccountSummary']['data'];
-                  return Query(
-                      options: QueryOptions(
-                        document: gql(getRecentTransactions),
-                        variables: {
-                          'orgId': orgId,
-                          'offset': 0,
-                          'status': "PENDING_OR_COMPLETED"
-                        },
-                        // pollInterval: const Duration(seconds: 10),
-                      ),
-                      builder: (QueryResult transactionResult,
-                          {VoidCallback? refetch, FetchMore? fetchMore}) {
-                        if (transactionResult.hasException) {
-                          return Text(transactionResult.exception.toString());
-                        }
-
-                        if (transactionResult.isLoading) {
-                          return CustomLoading();
-                        }
-                        var listTransactions =
-                            transactionResult.data!['listTransactions']
-                                ['financeAccountTransactions'];
-                        return mainHome(userAccountSummary, listTransactions);
-                      });
+                  var userAccountSummary =
+                      result.data!['readUserFinanceAccountSummary'];
+                  return mainHome(userAccountSummary);
                 })));
   }
 
-  Widget mainHome(userAccountSummary, listTransactions) {
+  Widget mainHome(userAccountSummary) {
     return Stack(children: [
       SingleChildScrollView(
           child: Column(children: [
         const CustomSpacer(size: 44),
         CustomMainHeader(title: 'Physical Card'),
         const CustomSpacer(size: 31),
-        cardDetailField(userAccountSummary),
+        PhysicalCardDetail(data: userAccountSummary),
         const CustomSpacer(size: 10),
         spendLimitField(userAccountSummary),
         const CustomSpacer(size: 20),
-        actionButtonField(),
+        actionButtonField(userAccountSummary),
         const CustomSpacer(size: 20),
-        allTransactionField(),
-        const CustomSpacer(size: 15),
-        getTransactionArrWidgets(listTransactions),
+        userAccountSummary['data']['physicalCard'] == null
+            ? SizedBox()
+            : AllTransaction(
+                cardID: userAccountSummary['data']['physicalCard']['id']),
         const CustomSpacer(size: 88),
       ])),
       const Positioned(
@@ -166,404 +129,190 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
     ]);
   }
 
-  Widget cardDetailField(cardData) {
-    return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(
-          left: wScale(16),
-          right: wScale(16),
-          top: hScale(16),
-          bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          cardField(cardData),
-          const CustomSpacer(size: 14),
-          cardValueField(cardData)
-        ],
-      ),
-    );
-  }
-
-  Widget cardField(cardData) {
-    return Container(
-        width: wScale(295),
-        height: wScale(187),
-        padding: EdgeInsets.all(hScale(16)),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/physical_card_detail.png"),
-            fit: BoxFit.contain,
-          ),
-        ),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [const SizedBox(), eyeIconField()],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      cardData == null
-                          ? ""
-                          : cardData['physicalCard']['accountName'],
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300,
-                          fontSize: fSize(14))),
-                  const CustomSpacer(size: 6),
-                  Row(children: [
-                    Text(
-                        showCardDetail
-                            ? cardData == null
-                                ? ""
-                                : cardData['physicalCard']
-                                    ['permanentAccountNumber']
-                            : '* * * *  * * * *  * * * *  * * * *',
-                        style: TextStyle(
-                            color: Colors.white, fontSize: fSize(16))),
-                    SizedBox(width: wScale(7)),
-                    Container(
-                        width: wScale(14),
-                        height: hScale(14),
-                        alignment: Alignment.center,
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            primary: const Color(0xff515151),
-                            padding: EdgeInsets.all(0),
-                            textStyle: TextStyle(
-                                fontSize: fSize(14),
-                                fontWeight: FontWeight.w500,
-                                color: const Color(0xff040415)),
-                          ),
-                          onPressed: () {
-                            handleCopied(
-                                0,
-                                cardData['physicalCard']
-                                    ['permanentAccountNumber']);
-                          },
-                          child: const Icon(Icons.content_copy,
-                              color: Color(0xff30E7A9), size: 14.0),
-                        )),
-                    SizedBox(width: wScale(4)),
-                    flagCopiedAccount
-                        ? Text('Copied',
-                            style: TextStyle(
-                                fontSize: fSize(14),
-                                fontWeight: FontWeight.w500,
-                                color: const Color(0xff30E7A9)))
-                        : const SizedBox(),
-                  ]),
-                ],
-              ),
-              Row(children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Valid Thru',
-                        style: TextStyle(
-                            color: Colors.white, fontSize: fSize(10))),
-                    Text(
-                        showCardDetail
-                            ? cardData == null
-                                ? ""
-                                : cardData['physicalCard']['expiryDate']
-                            : 'MM / DD',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: fSize(11),
-                            fontWeight: FontWeight.bold))
-                  ],
-                ),
-                SizedBox(width: wScale(10)),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('CVV',
-                        style: TextStyle(
-                            color: Colors.white, fontSize: fSize(10))),
-                    Text(
-                        showCardDetail
-                            ? cardData == null
-                                ? ""
-                                : cardData['physicalCard']['cvv']
-                            : '* * *',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: fSize(11),
-                            fontWeight: FontWeight.bold))
-                  ],
-                ),
-                SizedBox(width: wScale(6)),
-                Container(
-                    width: wScale(14),
-                    height: hScale(14),
-                    alignment: Alignment.center,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        primary: const Color(0xff515151),
-                        padding: EdgeInsets.all(0),
-                        textStyle: TextStyle(
-                            fontSize: fSize(14),
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xff040415)),
-                      ),
-                      onPressed: () {
-                        handleCopied(1, cardData['physicalCard']['cvv']);
-                      },
-                      child: const Icon(Icons.content_copy,
-                          color: Color(0xff30E7A9), size: 14.0),
-                    )),
-                SizedBox(width: wScale(4)),
-                flagCopiedCVV
-                    ? Text('Copied',
-                        style: TextStyle(
-                            fontSize: fSize(14),
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xff30E7A9)))
-                    : const SizedBox(),
-              ])
-            ]));
-  }
-
-  Widget cardValueField(cardData) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text('Available Limit',
-            style: TextStyle(fontSize: fSize(14), fontWeight: FontWeight.w600)),
-        Container(
-            padding: EdgeInsets.only(
-                left: wScale(16),
-                right: wScale(16),
-                top: hScale(5),
-                bottom: hScale(5)),
-            decoration: BoxDecoration(
-              color: const Color(0xFFDEFEE9),
-              borderRadius: BorderRadius.all(
-                Radius.circular(hScale(16)),
-              ),
+  Widget spendLimitField(userAccountSummary) {
+    var limitData = userAccountSummary['data']['physicalCard'] == null
+        ? {"limitValue": 0}
+        : userAccountSummary['data']['physicalCard']['financeAccountLimits'][0];
+    double percentage = userAccountSummary['data']['physicalCard'] == null
+        ? 0
+        : (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
+    return Opacity(
+        opacity: userAccountSummary['data']['physicalCard'] != null &&
+                userAccountSummary['data']['physicalCard']['status'] == 'ACTIVE'
+            ? 1
+            : 0.5,
+        child: Container(
+          width: wScale(327),
+          padding: EdgeInsets.only(
+              left: wScale(16),
+              right: wScale(16),
+              top: hScale(16),
+              bottom: hScale(16)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(hScale(10)),
+              topRight: Radius.circular(hScale(10)),
+              bottomLeft: Radius.circular(hScale(10)),
+              bottomRight: Radius.circular(hScale(10)),
             ),
-            child: Row(
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF106549).withOpacity(0.1),
+                spreadRadius: 4,
+                blurRadius: 10,
+                offset: const Offset(0, 1), // changes position of shadow
+              ),
+            ],
+          ),
+          child: TextButton(
+              style: TextButton.styleFrom(
+                primary: const Color(0xFFFFFFFF),
+                padding: EdgeInsets.zero,
+              ),
+              onPressed: () {
+                handleMonthlySpendLimit();
+              },
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                      cardData == null
-                          ? ""
-                          : cardData['physicalCard']['currencyCode'],
-                      style: TextStyle(
-                          fontSize: fSize(12),
-                          fontWeight: FontWeight.w500,
-                          height: 1,
-                          color: Color(0xFF30E7A9))),
-                  Text(
-                      cardData == null
-                          ? ""
-                          : cardData['physicalCard']['financeAccountLimits'][0]
-                                  ['availableLimit']
-                              .toString(),
-                      style: TextStyle(
-                          fontSize: fSize(12),
-                          fontWeight: FontWeight.w500,
-                          height: 1,
-                          color: Color(0xFF30E7A9))),
-                ]))
-      ],
-    );
-  }
-
-  Widget eyeIconField() {
-    return Container(
-        height: hScale(34),
-        width: hScale(34),
-        // padding: EdgeInsets.all(hScale(17)),
-        decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(hScale(17)),
-              topRight: Radius.circular(hScale(17)),
-              bottomLeft: Radius.circular(hScale(17)),
-              bottomRight: Radius.circular(hScale(17)),
-            )),
-        child: IconButton(
-          padding: const EdgeInsets.all(0),
-
-          // icon: const Icon(Icons.remove_red_eye_outlined, color: Color(0xff30E7A9),),
-          icon: Image.asset(
-              showCardDetail ? 'assets/hide_eye.png' : 'assets/show_eye.png',
-              fit: BoxFit.contain,
-              height: hScale(16)),
-          iconSize: hScale(17),
-          onPressed: () {
-            handleShowCardDetail();
-          },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Monthly Spend Limit',
+                          style: TextStyle(
+                              fontSize: fSize(14),
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF1A2831))),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                                userAccountSummary['data']['physicalCard'] ==
+                                        null
+                                    ? ""
+                                    : "${userAccountSummary['data']['physicalCard']['currencyCode']} ",
+                                style: TextStyle(
+                                    fontSize: fSize(10),
+                                    fontWeight: FontWeight.w600,
+                                    height: 1,
+                                    color: const Color(0xFF1A2831))),
+                            Text(limitData['limitValue'].toString(),
+                                style: TextStyle(
+                                    fontSize: fSize(16),
+                                    fontWeight: FontWeight.w600,
+                                    height: 1,
+                                    color: const Color(0xFF1A2831))),
+                          ])
+                    ],
+                  ),
+                  const CustomSpacer(size: 12),
+                  ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    child: LinearProgressIndicator(
+                      value: percentage,
+                      backgroundColor: const Color(0xFFF4F4F4),
+                      color: percentage < 0.7
+                          ? const Color(0xFF30E7A9)
+                          : percentage < 1
+                              ? const Color(0xFFFEB533)
+                              : const Color(0xFFEB5757),
+                      minHeight: hScale(10),
+                    ),
+                  ),
+                  const CustomSpacer(size: 12),
+                  Row(
+                    children: [
+                      Image.asset(
+                          percentage < 0.7
+                              ? 'assets/emoji1.png'
+                              : percentage < 1
+                                  ? 'assets/emoji2.png'
+                                  : 'assets/emoji3.png',
+                          fit: BoxFit.contain,
+                          width: wScale(18)),
+                      SizedBox(width: wScale(10)),
+                      Container(
+                          width: wScale(260),
+                          child: Text(
+                              percentage < 0.7
+                                  ? 'Great job, you are within your allocated limit!'
+                                  : percentage < 1
+                                      ? 'Careful! you almost at limit. Consider adding more?'
+                                      : 'You have reached your limit! Add more?',
+                              style: TextStyle(
+                                  fontSize: fSize(12),
+                                  color: const Color(0xFF70828D)))),
+                      percentage >= 0.8
+                          ? Container(
+                              height: hScale(12),
+                              child: TextButton(
+                                  style: TextButton.styleFrom(
+                                      padding: EdgeInsets.all(0)),
+                                  onPressed: () {},
+                                  child: Text('Add more!',
+                                      style: TextStyle(
+                                          fontSize: fSize(12),
+                                          color: const Color(0xFF30E7A9)))))
+                          : SizedBox()
+                    ],
+                  )
+                ],
+              )),
         ));
   }
 
-  Widget spendLimitField(cardData) {
-    var limitData = cardData == null
-        ? ""
-        : cardData['physicalCard']['financeAccountLimits'][0];
-    double percentage = cardData == null
-        ? 0
-        : (1 - limitData['availableLimit'] / limitData['limitValue']) as double;
+  Widget actionButton(imageUrl, text, index, userAccountSummary) {
     return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(
-          left: wScale(16),
-          right: wScale(16),
-          top: hScale(16),
-          bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Monthly Spend Limit',
-                  style: TextStyle(
-                      fontSize: fSize(14),
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF1A2831))),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        cardData == null
-                            ? ""
-                            : cardData['physicalCard']['currencyCode'],
-                        style: TextStyle(
-                            fontSize: fSize(12),
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF1A2831))),
-                    Text(
-                        cardData == null
-                            ? ""
-                            : cardData['physicalCard']['financeAccountLimits']
-                                    [0]['limitValue']
-                                .toString(),
-                        style: TextStyle(
-                            fontSize: fSize(14),
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A2831))),
-                  ])
-            ],
-          ),
-          const CustomSpacer(size: 12),
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: LinearProgressIndicator(
-              value: percentage,
-              backgroundColor: const Color(0xFFF4F4F4),
-              color: percentage < 0.8
-                  ? const Color(0xFF30E7A9)
-                  : percentage < 0.9
-                      ? const Color(0xFFFEB533)
-                      : const Color(0xFFEB5757),
-              minHeight: hScale(10),
+        width: wScale(102),
+        // height: hScale(82),
+        padding:
+            EdgeInsets.symmetric(vertical: hScale(16), horizontal: wScale(16)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF106549).withOpacity(0.1),
+              spreadRadius: 4,
+              blurRadius: 40,
+              offset: const Offset(0, 1), // changes position of shadow
             ),
-          ),
-          const CustomSpacer(size: 12),
-          Row(
-            children: [
-              Image.asset(
-                  percentage < 0.8
-                      ? 'assets/emoji1.png'
-                      : percentage < 0.9
-                          ? 'assets/emoji2.png'
-                          : 'assets/emoji3.png',
-                  fit: BoxFit.contain,
-                  width: wScale(18)),
-              SizedBox(width: wScale(10)),
-              Text(
-                  percentage < 0.8
-                      ? 'Great job, you are within your allocated limit!'
-                      : percentage < 0.9
-                          ? 'Careful! You are almost at the limit.'
-                          : 'You have reached the limit.',
-                  style: TextStyle(
-                      fontSize: fSize(12), color: const Color(0xFF70828D))),
-              percentage >= 0.8
-                  ? Container(
-                      height: hScale(12),
-                      child: TextButton(
-                          style:
-                              TextButton.styleFrom(padding: EdgeInsets.all(0)),
-                          onPressed: () {},
-                          child: Text('Add more!',
-                              style: TextStyle(
-                                  fontSize: fSize(12),
-                                  color: const Color(0xFF30E7A9)))))
-                  : SizedBox()
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget actionButton(imageUrl, text, index) {
-    return ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.all(0),
-          primary: const Color(0xffffffff),
-          side: const BorderSide(width: 0, color: Color(0xffffffff)),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ],
         ),
-        onPressed: () {
-          handleAction(index);
-        },
-        child: SizedBox(
-            width: wScale(102),
-            height: hScale(82),
+        child: TextButton(
+            style: TextButton.styleFrom(
+                primary: const Color(0xFFFFFFFF), padding: EdgeInsets.zero),
+            onPressed: () {
+              if (userAccountSummary['data']['physicalCard'] != null) {
+                if (index == 1) {
+                  userAccountSummary['data']['physicalCard']['status'] ==
+                          "ACTIVE"
+                      ? handleAction(index, userAccountSummary)
+                      : null;
+                } else {
+                  userAccountSummary['data']['physicalCard']['status'] ==
+                              "ACTIVE" ||
+                          userAccountSummary['data']['physicalCard']
+                                  ['status'] ==
+                              "SUSPENDED"
+                      ? handleAction(index, userAccountSummary)
+                      : null;
+                }
+              }
+            },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset(imageUrl, fit: BoxFit.contain, height: wScale(24)),
+                Image.asset(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  height: hScale(28),
+                  width: wScale(28),
+                ),
                 const CustomSpacer(
                   size: 10,
                 ),
@@ -572,230 +321,297 @@ class PhysicalUserCardState extends State<PhysicalUserCard> {
                   style: TextStyle(
                       fontSize: fSize(12),
                       fontWeight: FontWeight.w500,
-                      color: Colors.black),
+                      color: const Color(0xFF70828D)),
                   textAlign: TextAlign.center,
                 ),
               ],
             )));
   }
 
-  Widget actionButtonField() {
-    return SizedBox(
-      width: wScale(327),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        actionButton('assets/free.png', 'Freeze Card', 0),
-        actionButton('assets/limit.png', 'View \nLimit', 1),
-        actionButton('assets/cancel.png', 'Cancel Card', 2),
-      ]),
-    );
+  Widget actionButtonField(userAccountSummary) {
+    String freezeText = userAccountSummary['data']['physicalCard'] != null &&
+            userAccountSummary['data']['physicalCard']['status'] == 'SUSPENDED'
+        ? 'Unfreeze Card'
+        : 'Freeze Card';
+    return Opacity(
+        opacity: userAccountSummary['data']['physicalCard'] == null ? 0.5 : 1,
+        child: SizedBox(
+          width: wScale(327),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Opacity(
+                opacity: userAccountSummary['data']['physicalCard'] != null &&
+                        (userAccountSummary['data']['physicalCard']['status'] ==
+                                'ACTIVE' ||
+                            userAccountSummary['data']['physicalCard']
+                                    ['status'] ==
+                                'SUSPENDED')
+                    ? 1
+                    : 0.5,
+                child: actionButton(
+                    'assets/free.png', freezeText, 0, userAccountSummary)),
+            Opacity(
+                opacity: userAccountSummary['data']['physicalCard'] != null &&
+                        userAccountSummary['data']['physicalCard']['status'] ==
+                            'ACTIVE'
+                    ? 1
+                    : 0.5,
+                child: actionButton(
+                    'assets/limit.png',
+                    userStorage.getItem("isAdmin")
+                        ? 'Edit Limit'
+                        : 'View Limit',
+                    1,
+                    userAccountSummary)),
+            Opacity(
+                opacity: userAccountSummary['data']['physicalCard'] != null &&
+                        (userAccountSummary['data']['physicalCard']['status'] ==
+                                'ACTIVE' ||
+                            userAccountSummary['data']['physicalCard']
+                                    ['status'] ==
+                                'SUSPENDED')
+                    ? 1
+                    : 0.5,
+                child: actionButton(
+                    'assets/cancel.png', 'Cancel Card', 2, userAccountSummary)),
+          ]),
+        ));
   }
 
-  Widget allTransactionField() {
-    return SizedBox(
-      width: wScale(327),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  _showFreezeModalDialog(context, userAccountSummary) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: freezeMutationField(userAccountSummary)));
+        });
+  }
+
+  _showRemoveModalDialog(context, userAccountSummary) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: removeMutationField(userAccountSummary)));
+        });
+  }
+
+  _showResultModalDialog(context, success, message) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: CustomResultModal(
+                      status: success,
+                      title: freezeMode
+                          ? success
+                              ? "Card frozen successfully"
+                              : "Card frozen failed"
+                          : success
+                              ? "Card reactivated successfully"
+                              : "Card reactive failed",
+                      message: freezeMode
+                          ? success
+                              ? "The card has been frozen and is temporarily deactivated. To resume usage, please unfreeze it."
+                              : message
+                          : success
+                              ? "Your card is active. You can now proceed to make payments."
+                              : message)));
+        });
+  }
+
+  Widget freezeModalField(runMutation, userAccountSummary) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(vertical: hScale(25)),
+          child: Column(children: [
+            Image.asset('assets/snow_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text('Freezing this card?',
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              "Once the card is frozen, the user won't be able to use the card until you reactivate it.",
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
             children: [
-              Text('All Transactions',
-                  style: TextStyle(
-                      fontSize: fSize(16), fontWeight: FontWeight.w500)),
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: const Color(0xff30E7A9),
-                  textStyle: TextStyle(
-                      fontSize: fSize(14), color: const Color(0xff30E7A9)),
-                ),
-                onPressed: () {
-                  handleExport();
-                },
-                child: const Text('Export',
-                    style: TextStyle(decoration: TextDecoration.underline)),
-              ),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      var orgId = userStorage.getItem('orgId');
+                      var accountId =
+                          userAccountSummary['data']['physicalCard']['id'];
+                      runMutation(
+                          {'financeAccountId': accountId, "orgId": orgId});
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Ok'),
+                  ))
             ],
-          ),
-          // const CustomSpacer(size: 10),
-          transactionStatusField()
-        ],
-      ),
-    );
+          ))
+    ]);
   }
 
-  Widget transactionStatusField() {
-    return Container(
-      width: wScale(327),
-      height: hScale(34),
-      padding: EdgeInsets.all(hScale(1)),
-      decoration: BoxDecoration(
-        color: const Color(0xfff5f5f6),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(17)),
-          topRight: Radius.circular(hScale(17)),
-          bottomLeft: Radius.circular(hScale(17)),
-          bottomRight: Radius.circular(hScale(17)),
-        ),
-      ),
-      child: Row(children: [
-        transactionStatusButton('Completed', 1, const Color(0xFF70828D)),
-        transactionStatusButton('Pending', 2, const Color(0xFF1A2831)),
-        transactionStatusButton('Declined', 3, const Color(0xFFEB5757))
-      ]),
-    );
-  }
-
-  Widget transactionStatusButton(status, type, textColor) {
-    return type == transactionStatus
-        ? ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(0),
-              primary: const Color(0xffffffff),
-              side: const BorderSide(width: 0, color: Color(0xffffffff)),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+  Widget freezeMutationField(userAccountSummary) {
+    String accessToken = storage.getItem("jwt_token");
+    String cardStatus = userAccountSummary['data']['physicalCard']['status'];
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(cardStatus == 'ACTIVE'
+                  ? freezeMutation
+                  : cardStatus == 'SUSPENDED'
+                      ? unFreezeMutation
+                      : ''),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                var success = cardStatus == 'ACTIVE'
+                    ? resultData['freezeFinanceAccount']['success']
+                    : resultData['unfreezeFinanceAccount']['success'];
+                var message = cardStatus == 'ACTIVE'
+                    ? resultData['freezeFinanceAccount']['message']
+                    : resultData['unfreezeFinanceAccount']['message'];
+                if (success)
+                  setState(() {
+                    freezeMode = true;
+                  });
+                _showResultModalDialog(context, success, message);
+              },
             ),
-            onPressed: () {
-              handleTransactionStatus(type);
-            },
-            child: Container(
-              width: wScale(107),
-              height: hScale(30),
-              alignment: Alignment.center,
-              child: Text(
-                status,
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return freezeModalField(runMutation, userAccountSummary);
+            }));
+  }
+
+  Widget removeMutationField(userAccountSummary) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(
+        client: Token().getLink(accessToken),
+        child: Mutation(
+            options: MutationOptions(
+              document: gql(removeMutation),
+              update: (GraphQLDataProxy cache, QueryResult? result) {
+                return cache;
+              },
+              onCompleted: (resultData) {
+                var success = resultData['blockFinanceAccount']['success'];
+                var message = resultData['blockFinanceAccount']['message'];
+                if (success)
+                  setState(() {
+                    freezeMode = true;
+                  });
+                _showResultModalDialog(context, success, message);
+              },
+            ),
+            builder: (RunMutation runMutation, QueryResult? result) {
+              return removeModalField(runMutation, userAccountSummary);
+            }));
+  }
+
+  Widget removeModalField(runMutation, userAccountSummary) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      Container(
+          padding: EdgeInsets.symmetric(vertical: hScale(25)),
+          child: Column(children: [
+            Image.asset('assets/warning_icon.png',
+                fit: BoxFit.contain, height: wScale(30)),
+            const CustomSpacer(size: 15),
+            Text('This action cannot be reversed?',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: fSize(14), color: textColor),
-              ),
-            ))
-        : TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(
-                  fontSize: fSize(14), color: const Color(0xff70828D)),
+                style: TextStyle(
+                    fontSize: fSize(14), fontWeight: FontWeight.w700)),
+            const CustomSpacer(size: 10),
+            Text(
+              'Once the card is cancelled, you won’t be able to reactivate it again.',
+              style:
+                  TextStyle(fontSize: fSize(12), fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
             ),
-            onPressed: () {
-              handleTransactionStatus(type);
-            },
-            child: Container(
-              width: wScale(107),
-              height: hScale(30),
-              alignment: Alignment.center,
-              child: Text(
-                status,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: fSize(14), color: textColor),
-              ),
-            ),
-          );
-  }
-
-  Widget transactionField(date, transactionName, value) {
-    return Container(
-      width: wScale(327),
-      padding: EdgeInsets.only(
-          left: wScale(16),
-          right: wScale(16),
-          top: hScale(16),
-          bottom: hScale(16)),
-      margin: EdgeInsets.only(bottom: hScale(16)),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(hScale(10)),
-          topRight: Radius.circular(hScale(10)),
-          bottomLeft: Radius.circular(hScale(10)),
-          bottomRight: Radius.circular(hScale(10)),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
-            spreadRadius: 4,
-            blurRadius: 20,
-            offset: const Offset(0, 1), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          transactionTimeField(date),
-          transactionNameField(transactionName),
-          moneyValue('', value, 14.0, FontWeight.w700, const Color(0xffADD2C8)),
-        ],
-      ),
-    );
-  }
-
-  Widget transactionTimeField(date) {
-    return Text('$date',
-        style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            color: Color(0xff70828D)));
-  }
-
-  Widget transactionNameField(name) {
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(
-          fontSize: fSize(16),
-          fontWeight: FontWeight.w500,
-          color: Colors.black,
-        ),
-        children: [
-          TextSpan(text: name),
-        ],
-      ),
-    );
-  }
-
-  Widget moneyValue(title, value, size, weight, color) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(title, style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("SGD  ",
-              style: TextStyle(
-                  fontSize: fSize(12),
-                  fontWeight: weight,
-                  color: color,
-                  height: 1)),
-          Text(value,
-              style: TextStyle(
-                  fontSize: fSize(size),
-                  fontWeight: weight,
-                  color: color,
-                  height: 1)),
-        ])
-      ],
-    );
-  }
-
-  Widget getTransactionArrWidgets(arr) {
-    return arr.length == 0
-        ? Image.asset('assets/empty_transaction.png',
-            fit: BoxFit.contain, width: wScale(327))
-        : Column(
-            children: arr.map<Widget>((item) {
-            return TransactionItem(
-                accountId: item['txnFinanceAccId'],
-                transactionId: item['sourceTransactionId'],
-                date:
-                    '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
-                transactionName: item['description'],
-                status: item['status'],
-                userName: item['merchantName'],
-                cardNum: item['pan'],
-                value: item['billAmount'].toString(),
-                receiptStatus: item['fxrBillAmount'] >= 0
-                    ? 0
-                    : item['receiptStatus'] == "PAID"
-                        ? 2
-                        : 1);
-          }).toList());
+          ])),
+      Container(height: 1, color: const Color(0xFFD5DBDE)),
+      Container(
+          height: hScale(50),
+          child: Row(
+            children: [
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () => Navigator.of(context, rootNavigator: true)
+                        .pop('dialog'),
+                    child: const Text('Cancel'),
+                  )),
+              Container(width: 1, color: const Color(0xFFD5DBDE)),
+              Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff30E7A9),
+                      textStyle: TextStyle(
+                          fontSize: fSize(16), color: const Color(0xff30E7A9)),
+                    ),
+                    onPressed: () {
+                      var orgId = userStorage.getItem('orgId');
+                      var accountId =
+                          userAccountSummary['data']['physicalCard']['id'];
+                      runMutation({
+                        'financeAccountId': accountId,
+                        "orgId": orgId,
+                        "reason": "DESTROYED"
+                      });
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: const Text('Confirm'),
+                  ))
+            ],
+          ))
+    ]);
   }
 }

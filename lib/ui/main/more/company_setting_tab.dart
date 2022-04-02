@@ -70,7 +70,7 @@ class CompanySettingTabState extends State<CompanySettingTab> {
         child: Row(children: [
           statusButton('Company Profile', 0),
           statusButton('Team', 1),
-          statusButton('App', 2),
+          // statusButton('App', 2),
         ]),
       ),
     );
@@ -88,7 +88,7 @@ class CompanySettingTabState extends State<CompanySettingTab> {
         handleSettingType(type);
       },
       child: Container(
-        width: wScale(123),
+        width: wScale(162),
         height: hScale(35),
         // padding: EdgeInsets.only(left: wScale(10),right: wScale(10)),
         decoration: BoxDecoration(

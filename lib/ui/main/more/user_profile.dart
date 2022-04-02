@@ -1,7 +1,10 @@
+import 'package:co/ui/main/more/account_setting.dart';
 import 'package:co/ui/main/more/user_profile_edit.dart';
+import 'package:co/ui/widgets/custom_no_internet.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/mutations.dart';
+import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +13,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 
 class UserProfile extends StatefulWidget {
-  final userData;
-  const UserProfile({Key? key, this.userData}) : super(key: key);
+  // final userData;
+  // final handleUpdate;
+  const UserProfile({Key? key}) : super(key: key);
   @override
   UserProfileState createState() => UserProfileState();
 }
@@ -31,13 +35,17 @@ class UserProfileState extends State<UserProfile> {
 
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
+  String getUserInfoSettingQuery = Queries.QUERY_GET_USER_SETTING;
   String phoneVerificationMutation = FXRMutations.MUTATION_PHONE_VERIFICATION;
 
-  handleEditProfile() {
-    Navigator.of(context).push(
+  handleEditProfile(userData) async {
+    var result = await Navigator.of(context).push(
       CupertinoPageRoute(
-          builder: (context) => UserProfileEdit(userData: widget.userData)),
+          builder: (context) => UserProfileEdit(userData: userData)),
     );
+    if (result) {
+      setState(() {});
+    }
   }
 
   @override
@@ -47,15 +55,50 @@ class UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+    String accessToken = storage.getItem("jwt_token");
+    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+  }
+
+  Widget home() {
+    return Query(
+        options: QueryOptions(
+          document: gql(getUserInfoSettingQuery),
+          variables: {},
+          
+        ),
+        builder: (QueryResult result,
+            {VoidCallback? refetch, FetchMore? fetchMore}) {
+          if (result.hasException) {
+            return CustomNoInternet(handleTryAgain: () {
+              Navigator.of(context)
+                  .push(new MaterialPageRoute(
+                      builder: (context) => AccountSetting()))
+                  .then((value) => setState(() => {}));
+            });
+          }
+
+          if (result.isLoading) {
+            return Container(
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
+          }
+          var userSettingInfo = result.data!['user'];
+          return mainHome(userSettingInfo);
+        });
+  }
+
+  Widget mainHome(userSettingInfo) {
     return Column(children: [
       const CustomSpacer(size: 15),
-      userProfileField(),
+      userProfileField(userSettingInfo),
       const CustomSpacer(size: 30),
-      editProfileButton(),
+      editProfileButton(userSettingInfo),
     ]);
   }
 
-  Widget userProfileField() {
+  Widget userProfileField(userData) {
     return Container(
         width: wScale(327),
         // height: hScale(40),
@@ -68,7 +111,7 @@ class UserProfileState extends State<UserProfile> {
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1), // changes position of shadow
             ),
           ],
@@ -100,49 +143,45 @@ class UserProfileState extends State<UserProfile> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                    "${widget.userData['firstName']} ${widget.userData['lastName']}",
+                Text("${userData['firstName']} ${userData['lastName']}",
                     style: TextStyle(
                         fontSize: fSize(16),
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF040415))),
                 const CustomSpacer(size: 9),
-                Text(widget.userData['email'],
+                Text(userData['email'],
                     style: TextStyle(
                         fontSize: fSize(14), color: const Color(0xFF70828D))),
                 const CustomSpacer(size: 10),
                 Row(
                   children: [
-                    Text(widget.userData['mobile'],
+                    Text(userData['mobile'],
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
-                            color: widget.userData['mobileVerified'] == true
+                            color: userData['mobileVerified'] == true
                                 ? const Color(0xFF040415)
                                 : const Color(0xFFEB5757))),
                     SizedBox(width: wScale(10)),
-                    Text(
-                        widget.userData['mobileVerified'] == true
-                            ? 'Verified'
-                            : '',
+                    Text(userData['mobileVerified'] == true ? 'Verified' : '',
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
-                            color: widget.userData['mobileVerified'] == true
+                            color: userData['mobileVerified'] == true
                                 ? const Color(0xFF30E7A9)
                                 : const Color(0xFFEB5757))),
                     SizedBox(width: wScale(5)),
                     Icon(
-                        widget.userData['mobileVerified'] == true
+                        userData['mobileVerified'] == true
                             ? Icons.check_circle
                             : Icons.info,
-                        color: widget.userData['mobileVerified'] == true
+                        color: userData['mobileVerified'] == true
                             ? const Color(0xff30E7A9)
                             : const Color(0xFFEB5757),
                         size: hScale(14)),
                     SizedBox(width: wScale(10)),
-                    widget.userData['mobileVerified'] != true
-                        ? mutationButton()
+                    userData['mobileVerified'] != true
+                        ? mutationButton(userData)
                         : SizedBox()
                   ],
                 ),
@@ -155,9 +194,9 @@ class UserProfileState extends State<UserProfile> {
                             fontWeight: FontWeight.w500,
                             color: const Color(0xFF70828D))),
                     Text(
-                        widget.userData['language'] == 'en'
-                            ? 'English (US)'
-                            : 'English (UK)',
+                        userData['language'] == 'en'
+                            ? 'English(US)'
+                            : 'Vietnamese',
                         style: TextStyle(
                             fontSize: fSize(14),
                             fontWeight: FontWeight.w500,
@@ -170,7 +209,7 @@ class UserProfileState extends State<UserProfile> {
         ));
   }
 
-  Widget editProfileButton() {
+  Widget editProfileButton(userData) {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
@@ -182,7 +221,7 @@ class UserProfileState extends State<UserProfile> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onPressed: () {
-            handleEditProfile();
+            handleEditProfile(userData);
           },
           child: Text("Edit Profile",
               style: TextStyle(
@@ -192,7 +231,7 @@ class UserProfileState extends State<UserProfile> {
         ));
   }
 
-  Widget mutationButton() {
+  Widget mutationButton(userData) {
     String accessToken = storage.getItem("jwt_token");
     return GraphQLProvider(
         client: Token().getLink(accessToken),
@@ -232,7 +271,8 @@ class UserProfileState extends State<UserProfile> {
                                 child: CustomResultModal(
                                     status: true,
                                     title: "SMS verification Failed",
-                                    message: "An SMS verification link can't send to your mobile number.")));
+                                    message:
+                                        "An SMS verification link can't send to your mobile number.")));
                       });
                 }
               },
@@ -252,8 +292,8 @@ class UserProfileState extends State<UserProfile> {
                   onPressed: () {
                     runMutation({
                       "country": "SG",
-                      "language": widget.userData['language'],
-                      "mobile": widget.userData['mobile'],
+                      "language": userData['language'],
+                      "mobile": userData['mobile'],
                       "verificationType": "SMS",
                     });
                   });

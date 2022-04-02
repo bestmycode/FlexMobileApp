@@ -1,4 +1,5 @@
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
+import 'package:co/ui/widgets/custom_cardtype_popup_list.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
@@ -36,15 +37,20 @@ class UserProfileEditState extends State<UserProfileEdit> {
   final emailCtl = TextEditingController();
   final phoneNumberCtl = TextEditingController();
   final languageCtl = TextEditingController();
+  var langTypeArr = ["English(US)", "Vietnamese"];
 
   final LocalStorage storage = LocalStorage('token');
   final LocalStorage userStorage = LocalStorage('user_info');
   String updateUserProfileMutation = FXRMutations.MUTATION_UPDATE_USER_PROFILE;
+  bool isLoading = false;
 
   handleConfirm(runMutation) {
+    setState(() {
+      isLoading = true;
+    });
     runMutation({
       "firstName": widget.userData['firstName'],
-      "language": languageCtl.text,
+      "language": languageCtl.text == "English(US)" ? "en" : "vi",
       "lastName": widget.userData['lastName'],
       "mobile": phoneNumberCtl.text,
       "userId": widget.userData['id'],
@@ -57,7 +63,8 @@ class UserProfileEditState extends State<UserProfileEdit> {
     lastNameCtl.text = widget.userData['lastName'];
     emailCtl.text = widget.userData['email'];
     phoneNumberCtl.text = widget.userData['mobile'];
-    languageCtl.text = widget.userData['language'];
+    languageCtl.text =
+        widget.userData['language'] == "en" ? "English(US)" : "Vietnamese";
     super.initState();
   }
 
@@ -102,51 +109,83 @@ class UserProfileEditState extends State<UserProfileEdit> {
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1), // changes position of shadow
             ),
           ],
         ),
-        child: Column(
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Text("Edit Profile",
-                style: TextStyle(
-                    fontSize: fSize(16),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A2831))),
-            const CustomSpacer(size: 22),
-            CustomTextField(
-                ctl: firstNameCtl,
-                hint: 'Enter First Name',
-                label: 'First Name',
-                readOnly: true,
-                fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
-            const CustomSpacer(size: 22),
-            CustomTextField(
-                ctl: lastNameCtl,
-                hint: 'Enter Last Name',
-                label: 'Last Name',
-                readOnly: true,
-                fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
-            const CustomSpacer(size: 22),
-            CustomTextField(
-                ctl: emailCtl,
-                hint: 'Enter Email',
-                label: 'Email',
-                readOnly: true,
-                fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
-            const CustomSpacer(size: 22),
-            CustomTextField(
-                ctl: phoneNumberCtl,
-                hint: 'Enter Phone Number',
-                label: 'Phone Number',
-                fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
-            const CustomSpacer(size: 22),
-            CustomTextField(
-                ctl: languageCtl,
-                hint: 'Enter Language',
-                label: 'Language',
-                fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
+            Opacity(
+                opacity: isLoading ? 0.5 : 1,
+                child: Column(
+                  children: [
+                    Text("Edit Profile",
+                        style: TextStyle(
+                            fontSize: fSize(16),
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1A2831))),
+                    const CustomSpacer(size: 22),
+                    CustomTextField(
+                        ctl: firstNameCtl,
+                        hint: 'Enter First Name',
+                        label: 'First Name',
+                        readOnly: true,
+                        fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
+                    const CustomSpacer(size: 22),
+                    CustomTextField(
+                        ctl: lastNameCtl,
+                        hint: 'Enter Last Name',
+                        label: 'Last Name',
+                        readOnly: true,
+                        fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
+                    const CustomSpacer(size: 22),
+                    CustomTextField(
+                        ctl: emailCtl,
+                        hint: 'Enter Email',
+                        label: 'Email',
+                        readOnly: true,
+                        fillColor: const Color(0xFFBDBDBD).withOpacity(0.1)),
+                    const CustomSpacer(size: 22),
+                    CustomTextField(
+                        ctl: phoneNumberCtl,
+                        hint: 'Enter Phone Number',
+                        label: 'Phone Number',
+                        fillColor: const Color(0xFFFFFFFF)),
+                    const CustomSpacer(size: 22),
+                    widget.userData['language'] == "en" ? Stack(children: [
+                      CustomTextField(
+                          ctl: languageCtl,
+                          hint: 'Enter Language',
+                          label: 'Language',
+                          readOnly: true,
+                          fillColor: const Color(0xFFFFFFFF)),
+                      // Positioned(
+                      //     right: 0,
+                      //     child: Container(
+                      //         width: wScale(40),
+                      //         height: hScale(64),
+                      //         child: TextButton(
+                      //             onPressed: () {
+                      //               _showCardTypeModalDialog(
+                      //                   context, langTypeArr);
+                      //             },
+                      //             child: Icon(Icons.keyboard_arrow_down_rounded,
+                      //                 color: const Color(0xFFBFBFBF)))))
+                    ]): SizedBox()
+                  ],
+                )),
+            isLoading
+                ? Positioned(
+                    top: 150,
+                    child: Container(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF60C094)))),
+                  )
+                : SizedBox()
           ],
         ));
   }
@@ -161,37 +200,49 @@ class UserProfileEditState extends State<UserProfileEdit> {
               update: (GraphQLDataProxy cache, QueryResult? result) {
                 return cache;
               },
+              onError: (error) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+                          child: Dialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: CustomResultModal(
+                                  status: true,
+                                  title: "Something went wrong",
+                                  titleColor: Color(0xFFEB5757),
+                                  message: error!.graphqlErrors.length != 0
+                                      ? "This mobile number has been registered to an existing account.\nPlease enter a different mobile number."
+                                      : "We are unable to update the user profile.\nPlease try again later")));
+                    });
+              },
               onCompleted: (resultData) {
-                if (resultData['user'] != null) {
+                setState(() {
+                  isLoading = false;
+                });
+                if (resultData != null && resultData['user'] != null) {
                   showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: wScale(40)),
-                          child: Dialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0)),
-                              child: CustomResultModal(
-                                  status: true,
-                                  title: "Update Successful",
-                                  message:
-                                      "User Profile has been successfully updated")));
-                    });
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: wScale(40)),
-                          child: Dialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.0)),
-                              child: CustomResultModal(
-                                  status: true,
-                                  title: "Failed",
-                                  message:
-                                      "User Profile Don't Updated!!!")));
-                    });
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: wScale(40)),
+                            child: Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: CustomResultModal(
+                                    status: true,
+                                    title: "Update Successful",
+                                    message:
+                                        "User Profile has been successfully updated",
+                                    handleOKClick: () {
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop('dialog');
+                                      Navigator.pop(context, true);
+                                    })));
+                      });
                 }
               },
             ),
@@ -201,24 +252,45 @@ class UserProfileEditState extends State<UserProfileEdit> {
   }
 
   Widget confirmButton(runMutation) {
-    return SizedBox(
-        width: wScale(295),
-        height: hScale(56),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            primary: const Color(0xff1A2831),
-            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          ),
-          onPressed: () {
-            handleConfirm(runMutation);
-          },
-          child: Text("Confirm Changes",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: fSize(16),
-                  fontWeight: FontWeight.bold)),
-        ));
+    return Opacity(
+        opacity: isLoading ? 0.5 : 1,
+        child: SizedBox(
+            width: wScale(295),
+            height: hScale(56),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: const Color(0xff1A2831),
+                side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              onPressed: () {
+                isLoading ? null : handleConfirm(runMutation);
+              },
+              child: Text("Confirm Changes",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fSize(16),
+                      fontWeight: FontWeight.bold)),
+            )));
+  }
+
+  _showCardTypeModalDialog(context, arrData) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+              padding: EdgeInsets.symmetric(horizontal: wScale(40)),
+              child: Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0)),
+                  child: CustomCardTypePopUpList(
+                    arrData: arrData,
+                    onPress: (index) {
+                      languageCtl.text =
+                          index == 0 ? "English(US)" : "Vietnamese";
+                    },
+                  )));
+        });
   }
 }

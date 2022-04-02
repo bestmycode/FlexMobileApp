@@ -239,7 +239,7 @@ class TeamCardsState extends State<TeamCards> {
                     contentPadding: const EdgeInsets.all(0),
                     enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.transparent)),
-                    hintText: 'Card Holders , Cards…',
+                    hintText: 'Card Holders, Card Names',
                     hintStyle: TextStyle(
                         color: const Color(0xff040415).withOpacity(0.5),
                         fontSize: fSize(12),
@@ -309,6 +309,7 @@ class TeamCardsState extends State<TeamCards> {
   }
 
   Widget cardHeader(data) {
+    var cardNumber = data["cardNum"].substring(data["cardNum"].length-4, data["cardNum"].length);
     return Container(
         width: wScale(327),
         // height: hScale(50),
@@ -329,7 +330,7 @@ class TeamCardsState extends State<TeamCards> {
           children: [
             Text(data['userName'],
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
-            Text('**** **** **** ${data["cardNum"]}',
+            Text('**** **** **** ${cardNumber}',
                 style: TextStyle(fontSize: fSize(12), color: Colors.white)),
           ],
         ));
@@ -419,9 +420,9 @@ class TeamCardsState extends State<TeamCards> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],

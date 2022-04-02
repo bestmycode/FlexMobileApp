@@ -29,7 +29,7 @@ class CustomLoading extends StatelessWidget {
                     BoxShadow(
                       color: Color(0xFF303030).withOpacity(0.25),
                       spreadRadius: 4,
-                      blurRadius: 20,
+                      blurRadius: 10,
                       offset: const Offset(0, 1), // changes position of shadow
                     ),
                   ],

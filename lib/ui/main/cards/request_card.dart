@@ -59,7 +59,7 @@ class RequestCardState extends State<RequestCard> {
     true,
     false
   ];
-  double transactionLimitValue = 0;
+  double transactionLimitValue = 1.0;
   double varianceLimitValue = 0;
 
   handleCloneSetting() {}
@@ -144,9 +144,9 @@ class RequestCardState extends State<RequestCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -226,9 +226,9 @@ class RequestCardState extends State<RequestCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -304,9 +304,9 @@ class RequestCardState extends State<RequestCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -420,9 +420,9 @@ class RequestCardState extends State<RequestCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -434,6 +434,7 @@ class RequestCardState extends State<RequestCard> {
           Text('Additional Spend Control',
               style: TextStyle(
                   fontSize: fSize(16),
+                  height: 1.8,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1A2831))),
           Opacity(
@@ -447,6 +448,7 @@ class RequestCardState extends State<RequestCard> {
                       Text('Merchant Category Blocking',
                           style: TextStyle(
                               fontSize: fSize(14),
+                              fontWeight: FontWeight.w500,
                               color: const Color(0xFF1A2831))),
                       SizedBox(
                         width: wScale(32),
@@ -468,21 +470,21 @@ class RequestCardState extends State<RequestCard> {
                   RichText(
                     text: TextSpan(
                       style: TextStyle(
-                          fontSize: fSize(12),
+                          fontSize: fSize(14),
                           color: const Color(0xFF70828D),
                           fontWeight: FontWeight.w400),
                       children: const [
                         TextSpan(
                             text:
-                                'Select the categories where spending will be \n'),
+                                'Select the categories where spending will be '),
                         TextSpan(
-                            text: 'Blocked',
+                            text: 'blocked',
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFFEB5757))),
                         TextSpan(
                             text:
-                                '.  When making a purchase on unauthorized\ncategories, the transaction will be rejected. All\nspending categories are'),
+                                '.  When making a purchase on unauthorized categories, the transaction will be rejected. All spending categories are'),
                         TextSpan(
                             text: ' allowed',
                             style: TextStyle(
@@ -621,26 +623,32 @@ class RequestCardState extends State<RequestCard> {
         SizedBox(width: wScale(9)),
         Text(title,
             style: TextStyle(
-                fontSize: fSize(16),
-                fontWeight: FontWeight.w600,
+                fontSize: fSize(14),
+                fontWeight: FontWeight.w500,
                 color: const Color(0xFF1A2831)))
       ],
     );
   }
 
   Widget customSwitch(index) {
-    return SizedBox(
-      width: wScale(26),
-      height: hScale(15),
-      child: Transform.scale(
-        scale: 0.4,
-        child: CupertinoSwitch(
-            trackColor: const Color(0xFFEB5757),
-            activeColor: const Color(0xFF3BD8A3),
-            value: isSwitchedArr[index],
-            onChanged: (v) => handleSwitch(index, v)),
-      ),
-    );
+    return Container(
+        height: wScale(30),
+        width: wScale(38),
+        child: TextButton(
+          onPressed: () {
+            setState(() {
+              isSwitchedArr[index] = !isSwitchedArr[index];
+            });
+          },
+          child: Transform.scale(
+            scale: 0.4,
+            child: CupertinoSwitch(
+                trackColor: const Color(0xFFEB5757),
+                activeColor: const Color(0xFF3BD8A3),
+                value: isSwitchedArr[index],
+                onChanged: (v) {}),
+          ),
+        ));
   }
 
   Widget readonlyTextFiled(ctl, hint, label) {
@@ -690,9 +698,9 @@ class RequestCardState extends State<RequestCard> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -754,7 +762,7 @@ class RequestCardState extends State<RequestCard> {
         margin: EdgeInsets.only(left: wScale(8), right: wScale(8)),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xffc9c9c9).withOpacity(0.1),
+            primary: const Color(0xff1A2831).withOpacity(0.1),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),
@@ -857,7 +865,7 @@ class RequestCardState extends State<RequestCard> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 0),
-            primary: const Color(0xffc9c9c9).withOpacity(0.1),
+            primary: const Color(0xff1A2831).withOpacity(0.1),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           ),

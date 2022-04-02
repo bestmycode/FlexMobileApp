@@ -4,8 +4,6 @@ import 'package:auth0/auth0.dart';
 import 'package:co/ui/auth/signup/mail_verify.dart';
 import 'package:co/utils/basedata.dart';
 import 'package:co/utils/token.dart';
-import 'package:country_pickers/country.dart';
-import 'package:country_pickers/country_pickers.dart';
 import 'package:co/ui/widgets/custom_mobile_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -185,7 +183,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                 child: Container(
                   color: Colors.white,
                   child: Column(children: [
-      const SignupProgressHeader(prev: SPLASH_SCREEN),
+      const SignupProgressHeader(prev: SIGN_IN),
       const CustomSpacer(size: 38),
       CustomTextField(
           ctl: firstNameCtl, hint: 'Enter First Name', label: 'First Name'),

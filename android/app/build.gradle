@@ -84,5 +84,8 @@ flutter {
 }
 
 dependencies {
+    implementation 'io.intercom.android:intercom-sdk-base:10.6.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    debugImplementation 'com.meawallet:mcd-finaxar-test:1.0.1-debug'
+    releaseImplementation 'com.meawallet:mcd-finaxar-test:1.0.1'
 }

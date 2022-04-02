@@ -39,7 +39,7 @@ class Validator {
     if (value.isEmpty) {
       return "This field is required.";
     } else if (!regExp.hasMatch(value)) {
-      return "Please input valid Email address";
+      return "Please use a valid email address.";
     } else {
       return '';
     }

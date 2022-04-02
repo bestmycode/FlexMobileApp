@@ -1,3 +1,4 @@
+import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/ui/widgets/transaction_item.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
@@ -8,11 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 
 class CreditTransactionTypeSectionItem extends StatefulWidget {
-  final billedType;
-  const CreditTransactionTypeSectionItem({
-    Key? key,
-    this.billedType
-  }) : super(key: key);
+  final unbilledTrans;
+  final billedTrans;
+  const CreditTransactionTypeSectionItem(
+      {Key? key, this.billedTrans, this.unbilledTrans})
+      : super(key: key);
 
   @override
   CreditTransactionTypeSectionItemState createState() =>
@@ -33,11 +34,13 @@ class CreditTransactionTypeSectionItemState
     return Scale().fSize(context, size);
   }
 
-  final LocalStorage storage = LocalStorage('token');
-  final LocalStorage userStorage = LocalStorage('user_info');
-  String readBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
-  String billedUnbilledTransactions = Queries.QUERY_BILLED_UNBILLED_TRANSACTIONS;
-  String billingStatementsTable = Queries.QUERY_BILLING_STATEMENTTABLE;
+  int billedType = 1;
+
+  handleBilledType(type) {
+    setState(() {
+      billedType = type;
+    });
+  }
 
   @override
   void initState() {
@@ -46,63 +49,167 @@ class CreditTransactionTypeSectionItemState
 
   @override
   Widget build(BuildContext context) {
-    String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
+    return DefaultTabController(
+      length: 2,
+      child: Container(
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                width: wScale(327),
+                height: hScale(40),
+                padding: EdgeInsets.all(hScale(2)),
+                decoration: BoxDecoration(
+                  color: const Color(0xfff5f5f6),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(hScale(20)),
+                    topRight: Radius.circular(hScale(20)),
+                    bottomLeft: Radius.circular(hScale(20)),
+                    bottomRight: Radius.circular(hScale(20)),
+                  ),
+                ),
+                child: TabBar(
+                  unselectedLabelColor: const Color(0xff70828D),
+                  labelPadding: const EdgeInsets.all(1),
+                  labelStyle: TextStyle(
+                    fontSize: fSize(14),
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  labelColor: Color(0xff1A2831),
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(260),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF040415).withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 1,
+                        offset:
+                            const Offset(0, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  indicatorPadding: const EdgeInsets.all(1),
+                  indicatorWeight: 1,
+                  tabs: [
+                    Tab(
+                      text: 'Unbilled',
+                    ),
+                    Tab(
+                      text: 'Billed',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              height: hScale(584),
+              width: double.maxFinite,
+              child: TabBarView(
+                children: [
+                  Container(
+                      height: hScale(570),
+                      child: SingleChildScrollView(
+                          child: Column(children: [
+                        CustomSpacer(size: 15),
+                        getTransactionArrWidgets(
+                            widget.unbilledTrans['financeAccountTransactions'])
+                      ]))),
+                  Container(
+                      height: hScale(570),
+                      child: SingleChildScrollView(
+                          child: Column(children: [
+                        CustomSpacer(size: 15),
+                        getTransactionArrWidgets(
+                            widget.billedTrans['financeAccountTransactions'])
+                      ])))
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget home() {
-    var orgId = userStorage.getItem('orgId');
-    var isAdmin = userStorage.getItem('isAdmin');
-    return Query(
-        options: QueryOptions(
-          document: gql(readBusinessAccountSummary),
-          variables: {
-            "orgId": orgId,
-            "isAdmin": isAdmin,
-          },
+  Widget billedTypeField() {
+    return Container(
+      width: wScale(327),
+      height: hScale(40),
+      padding: EdgeInsets.all(hScale(2)),
+      decoration: BoxDecoration(
+        color: const Color(0xfff5f5f6),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(hScale(20)),
+          topRight: Radius.circular(hScale(20)),
+          bottomLeft: Radius.circular(hScale(20)),
+          bottomRight: Radius.circular(hScale(20)),
         ),
-        builder: (QueryResult result,
-            {VoidCallback? refetch, FetchMore? fetchMore}) {
-          if (result.hasException) {
-            return Text(result.exception.toString());
-          }
-
-          if (result.isLoading) {
-            return Container(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
-          }
-          var listUserFinanceAccounts = result.data!['readBusinessAcccountSummary'];
-          var flaId = listUserFinanceAccounts['data']['creditLine']['id'];
-      return Query(
-        options: QueryOptions(
-          document: gql(billedUnbilledTransactions),
-          variables: {
-            "orgId": orgId, 
-            "status": widget.billedType != 1 ? "BILLED" : "PENDING_OR_UNBILLED",
-            "flaId": flaId
-          },
-          // pollInterval: const Duration(seconds: 10),
-        ),
-        builder: (QueryResult billedResult,
-            {VoidCallback? refetch, FetchMore? fetchMore}) {
-          if (billedResult.hasException) {
-            return Text(billedResult.exception.toString());
-          }
-
-          if (billedResult.isLoading) {
-            return Container(
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF60C094))));
-          }
-          var listTransactions = billedResult.data!['listTransactions'];
-          return mainHome(listTransactions);
-        });
-      });
+      ),
+      child: Row(children: [
+        cardGroupButton('Unbilled', 1),
+        cardGroupButton('Billed', 2),
+      ]),
+    );
   }
 
-  Widget mainHome(listTransactions) {
-    return getTransactionArrWidgets(listTransactions['financeAccountTransactions']);
+  Widget cardGroupButton(cardName, type) {
+    return type == billedType
+        ? Container(
+            width: wScale(160),
+            height: hScale(35),
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(260),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 4,
+                  blurRadius: 10,
+                  offset: const Offset(0, 1), // changes position of shadow
+                ),
+              ],
+            ),
+            child: TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xFFFFFFFF),
+                  padding: const EdgeInsets.all(0),
+                ),
+                child: Text(
+                  cardName,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: fSize(14), color: const Color(0xff1A2831)),
+                ),
+                onPressed: () {
+                  handleBilledType(type);
+                }),
+          )
+        : TextButton(
+            style: TextButton.styleFrom(
+              primary: const Color(0xff70828D),
+              padding: const EdgeInsets.all(0),
+              textStyle: TextStyle(
+                  fontSize: fSize(14), color: const Color(0xff70828D)),
+            ),
+            onPressed: () {
+              handleBilledType(type);
+            },
+            child: Container(
+              width: wScale(160),
+              height: hScale(35),
+              alignment: Alignment.center,
+              child: Text(
+                cardName,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: fSize(14), color: const Color(0xff70828D)),
+              ),
+            ),
+          );
   }
 
   Widget getTransactionArrWidgets(arr) {
@@ -112,15 +219,26 @@ class CreditTransactionTypeSectionItemState
         : Column(
             children: arr.map<Widget>((item) {
             return TransactionItem(
-              accountId: item['txnFinanceAccId'],
-              transactionId: item['sourceTransactionId'],
-              date: '${DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}  |  ${DateFormat('hh:mm a').format(DateTime.fromMillisecondsSinceEpoch(item['transactionDate']))}',
-              transactionName: item['description'],
-              subTransactionName: item['qualifiers'] == null ? "" : item['qualifiers'],
-              status: item['status'],
-              userName: item['merchantName'],
-              cardNum: item['pan'],
-              value: item['fxrBillAmount'].toStringAsFixed(2));
+                whichTab: billedType == 1 ? "UNBILLED" : "BILLED",
+                accountId: item['txnFinanceAccId'],
+                transactionId: item['sourceTransactionId'],
+                date: item['transactionDate'],
+                transactionName: item['description'],
+                status: item['status'],
+                transactionType: item['transactionType'],
+                userName: item['merchantName'],
+                cardNum: item['pan'],
+                billCurrency: item['billCurrency'],
+                fxrBillAmount: item['fxrBillAmount'],
+                transactionCurrency: item['transactionCurrency'],
+                transactionAmount: item['transactionAmount'],
+                qualifiers:
+                    item['qualifiers'] == null ? "" : item['qualifiers'],
+                receiptStatus: item['fxrBillAmount'] >= 0
+                    ? 0
+                    : item['receiptStatus'] == "PAID"
+                        ? 2
+                        : 1);
           }).toList());
   }
 }

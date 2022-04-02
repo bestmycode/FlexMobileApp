@@ -8,18 +8,17 @@ class VirtualMyCardsSearchField extends StatefulWidget {
   final handleCardType;
   final handleSortType;
   const VirtualMyCardsSearchField(
-      {
-        Key? key,
-        this.activeType,
-        this.sortArr,
-        this.sortType,
-        this.handleCardType,
-        this.handleSortType
-      })
+      {Key? key,
+      this.activeType,
+      this.sortArr,
+      this.sortType,
+      this.handleCardType,
+      this.handleSortType})
       : super(key: key);
 
   @override
-  VirtualMyCardsSearchFieldState createState() => VirtualMyCardsSearchFieldState();
+  VirtualMyCardsSearchFieldState createState() =>
+      VirtualMyCardsSearchFieldState();
 }
 
 class VirtualMyCardsSearchFieldState extends State<VirtualMyCardsSearchField> {
@@ -36,7 +35,7 @@ class VirtualMyCardsSearchFieldState extends State<VirtualMyCardsSearchField> {
   }
 
   bool showSortModal = false;
-  
+
   handleSortModal() {
     setState(() {
       showSortModal = !showSortModal;
@@ -54,33 +53,41 @@ class VirtualMyCardsSearchFieldState extends State<VirtualMyCardsSearchField> {
   }
 
   Widget headerSortField() {
-    return Container(
-      height: hScale(500),
-      alignment: Alignment.topCenter,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Row(children: [
-          activeButton('Active Cards', 1),
-          activeButton('Inactive Cards', 2),
-        ]),
-        TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xff70828D),
-              padding: const EdgeInsets.all(0),
-              textStyle: TextStyle(
-                  fontSize: fSize(14), color: const Color(0xff70828D)),
-            ),
-            onPressed: () {
-              handleSortModal();
-            },
-            child: Row(
-              children: [
-                Icon(Icons.swap_vert_rounded,
-                    color: const Color(0xff29C490), size: hScale(18)),
-                Text('Sort by', style: TextStyle(fontSize: fSize(12)))
-              ],
-            )),
-      ]),
-    );
+    return GestureDetector(
+        onTap: () {
+          showSortModal && handleSortModal();
+        },
+        child: Container(
+          height: hScale(500),
+          color: showSortModal ? Colors.transparent : null,
+          alignment: Alignment.topCenter,
+          child:Container(
+          height: hScale(40),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(children: [
+              activeButton('Active Cards', 1),
+              activeButton('Inactive Cards', 2),
+            ]),
+            TextButton(
+                style: TextButton.styleFrom(
+                  primary: const Color(0xff70828D),
+                  padding: const EdgeInsets.all(0),
+                  textStyle: TextStyle(
+                      fontSize: fSize(14), color: const Color(0xff70828D)),
+                ),
+                onPressed: () {
+                  handleSortModal();
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.swap_vert_rounded,
+                        color: const Color(0xff29C490), size: hScale(18)),
+                    Text('Sort by', style: TextStyle(fontSize: fSize(12)))
+                  ],
+                )),
+          ]),
+        )));
   }
 
   Widget activeButton(title, type) {
@@ -133,9 +140,9 @@ class VirtualMyCardsSearchFieldState extends State<VirtualMyCardsSearchField> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -155,9 +162,8 @@ class VirtualMyCardsSearchFieldState extends State<VirtualMyCardsSearchField> {
   Widget modalButton(title, type, style) {
     return TextButton(
       style: TextButton.styleFrom(
-        primary: widget.sortType == type
-                ? const Color(0xFF29C490)
-                : Colors.black,
+        primary:
+            widget.sortType == type ? const Color(0xFF29C490) : Colors.black,
         padding: EdgeInsets.only(
             top: hScale(10),
             bottom: hScale(10),
@@ -181,6 +187,4 @@ class VirtualMyCardsSearchFieldState extends State<VirtualMyCardsSearchField> {
       ),
     );
   }
-
-
 }

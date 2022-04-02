@@ -2,8 +2,6 @@
 const String LOADING_SCREEN = 'loading';
 const String FIRST_LOADING_SCREEN = "first_loading";
 // ignore: constant_identifier_names
-const String SPLASH_SCREEN = 'splash';
-// ignore: constant_identifier_names
 const String SIGN_IN = 'signin';
 // ignore: constant_identifier_names
 const String SIGN_IN_AUTH = 'signin_auth';

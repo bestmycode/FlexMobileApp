@@ -24,15 +24,13 @@ class LoadingScreenState extends State<LoadingScreen>
     return Timer(_duration, navigationPage);
   }
 
-  void navigationPage() async{
+  void navigationPage() async {
     SharedPreferences prefs = await _prefs;
     bool? isFirst = prefs.getBool("isFirst");
     bool? isRememberd = prefs.getBool("isRemembered");
     isFirst == false
-    ? isRememberd == true 
-      ? Navigator.of(context).pushReplacementNamed(SIGN_IN)
-      :Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN)
-    : Navigator.of(context).pushReplacementNamed(FIRST_LOADING_SCREEN);
+        ? Navigator.of(context).pushReplacementNamed(SIGN_IN)
+        : Navigator.of(context).pushReplacementNamed(FIRST_LOADING_SCREEN);
   }
 
   @override
@@ -43,7 +41,9 @@ class LoadingScreenState extends State<LoadingScreen>
     animation =
         CurvedAnimation(parent: animationController, curve: Curves.easeOut);
 
-    animation.addListener(() => setState(() {_visible = !_visible;}));
+    animation.addListener(() => setState(() {
+          _visible = !_visible;
+        }));
     animationController.forward();
 
     startTime();
@@ -51,13 +51,19 @@ class LoadingScreenState extends State<LoadingScreen>
 
   @override
   Widget build(BuildContext context) {
-    double widthRatio = MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width / 375;
+    double widthRatio =
+        MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width /
+            375;
     return Stack(
       children: <Widget>[
         Image.asset(
           "assets/loading_background.png",
-          height: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.height,
-          width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
+          height: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+              .size
+              .height,
+          width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+              .size
+              .width,
           fit: BoxFit.cover,
         ),
         Scaffold(

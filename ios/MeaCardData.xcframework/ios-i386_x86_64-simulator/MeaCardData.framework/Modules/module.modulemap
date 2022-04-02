@@ -1,0 +1,6 @@
+framework module MeaCardData {
+  umbrella header "MeaCardData.h"
+
+  export *
+  module * { export * }
+}

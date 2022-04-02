@@ -64,7 +64,7 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
       const Positioned(
         bottom: 0,
         left: 0,
-        child: CustomBottomBar(active: 0),
+        child: CustomBottomBar(active: 0, backHome: true),
       )
     ])));
   }
@@ -88,9 +88,9 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF000000).withOpacity(0.04),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -125,35 +125,50 @@ class DepositFundsScreenState extends State<DepositFundsScreen> {
                       ? "885123001190"
                       : widget.data["businessAccount"]["virtualAccountNumber"]),
               SizedBox(width: wScale(10)),
-              widget.data["businessAccount"]["virtualAccountNumber"] == null
-                  ? SizedBox()
-                  : Container(
-                      width: wScale(14),
-                      height: hScale(14),
-                      alignment: Alignment.center,
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          primary: const Color(0xff515151),
-                          padding: EdgeInsets.all(0),
-                          textStyle: TextStyle(
-                              fontSize: fSize(14),
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xff040415)),
-                        ),
-                        onPressed: () {
-                          handleCopied(widget.data["businessAccount"]
-                              ["virtualAccountNumber"]);
-                        },
-                        child: const Icon(Icons.content_copy,
-                            color: Color(0xff30E7A9), size: 14.0),
-                      )),
-              SizedBox(width: wScale(4)),
-              flagCopied
-                  ? Text('Copied',
-                      style: TextStyle(
+              Container(
+                  width: wScale(14),
+                  height: hScale(14),
+                  alignment: Alignment.center,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: const Color(0xff515151),
+                      padding: EdgeInsets.all(0),
+                      textStyle: TextStyle(
                           fontSize: fSize(14),
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xff30E7A9)))
+                          color: const Color(0xff040415)),
+                    ),
+                    onPressed: () {
+                      handleCopied(widget.data["businessAccount"]
+                                  ["virtualAccountNumber"] ==
+                              null
+                          ? "885123001190"
+                          : widget.data["businessAccount"]
+                              ["virtualAccountNumber"]);
+                    },
+                    child: const Icon(Icons.content_copy,
+                        color: Color(0xff30E7A9), size: 14.0),
+                  )),
+              SizedBox(width: wScale(4)),
+              flagCopied
+                  ? TextButton(
+                      style: TextButton.styleFrom(
+                        primary: const Color(0xff515151),
+                        padding: EdgeInsets.all(0),
+                      ),
+                      onPressed: () {
+                        handleCopied(widget.data["businessAccount"]
+                                    ["virtualAccountNumber"] ==
+                                null
+                            ? "885123001190"
+                            : widget.data["businessAccount"]
+                                ["virtualAccountNumber"]);
+                      },
+                      child: Text('Copied',
+                          style: TextStyle(
+                              fontSize: fSize(14),
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xff30E7A9))))
                   : const SizedBox(),
             ],
           ),

@@ -120,7 +120,7 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
                 options: QueryOptions(
                   document: gql(getCountryQuery),
                   variables: {"countryId": storage.getItem("country")},
-                  // pollInterval: const Duration(seconds: 10),
+                  
                 ),
                 builder: (QueryResult countryResult,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
@@ -150,7 +150,6 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
           return cache;
         },
         onCompleted: (resultData) {
-          print(resultData);
         },
       ),
       builder: (RunMutation runMutation, QueryResult? result ) {
@@ -218,9 +217,9 @@ class TwoStepVerificationScreenState extends State<TwoStepVerificationScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],

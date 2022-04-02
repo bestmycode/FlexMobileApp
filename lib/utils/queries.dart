@@ -37,7 +37,7 @@ class Queries {
   }
 ''';
 
-static const QUERY_CREATE_ORGANIZATION_PROFILE = r'''
+  static const QUERY_CREATE_ORGANIZATION_PROFILE = r'''
   query createOrganizationProfileQuery(
     $industryTerm: String!
     $countryId: String!
@@ -69,7 +69,7 @@ static const QUERY_CREATE_ORGANIZATION_PROFILE = r'''
   }
 ''';
 
-static const QUERY_ORGANIZATIONS = '''
+  static const QUERY_ORGANIZATIONS = '''
   query organizationsQuery {
     organizations {
       organizations {
@@ -119,7 +119,7 @@ static const QUERY_ORGANIZATIONS = '''
   }
 ''';
 
-static const QUERY_INTERACTION_FORMS_DATA = '''
+  static const QUERY_INTERACTION_FORMS_DATA = '''
   query interactionFormsDataQuery {
     user: profile {
       id
@@ -192,7 +192,7 @@ static const QUERY_INTERACTION_FORMS_DATA = '''
   }
 ''';
 
-static const QUERY_LIST_CALLBACK_REASONS = r'''
+  static const QUERY_LIST_CALLBACK_REASONS = r'''
   query listCallbackReasonsQuery($language: String) {
     listCallbackReasons: LIST_CALLBACK_REASONS(language: $language) {
       id
@@ -202,7 +202,7 @@ static const QUERY_LIST_CALLBACK_REASONS = r'''
 ''';
 
 // NOTE: This is a REST endpoint
-static const QUERY_CHECK_SIGNUP_TOKEN = r'''
+  static const QUERY_CHECK_SIGNUP_TOKEN = r'''
   query checkSignupToken($token: String) {
     checkSignupToken(token: $token)
       @rest(type: "checkSignupToken", path: "/token/verify/{args.token}") {
@@ -216,7 +216,7 @@ static const QUERY_CHECK_SIGNUP_TOKEN = r'''
 
 /////////////////////////////////
 
-static const QUERY_DASHBOARD_LAYOUT = r'''
+  static const QUERY_DASHBOARD_LAYOUT = r'''
   query getUserInfoQuery {
     user: profile {
       id
@@ -244,7 +244,7 @@ static const QUERY_DASHBOARD_LAYOUT = r'''
   }
 ''';
 
-static const QUERY_BUSINESS_ACCOUNT_SUMMARY = r'''
+  static const QUERY_BUSINESS_ACCOUNT_SUMMARY = r'''
   query getBusinessAccountSummary(
     $orgId: Int!
     $isAdmin: Boolean!
@@ -320,7 +320,7 @@ static const QUERY_BUSINESS_ACCOUNT_SUMMARY = r'''
   }
 ''';
 
-static const QUERY_USER_ACCOUNT_SUMMARY = r'''
+  static const QUERY_USER_ACCOUNT_SUMMARY = r'''
 query getUserFinanceAccountSummary($orgId: Int!) {
 readUserFinanceAccountSummary(orgId: $orgId) {
     data {
@@ -346,6 +346,7 @@ readUserFinanceAccountSummary(orgId: $orgId) {
         balance
         status
         currencyCode
+        publicToken
         spendControlLimits {
           transactionLimit
           variancePercentage
@@ -379,7 +380,7 @@ readUserFinanceAccountSummary(orgId: $orgId) {
 }
 ''';
 
-static const QUERY_RECENT_TRANSACTIONS = r'''
+  static const QUERY_RECENT_TRANSACTIONS = r'''
 query recentTransactionsQuery($orgId: Int!, $userId: Int, $flaId: String, $status: String, $startDate: Long, $endDate: Long, $filterArgs: String, $limit: Int, $offset: Int) {
     listTransactions(
     orgId: $orgId
@@ -427,7 +428,7 @@ query recentTransactionsQuery($orgId: Int!, $userId: Int, $flaId: String, $statu
 
 ''';
 
-static const QUERY_GET_USER_SETTING = r'''
+  static const QUERY_GET_USER_SETTING = r'''
 query getUserSettingInfo {
   user: profile {
     id
@@ -469,7 +470,7 @@ query getUserSettingInfo {
 }
 ''';
 
-static const QUERY_GET_COMPANY_SETTING = r'''
+  static const QUERY_GET_COMPANY_SETTING = r'''
 query organization($orgId: Int!) {
   organization(orgId: $orgId) {
     id
@@ -479,6 +480,7 @@ query organization($orgId: Int!) {
     country
     zipCode
     phone
+    timezone
     organizationAlias
     fxrEnableSpendControl
     baseCurrency
@@ -549,7 +551,7 @@ query organization($orgId: Int!) {
 }
 ''';
 
-static const QUERY_MY_VIRTUAL_CARD_TRANSACTION = r'''
+  static const QUERY_MY_VIRTUAL_CARD_TRANSACTION = r'''
 query myVirtualCardTransactionsQuery($flaId: String, $orgId: Int!, $status: String, $limit: Int, $offset: Int, $filterArgs: String, $startDate: Long, $endDate: Long, $userId: Int) {
   listTransactions(
     flaId: $flaId
@@ -596,7 +598,7 @@ query myVirtualCardTransactionsQuery($flaId: String, $orgId: Int!, $status: Stri
   }
 }
 ''';
-static const QUERY_MY_VIRTUAL_CARD_LIST = r'''
+  static const QUERY_MY_VIRTUAL_CARD_LIST = r'''
 query myVirtualCardsListQuery($orgId: Int!, $accountSubtype: String, $status: String, $search: String, $limit: Int, $offset: Int, $sort: String) {
   listUserFinanceAccounts(
     orgId: $orgId
@@ -609,6 +611,7 @@ query myVirtualCardsListQuery($orgId: Int!, $accountSubtype: String, $status: St
   ) {
     totalCount
     financeAccounts {
+      creation
       id
       accountType
       orgId
@@ -659,11 +662,11 @@ query myVirtualCardsListQuery($orgId: Int!, $accountSubtype: String, $status: St
 }
 ''';
 
-
-static const QUERY_LIST_CARDNAME = r'''
+  static const QUERY_LIST_CARDNAME = r'''
 query listCardNamesQuery($orgId: Int!, $financeAccountType: String) {
   listFinanceAccounts(orgId: $orgId, financeAccountType: $financeAccountType) {
     financeAccounts {
+      creation
       id
       accountType
       orgId
@@ -712,9 +715,7 @@ query listCardNamesQuery($orgId: Int!, $financeAccountType: String) {
 }
 ''';
 
-
-
-static const QUERY_TEAM_CARD_LIST = r'''
+  static const QUERY_TEAM_CARD_LIST = r'''
 query teamCardsList($orgId: Int!, $teamId: String, $accountSubtype: String, $status: String, $search: String, $limit: Int, $offset: Int, $sort: String) {
   listTeamFinanceAccounts(
     orgId: $orgId
@@ -728,6 +729,7 @@ query teamCardsList($orgId: Int!, $teamId: String, $accountSubtype: String, $sta
   ) {
     totalCount
     financeAccounts {
+      creation
       id
       accountType
       orgId
@@ -779,7 +781,7 @@ query teamCardsList($orgId: Int!, $teamId: String, $accountSubtype: String, $sta
 }
 ''';
 
-static const QUERY_TOTAL_COMPANY_BALANCE = r'''
+  static const QUERY_TOTAL_COMPANY_BALANCE = r'''
 query totalCompanyBalance($orgId: Int!) {
   readBusinessAcccountSummary(orgId: $orgId) {
     data {
@@ -805,7 +807,7 @@ query totalCompanyBalance($orgId: Int!) {
 }
 ''';
 
-static const QUERY_ALL_TRANSACTIONS_TAB_PANE_CONTENTS = r'''
+  static const QUERY_ALL_TRANSACTIONS_TAB_PANE_CONTENTS = r'''
 query allTransactionsTabPaneContents($flaId: String, $orgId: Int!, $status: String, $limit: Int, $offset: Int, $filterArgs: String, $startDate: Long, $endDate: Long, $userId: Int) {
   listTransactions(
     flaId: $flaId
@@ -835,6 +837,7 @@ query allTransactionsTabPaneContents($flaId: String, $orgId: Int!, $status: Stri
       owner
       pan
       paymentMethod
+      odAmount
       txnFinanceAccId
       description
       transactionAccountPublicToken
@@ -866,7 +869,7 @@ query allTransactionsTabPaneContents($flaId: String, $orgId: Int!, $status: Stri
 }
 ''';
 
-static const QUERY_ORGINTEGRATIONS = r'''
+  static const QUERY_ORGINTEGRATIONS = r'''
   query getOrgIntegrations($orgId: Int!) {
     orgIntegrations(orgId: $orgId) {
       orgIntegrationId
@@ -888,7 +891,7 @@ static const QUERY_ORGINTEGRATIONS = r'''
   }
 ''';
 
-static const QUERY_ALL_TRANSACTIONS = r'''
+  static const QUERY_ALL_TRANSACTIONS = r'''
 query allTransactionsQuery($flaId: String!, $orgId: Int!, $status: String, $limit: Int, $offset: Int, $filterArgs: String, $startDate: Long, $endDate: Long) {
   listTransactions(
     flaId: $flaId
@@ -934,7 +937,7 @@ query allTransactionsQuery($flaId: String!, $orgId: Int!, $status: String, $limi
 }
 ''';
 
-static const QUERY_PHYSICAL_TEAMCARD_LIST = r'''
+  static const QUERY_PHYSICAL_TEAMCARD_LIST = r'''
 query teamCardsList($orgId: Int!, $teamId: String, $accountSubtype: String, $status: String, $search: String, $limit: Int, $offset: Int, $sort: String) {
   listTeamFinanceAccounts(
     orgId: $orgId
@@ -948,6 +951,7 @@ query teamCardsList($orgId: Int!, $teamId: String, $accountSubtype: String, $sta
   ) {
     totalCount
     financeAccounts {
+      creation
       id
       accountType
       orgId
@@ -1000,7 +1004,7 @@ query teamCardsList($orgId: Int!, $teamId: String, $accountSubtype: String, $sta
 
 ''';
 
-static const QUERY_BILLED_UNBILLED_TRANSACTIONS = r'''
+  static const QUERY_BILLED_UNBILLED_TRANSACTIONS = r'''
 query billedUnbilledTransactions($orgId: Int!, $limit: Int, $offset: Int, $status: String, $flaId: String) {
   listTransactions(
     orgId: $orgId
@@ -1026,7 +1030,7 @@ query billedUnbilledTransactions($orgId: Int!, $limit: Int, $offset: Int, $statu
 }
 ''';
 
-static const QUERY_BILLING_STATEMENTTABLE = r'''
+  static const QUERY_BILLING_STATEMENTTABLE = r'''
 query billingStatementsTable($fplId: String!, $limit: Int) {
   listBills(fplId: $fplId, limit: $limit) {
     statusCode
@@ -1045,7 +1049,7 @@ query billingStatementsTable($fplId: String!, $limit: Int) {
 }
 ''';
 
-static const QUERY_INDUSTRY_FILTERD = r'''
+  static const QUERY_INDUSTRY_FILTERD = r'''
 query industriesFiltered($industryTerm: String!) {
   industriesFiltered: industries(term: $industryTerm) {
     id
@@ -1056,7 +1060,7 @@ query industriesFiltered($industryTerm: String!) {
 }
 ''';
 
-static const QUERY_LIST_COMPANY_TYPE = r'''
+  static const QUERY_LIST_COMPANY_TYPE = r'''
 query listCompanyTypes($country: String) {
   LIST_COMPANY_TYPES(country: $country) {
     id
@@ -1065,7 +1069,7 @@ query listCompanyTypes($country: String) {
 }
 ''';
 
-static const QUERY_GET_COUNTRY = r'''
+  static const QUERY_GET_COUNTRY = r'''
 query getCountry($countryId: String!) {
   country(id: $countryId) {
     id
@@ -1088,7 +1092,7 @@ query getCountry($countryId: String!) {
 }
 ''';
 
-static const QUERY_GET_TRANSACTION_DETAIL = r'''
+  static const QUERY_GET_TRANSACTION_DETAIL = r'''
 query getTransactionDetails($sourceTransactionId: String!, $financeAccountId: String!) {
   getTransactionDetails(
     sourceTransactionId: $sourceTransactionId
@@ -1125,17 +1129,17 @@ query getTransactionDetails($sourceTransactionId: String!, $financeAccountId: St
 }
 ''';
 
-static const QUERY_DOC_DOWNLOAD = r'''
+  static const QUERY_DOC_DOWNLOAD = r'''
 query downloadDocument($fileId: String!) {
   downloadDocument(fileId: $fileId)
 }''';
 
-static const QUERY_BILL_DOWNLOAD = r'''
+  static const QUERY_BILL_DOWNLOAD = r'''
 query downloadBillStatement($fileId: String!) {
   downloadBillStatement(fileId: $fileId)
 }''';
 
-static const QUERY_TEAMMEMBER_INVITATIONS = r'''
+  static const QUERY_TEAMMEMBER_INVITATIONS = r'''
 query teamMembersInvitations($orgId: Int!, $search: String, $limit: Int, $offset: Int, $sort: String) {
   invitations(
     orgId: $orgId
@@ -1169,7 +1173,7 @@ query teamMembersInvitations($orgId: Int!, $search: String, $limit: Int, $offset
 }
 ''';
 
-static const QUERY_LIST_ELIGIBLE_USER_CARD = r'''
+  static const QUERY_LIST_ELIGIBLE_USER_CARD = r'''
 query listEligibleUsersCard($orgId: Int!, $accountSubtype: String!) {
   listEligibleUsersForCard(orgId: $orgId, accountSubtype: $accountSubtype) {
     eligibleUsers {
@@ -1183,7 +1187,7 @@ query listEligibleUsersCard($orgId: Int!, $accountSubtype: String!) {
 }
 ''';
 
-static const QUERY_LIST_MERCHANT_GROUP = r'''
+  static const QUERY_LIST_MERCHANT_GROUP = r'''
 query listMerchantGroups($countryCode: String!) {
   listMerchantGroups(countryCode: $countryCode) {
     merchantGroup {
@@ -1194,7 +1198,7 @@ query listMerchantGroups($countryCode: String!) {
   }
 }''';
 
-static const QUERY_READ_FINANCE_ACCOUNT = r'''
+  static const QUERY_READ_FINANCE_ACCOUNT = r'''
 query readFinanceAccount($orgId: Int!, $financeAccountId: String!) {
   readFinanceAccount(orgId: $orgId, financeAccountId: $financeAccountId) {
     id
@@ -1253,7 +1257,7 @@ query readFinanceAccount($orgId: Int!, $financeAccountId: String!) {
 }
 ''';
 
-static const QUERY_GET_CARD_DETAIL = r'''
+  static const QUERY_GET_CARD_DETAIL = r'''
 query getCardDetails($financeAccountId: String!, $wrappedSessionKey: String!) {
   getCardDetails(
     financeAccountId: $financeAccountId
@@ -1272,5 +1276,131 @@ query getCardDetails($financeAccountId: String!, $wrappedSessionKey: String!) {
   }
 }
 ''';
+
+  static const QUERY_ALL_TRANSACTION_TO_CSV = r'''
+query allTransactionsV2CsvContents($orgId: Int!, $status: String, $limit: Int, $startDate: Long, $endDate: Long, $userId: Int, $lastExclusiveKey: String) {
+  listTransactionsV2(
+    orgId: $orgId
+    status: $status
+    limit: $limit
+    startDate: $startDate
+    endDate: $endDate
+    userId: $userId
+    LastExclusiveKeyArg: $lastExclusiveKey
+  ) {
+    statusCode
+    success
+    message
+    totalCount
+    lastExclusiveKey
+    financeAccountTransactions {
+      id
+      transactionCurrency
+      transactionAmount
+      transactionType
+      status
+      merchantName
+      transactionDate
+      billCurrency
+      billAmount
+      owner
+      pan
+      paymentMethod
+      txnFinanceAccId
+      description
+      transactionAccountPublicToken
+      sourceTransactionId
+      sourceTransactionMatchingId
+      sourceTransactionTraceId
+      sourceTransactionStatus
+      receiptId
+      receiptStatus
+      cardName
+      fxrBillAmount
+      cardType
+      qualifiers
+      odAmount
+    }
+  }
+  orgMembers(orgId: $orgId) {
+    orgMembers {
+      id
+      userId
+      firstName
+      lastName
+      email
+      mobile
+      language
+      roles
+      kycStatus
+    }
+  }
+}
+''';
+
+  static const QUERY_VIRTUAL_CARD_PAGE = r'''
+query virtualCardPage($orgId: Int!, $financeAccountId: String!) {
+  readFinanceAccount(orgId: $orgId, financeAccountId: $financeAccountId) {
+    id
+    accountType
+    orgId
+    parentAccountId
+    userId
+    cvv
+    publicToken
+    permanentAccountNumber
+    accountName
+    startDate
+    expiryDate
+    balance
+    status
+    cardStatus
+    currencyCode
+    accountSubtype
+    availableLimit
+    totalCreditLimit
+    totalUnbilledAmount
+    outstandingAuthorisedAmount
+    virtualAccountNumber
+    lastBilledAmount
+    billingDate
+    dueDate
+    creditUsage
+    availableBalance
+    financeAccountLimits {
+      id
+      limitType
+      limitValue
+      controlValue
+      utilization
+      availableLimit
+      status
+    }
+    virtualAccountNumber
+    bankName
+    bankAccountName
+    bankBranchCode
+    odBalance
+    totalLimit
+    holdBalance
+    cardType
+    cardName
+    remarks
+    merchantId
+    name
+    merchantName
+    cardExpiryDate
+    spendControlLimits {
+      transactionLimit
+      variancePercentage
+      allowedCategories {
+        categoryName
+        displayName
+        isAllowed
+      }
+    }
+  }
 }
 
+''';
+}

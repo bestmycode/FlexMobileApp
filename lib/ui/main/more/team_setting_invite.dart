@@ -2,6 +2,7 @@ import 'package:co/ui/widgets/custom_result_modal.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/mutations.dart';
 import 'package:co/utils/token.dart';
+import 'package:co/utils/validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
@@ -11,7 +12,9 @@ import 'package:localstorage/localstorage.dart';
 
 class TeamSettingInvite extends StatefulWidget {
   final bool mobileVerified;
-  const TeamSettingInvite({Key? key, this.mobileVerified = true})
+  final handleUpdate;
+  const TeamSettingInvite(
+      {Key? key, this.mobileVerified = true, this.handleUpdate})
       : super(key: key);
 
   @override
@@ -41,13 +44,33 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
   int userRole = -1;
   bool showUserRoles = false;
   String inviteErrMsg = "";
+  bool isLoading = false;
+  bool isInvalidEmail = false;
+  bool errorUserRole = false;
 
   handleEditProfile(runMutation) {
-    runMutation({
-      "email": userEmailCtl.text,
-      "orgId": userStorage.getItem('orgId'),
-      "role": userRole == 0 ? "admin" : "user",
-      "senderId": userStorage.getItem('userId'),
+    checkValidation();
+    if (!isInvalidEmail && !errorUserRole) {
+      setState(() {
+        isLoading = true;
+      });
+
+      runMutation({
+        "email": userEmailCtl.text,
+        "orgId": userStorage.getItem('orgId'),
+        "role": userRole == 0 ? "admin" : "user",
+        "senderId": userStorage.getItem('userId'),
+      });
+    }
+  }
+
+  checkValidation() {
+    setState(() {
+      errorUserRole = userRole == -1 ? true : false;
+      isInvalidEmail =
+          Validator().validateEmail(userEmailCtl.text).toString() != ''
+              ? true
+              : false;
     });
   }
 
@@ -71,6 +94,7 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
   Widget home() {
     return Container(
         width: wScale(327),
+        alignment: Alignment.center,
         padding: EdgeInsets.symmetric(horizontal: wScale(16)),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -79,23 +103,60 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
               spreadRadius: 4,
-              blurRadius: 20,
+              blurRadius: 10,
               offset: const Offset(0, 1), // changes position of shadow
             ),
           ],
         ),
-        child: Column(
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            const CustomSpacer(size: 28),
-            // CustomTextField(
-            //     ctl: selectRoleCtl, hint: 'Select Role', label: 'Role'),
-            userRoleField(0, setState),
-            const CustomSpacer(size: 32),
-            customTextField(
-                userEmailCtl, 'Enter User Email Here', 'New Member Email'),
-            const CustomSpacer(size: 30),
-            mutationButton(),
-            const CustomSpacer(size: 20),
+            Opacity(
+                opacity: isLoading ? 0.5 : 1,
+                child: Column(
+                  children: [
+                    const CustomSpacer(size: 28),
+                    userRoleField(0, setState),
+                    Container(
+                        width: wScale(295),
+                        height: hScale(32),
+                        child: Text(
+                            errorUserRole ? "This field is required." : '',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: fSize(12),
+                                color: Color(0xFFEB5757),
+                                fontWeight: FontWeight.w400))),
+                    customTextField(userEmailCtl, 'Enter User Email Here',
+                        'New Member Email'),
+                    Container(
+                        width: wScale(295),
+                        height: hScale(32),
+                        child: Text(
+                            isInvalidEmail
+                                ? Validator()
+                                    .validateEmail(userEmailCtl.text)
+                                    .toString()
+                                : '',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                                fontSize: fSize(12),
+                                color: Color(0xFFEB5757),
+                                fontWeight: FontWeight.w400))),
+                    mutationButton(),
+                    const CustomSpacer(size: 20),
+                  ],
+                )),
+            isLoading
+                ? Positioned(
+                    top: 110,
+                    child: Container(
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFF60C094)))),
+                  )
+                : SizedBox()
           ],
         ));
   }
@@ -104,25 +165,23 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
     return SizedBox(
         width: wScale(295),
         height: hScale(56),
-        child: Opacity(
-            opacity: isButtonDisabled ? 0.4 : 1,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: const Color(0xff1A2831),
-                onPrimary: const Color(0xff1A2831),
-                side: const BorderSide(width: 0, color: Color(0xff1A2831)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
-              ),
-              onPressed: () {
-                isButtonDisabled ? null : handleEditProfile(runMutation);
-              },
-              child: Text("Invite",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: fSize(16),
-                      fontWeight: FontWeight.bold)),
-            )));
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: const Color(0xff1A2831),
+            onPrimary: const Color(0xff1A2831),
+            side: const BorderSide(width: 0, color: Color(0xff1A2831)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          onPressed: () {
+            handleEditProfile(runMutation);
+          },
+          child: Text("Invite",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.bold)),
+        ));
   }
 
   Widget mutationButton() {
@@ -133,8 +192,7 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
             return cache;
           },
           onCompleted: (resultData) {
-            print(resultData);
-            if (resultData == null) {
+            if (resultData == null || resultData['inviteUser'] == null) {
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -144,10 +202,21 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12.0)),
                             child: CustomResultModal(
-                                status: false,
-                                title: "Active User",
-                                message:
-                                    "${userEmailCtl.text} is already a team member.")));
+                              status: false,
+                              title: "Active User",
+                              titleColor: Color(0xFFEB5757),
+                              message:
+                                  "${userEmailCtl.text} is already a team member.",
+                              handleOKClick: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop('dialog');
+                                setState(() {
+                                  isLoading = false;
+                                  isButtonDisabled = true;
+                                });
+                                widget.handleUpdate();
+                              },
+                            )));
                   });
             } else {
               showDialog(
@@ -159,10 +228,23 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12.0)),
                             child: CustomResultModal(
-                                status: true,
-                                title: "Invitation Sent",
-                                message:
-                                    "Your invitation has been sent successfully to ${userEmailCtl.text}.")));
+                              status: true,
+                              title: "Invitation Sent",
+                              message:
+                                  "Your invitation has been sent successfully to ${userEmailCtl.text}.",
+                              handleOKClick: () {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop('dialog');
+                                setState(() {
+                                  isLoading = false;
+                                  selectRoleCtl.text = "";
+                                  userEmailCtl.text = "";
+                                  userRole = -1;
+                                  isButtonDisabled = true;
+                                });
+                                widget.handleUpdate();
+                              },
+                            )));
                   });
             }
           },
@@ -255,7 +337,7 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -331,7 +413,7 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -364,17 +446,16 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
                             ? const Color(0xFF29C490)
                             : const Color(0xFF1A2831))),
             child: Text(
-              index == -1
-                  ? 'Select Role'
-                  : index == 0
-                      ? 'Admin'
-                      : 'User',
-              textAlign: TextAlign.left,
-              style: TextStyle(
+                index == -1
+                    ? 'Select Role'
+                    : index == 0
+                        ? 'Admin'
+                        : 'User',
+                textAlign: TextAlign.left,
+                style: TextStyle(
                   fontSize: fSize(14),
                   fontWeight: FontWeight.w400,
-                )
-            ),
+                )),
             onPressed: () {
               setState(() {
                 userRole = index;
@@ -446,10 +527,13 @@ class TeamSettingInviteState extends State<TeamSettingInvite> {
                   color: Color(0xFF040415)),
               controller: ctl,
               onChanged: (text) {
-                if (text != '' && userRole != -1)
-                  setState(() {
+                setState(() {
+                  if (text != '' && userRole != -1) {
                     isButtonDisabled = false;
-                  });
+                  } else {
+                    isButtonDisabled = true;
+                  }
+                });
               },
               decoration: InputDecoration(
                 filled: true,

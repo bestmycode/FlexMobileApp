@@ -24,6 +24,10 @@ class TeamSettingState extends State<TeamSetting> {
     return Scale().fSize(context, size);
   }
 
+  handleUpdate() {
+    this.setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -31,49 +35,51 @@ class TeamSettingState extends State<TeamSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return SingleChildScrollView(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       const CustomSpacer(size: 15),
       titleField('Invite New User'),
       const CustomSpacer(size: 4),
       titleDetailField(
           'We will send an invitation email that is valid for 7 days'),
       const CustomSpacer(size: 15),
-      TeamSettingInvite(),
+      TeamSettingInvite(handleUpdate: handleUpdate),
       const CustomSpacer(size: 25),
-      Text('Users',
-          style: TextStyle(
-              fontSize: fSize(14),
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF1A2831))),
+      titleField('Users'),
       const CustomSpacer(size: 15),
       TeamSettingUsers(),
       const CustomSpacer(size: 15),
-    ]);
+    ]));
   }
 
   Widget titleField(title) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(title,
-            style: TextStyle(
-                fontSize: fSize(16),
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A2831))),
-      ],
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  fontSize: fSize(16),
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1A2831))),
+        ],
+      ),
     );
   }
 
   Widget titleDetailField(detail) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(detail,
-            style:
-                TextStyle(fontSize: fSize(12), color: const Color(0xFF70828D))),
-      ],
-    );
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(detail,
+                style: TextStyle(
+                    fontSize: fSize(12), color: const Color(0xFF70828D))),
+          ],
+        ));
   }
 }

@@ -45,14 +45,14 @@ class PhysicalTeamSubSortState extends State<PhysicalTeamSubSort> {
       sortField(),
       showSubSortModal
           ? Positioned(
-              top: hScale(50), right: 0, child: subSortTypeModalField())
+              top: hScale(30), right: 0, child: subSortTypeModalField())
           : const SizedBox()
     ]);
   }
 
   Widget sortField() {
     return Container(
-      height: hScale(500),
+      height: hScale(450),
       alignment: Alignment.topCenter,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,19 +69,17 @@ class PhysicalTeamSubSortState extends State<PhysicalTeamSubSort> {
     );
   }
 
-   Widget sortValue() {
-    return TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xffffffff),
-          padding: const EdgeInsets.all(0),
-        ),
-        child: Container(
-          padding:
-              EdgeInsets.symmetric(vertical: hScale(3), horizontal: wScale(16)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+  Widget sortValue() {
+    return Container(
+      height: hScale(30),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xffffffff),
+            padding: EdgeInsets.symmetric(horizontal: wScale(16)),
+          ),
           child: Row(children: [
             Text(
                 widget.subSortType == 0
@@ -96,10 +94,10 @@ class PhysicalTeamSubSortState extends State<PhysicalTeamSubSort> {
                   color: const Color(0xFFBFBFBF), size: fSize(24)),
             )
           ]),
-        ),
-        onPressed: () {
-          handleSubSortModal();
-        });
+          onPressed: () {
+            handleSubSortModal();
+          }),
+    );
   }
 
   Widget subSortTypeModalField() {
@@ -115,9 +113,9 @@ class PhysicalTeamSubSortState extends State<PhysicalTeamSubSort> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -170,5 +168,4 @@ class PhysicalTeamSubSortState extends State<PhysicalTeamSubSort> {
       ),
     );
   }
-
 }

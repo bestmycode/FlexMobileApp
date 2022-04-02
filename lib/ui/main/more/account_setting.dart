@@ -1,16 +1,11 @@
 import 'package:co/ui/main/more/my_subsibiaries.dart';
 import 'package:co/ui/main/more/user_profile.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
-import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_main_header.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
-import 'package:co/utils/queries.dart';
-import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:localstorage/localstorage.dart';
 
 class AccountSetting extends StatefulWidget {
   const AccountSetting({Key? key}) : super(key: key);
@@ -32,14 +27,15 @@ class AccountSettingState extends State<AccountSetting> {
   }
 
   int settingType = 1;
-  final LocalStorage storage = LocalStorage('token');
-  final LocalStorage userStorage = LocalStorage('user_info');
-  String getUserInfoSettingQuery = Queries.QUERY_GET_USER_SETTING;
 
   handleSettingType(type) {
     setState(() {
       settingType = type;
     });
+  }
+
+  handleUpdate() {
+    setState(() {});
   }
 
   @override
@@ -49,36 +45,9 @@ class AccountSettingState extends State<AccountSetting> {
 
   @override
   Widget build(BuildContext context) {
-    String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
-  }
-
-  Widget home() {
-    var orgId = userStorage.getItem('orgId');
     return Material(
         child: Scaffold(
-            body: Query(
-            options: QueryOptions(
-              document: gql(getUserInfoSettingQuery),
-              variables: {},
-              // pollInterval: const Duration(seconds: 10),
-            ),
-            builder: (QueryResult result, {VoidCallback? refetch, FetchMore? fetchMore}) {
-              if (result.hasException) {
-                return Text(result.exception.toString());
-              }
-
-              if (result.isLoading) {
-                return CustomLoading();
-              }
-              var userSettingInfo = result.data!['user'];
-              var userInvitations = result.data!['currentUserInvitations'];
-              return mainHome(userSettingInfo, userInvitations);
-            })));
-  }
-
-  Widget mainHome(userSettingInfo, userInvitations) {
-    return Stack(children: [
+            body: Stack(children: [
       Container(
         color: Colors.white,
         child: SizedBox(
@@ -87,10 +56,8 @@ class AccountSettingState extends State<AccountSetting> {
                 child: Column(children: [
               const CustomSpacer(size: 44),
               const CustomMainHeader(title: 'User Settings'),
-              const CustomSpacer(size: 49),
-              userSettingTypeField(),
-              settingType == 1 ? UserProfile(userData: userSettingInfo) : MySubsibiaries(roles: userSettingInfo['roles'], userInvitations: userInvitations),
-              const CustomSpacer(size: 88),
+              const CustomSpacer(size: 20),
+              tabView(),
             ]))),
       ),
       const Positioned(
@@ -98,9 +65,55 @@ class AccountSettingState extends State<AccountSetting> {
         left: 0,
         child: CustomBottomBar(active: 14),
       )
-    ]);
+    ])));
   }
 
+  Widget tabView() {
+    return DefaultTabController(
+      length: 2,
+      child: Container(
+        child: Column(
+          children: [
+            Container(
+              width: wScale(327),
+              child: TabBar(
+                unselectedLabelColor: const Color(0xFF70828D),
+                labelPadding: const EdgeInsets.all(1),
+                labelStyle: TextStyle(
+                  fontSize: fSize(14),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                labelColor: Color(0xff1A2831),
+                indicator: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Color(0xFF29C490), width: hScale(2)))),
+                indicatorPadding: const EdgeInsets.all(1),
+                indicatorWeight: 1,
+                tabs: [
+                  Tab(
+                    text: 'User Profile',
+                  ),
+                  Tab(
+                    text: 'My Subsidiaries',
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: hScale(546),
+              width: double.maxFinite,
+              margin: EdgeInsets.only(top: hScale(15)),
+              child: TabBarView(
+                children: [UserProfile(), MySubsibiaries()],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget userSettingTypeField() {
     return Container(

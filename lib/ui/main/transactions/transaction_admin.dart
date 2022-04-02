@@ -4,7 +4,6 @@ import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/queries.dart';
-import 'package:co/utils/token.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:co/utils/scale.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:intercom_flutter/intercom_flutter.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class TransactionAdmin extends StatefulWidget {
   const TransactionAdmin({Key? key}) : super(key: key);
@@ -47,8 +47,17 @@ class TransactionAdminState extends State<TransactionAdmin> {
   final LocalStorage userStorage = LocalStorage('user_info');
   String totalCompanyBalanceQuery = Queries.QUERY_TOTAL_COMPANY_BALANCE;
   String getBusinessAccountSummary = Queries.QUERY_BUSINESS_ACCOUNT_SUMMARY;
-  String getUserAccountSummary = Queries.QUERY_USER_ACCOUNT_SUMMARY;
   String allTransationsQuery = Queries.QUERY_ALL_TRANSACTIONS_TAB_PANE_CONTENTS;
+  String getUserInfoQuery = Queries.QUERY_DASHBOARD_LAYOUT;
+
+  bool isLoading = false;
+  var businessData = {};
+  String availableBalance = '0.00';
+  String balance = '0.00';
+  var transComplete = [];
+  var transPending = [];
+  var transDecline = [];
+  var userOrg = {};
 
   handleDepositFunds(businessAccountSummary) {
     Navigator.of(context).push(
@@ -88,106 +97,150 @@ Thanks.''';
     return true;
   }
 
+  Future<void> _fetchData() async {
+    isLoading = true;
+    var accessToken = storage.getItem("jwt_token");
+    final HttpLink httpLink =
+        HttpLink("https://gql.staging.fxr.one/v1/graphql");
+
+    final AuthLink authLink = AuthLink(getToken: () async => "$accessToken");
+    final Link link = authLink.concat(httpLink);
+    final client = GraphQLClient(cache: GraphQLCache(), link: link);
+
+    final businessVars = {
+      'orgId': userStorage.getItem("orgId"),
+      'isAdmin': true
+    };
+    final cardValanceVars = {'orgId': userStorage.getItem("orgId")};
+    final transVars1 = {
+      'orgId': userStorage.getItem("orgId"),
+      'status': "COMPLETED",
+      'limit': 100
+    };
+    final transVars2 = {
+      'orgId': userStorage.getItem("orgId"),
+      'status': "APPROVED",
+      'limit': 100
+    };
+    final transVars3 = {
+      'orgId': userStorage.getItem("orgId"),
+      'status': "DECLINED",
+      'limit': 100
+    };
+    try {
+      final businessSummaryOption = QueryOptions(
+          document: gql(getBusinessAccountSummary), variables: businessVars);
+      final businessSummaryResult = await client.query(businessSummaryOption);
+      final cardValanceOption = QueryOptions(
+          document: gql(totalCompanyBalanceQuery), variables: cardValanceVars);
+      final cardValanceResult = await client.query(cardValanceOption);
+
+      final queryOptions1 = QueryOptions(
+          document: gql(allTransationsQuery), variables: transVars1);
+      final transactionCompleteResult = await client.query(queryOptions1);
+      final queryOption2 = QueryOptions(
+          document: gql(allTransationsQuery), variables: transVars2);
+      final transactionApproveResult = await client.query(queryOption2);
+      final queryOptions3 = QueryOptions(
+          document: gql(allTransationsQuery), variables: transVars3);
+      final transactionDeclineResult = await client.query(queryOptions3);
+      final queryOptions4 =
+          QueryOptions(document: gql(getUserInfoQuery), variables: {});
+      final userInfoResult = await client.query(queryOptions4);
+      final userInfo = userInfoResult.data!['user'];
+      setState(() {
+        businessData =
+            businessSummaryResult.data?['readBusinessAcccountSummary'] ?? {};
+        availableBalance = cardValanceResult
+                .data?['readBusinessAcccountSummary']['data']['businessAccount']
+                    ['availableBalance']
+                .toStringAsFixed(2) ??
+            '0.00';
+        balance = cardValanceResult.data?['readBusinessAcccountSummary']['data']
+                    ['businessAccount']['balance']
+                .toStringAsFixed(2) ??
+            '0.00';
+        transComplete = transactionCompleteResult.data?['listTransactions']
+                ['financeAccountTransactions'] ??
+            [];
+        transPending = transactionApproveResult.data?['listTransactions']
+                ['financeAccountTransactions'] ??
+            [];
+        transDecline = transactionDeclineResult.data?['listTransactions']
+                ['financeAccountTransactions'] ??
+            [];
+        userOrg = userInfo['roles']
+            .firstWhere((item) => item['orgId'] == userInfo['currentOrgId']);
+        isLoading = false;
+      });
+    } catch (error) {
+      print("===== Error : Get User Transactions =====");
+      print("===== Query : allTransactionsTabPaneContents =====");
+      print(error);
+      await Sentry.captureException(error);
+      return null;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    // _pageController = PageController(initialPage: transactionStatus);
+    _fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
-    String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(client: Token().getLink(accessToken), child: home());
-  }
-
-  Widget home() {
-    var isAdmin = userStorage.getItem("isAdmin");
-    var orgId = userStorage.getItem("orgId");
-    return Query(
-        options: QueryOptions(
-          document:
-              gql(isAdmin ? getBusinessAccountSummary : getUserAccountSummary),
-          variables: {'orgId': orgId, 'isAdmin': isAdmin ? true : false},
-        ),
-        builder: (QueryResult accountSummary,
-            {VoidCallback? refetch, FetchMore? fetchMore}) {
-          if (accountSummary.hasException) {
-            return Text(accountSummary.exception.toString());
-          }
-
-          if (accountSummary.isLoading) {
-            return CustomLoading();
-          }
-
-          var businessAccountSummary = isAdmin
-              ? accountSummary.data!['readBusinessAcccountSummary']
-              : accountSummary.data!['readUserFinanceAccountSummary'];
-          return mainHome(businessAccountSummary);
-        });
-  }
-
-  Widget mainHome(businessAccountSummary) {
-    return Material(
-        child: Scaffold(
-            body: Stack(children: [
-      Container(
-        height: hScale(812),
-        child: SingleChildScrollView(
-            padding: EdgeInsets.only(left: wScale(24), right: wScale(24)),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const CustomSpacer(size: 57),
-              cardValance(),
-              const CustomSpacer(size: 20),
-              welcomeHandleField(businessAccountSummary,
-                  'assets/deposit_funds.png', 27.0, "Deposit Funds"),
-              const CustomSpacer(size: 10),
-              welcomeHandleField(businessAccountSummary,
-                  'assets/get_credit_line.png', 27.0, "Increase Credit Line"),
-              const CustomSpacer(size: 20),
-              TransactionTypeSection()
-            ])),
-      ),
-      const Positioned(
-        bottom: 0,
-        left: 0,
-        child: CustomBottomBar(active: 2),
-      )
-    ])));
-  }
-
-  Widget cardValance() {
-    var orgId = userStorage.getItem('orgId');
-    String accessToken = storage.getItem("jwt_token");
-    return GraphQLProvider(
-        client: Token().getLink(accessToken),
-        child: Query(
-            options: QueryOptions(
-              document: gql(totalCompanyBalanceQuery),
-              variables: {
-                'orgId': orgId,
-              },
-              // pollInterval: const Duration(seconds: 10),
+    return isLoading
+        ? CustomLoading()
+        : Material(
+            child: Scaffold(
+                body: Stack(children: [
+            Container(
+              height: hScale(812),
+              child: SingleChildScrollView(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Container(
+                        padding: EdgeInsets.only(
+                            left: wScale(24), right: wScale(24)),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const CustomSpacer(size: 57),
+                              cardValanceField(),
+                              const CustomSpacer(size: 20),
+                              welcomeHandleField(
+                                  businessData,
+                                  'assets/deposit_funds.png',
+                                  27.0,
+                                  "Deposit Funds"),
+                              const CustomSpacer(size: 10),
+                              welcomeHandleField(
+                                  businessData,
+                                  'assets/get_credit_line.png',
+                                  27.0,
+                                  "Increase Credit Line"),
+                              const CustomSpacer(size: 20),
+                            ])),
+                    TransactionTypeSection(
+                      transComplete: transComplete,
+                      transPending: transPending,
+                      transDecline: transDecline,
+                      userOrg: userOrg,
+                    )
+                  ])),
             ),
-            builder: (QueryResult result,
-                {VoidCallback? refetch, FetchMore? fetchMore}) {
-              if (result.hasException) {
-                return Text(result.exception.toString());
-              }
-
-              if (result.isLoading) {
-                return cardValanceField(0, 0);
-              }
-              var businessAcccountSummary =
-                  result.data!['readBusinessAcccountSummary'];
-              return cardValanceField(
-                  businessAcccountSummary['data']['businessAccount']
-                      ['availableBalance'],
-                  businessAcccountSummary['data']['businessAccount']
-                      ['balance']);
-            }));
+            const Positioned(
+              bottom: 0,
+              left: 0,
+              child: CustomBottomBar(active: 2),
+            )
+          ])));
   }
 
-  Widget cardValanceField(availableBalance, balance) {
+  Widget cardValanceField() {
     return Container(
         width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
             .size
@@ -209,11 +262,11 @@ Thanks.''';
           ],
         ),
         child: Column(children: [
-          moneyValue('Total Balance', availableBalance.toStringAsFixed(2), 20.0,
-              FontWeight.w700, const Color(0xff30E7A9)),
+          moneyValue('Total Balance', availableBalance, 20.0, FontWeight.w700,
+              const Color(0xff30E7A9)),
           const CustomSpacer(size: 10),
-          moneyValue('Ledger Balance', balance.toStringAsFixed(2), 18.0,
-              FontWeight.w600, const Color(0xffADD2C8)),
+          moneyValue('Ledger Balance', balance, 18.0, FontWeight.w600,
+              const Color(0xffADD2C8)),
         ]));
   }
 

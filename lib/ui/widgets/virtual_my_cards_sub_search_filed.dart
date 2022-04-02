@@ -7,20 +7,20 @@ class VirtualMyCardsSubSearchField extends StatefulWidget {
   final subSortType;
   final handleSubSortType;
   const VirtualMyCardsSubSearchField(
-      {
-        Key? key,
-        this.sortArr,
-        this.sortType,
-        this.subSortType,
-        this.handleSubSortType
-      })
+      {Key? key,
+      this.sortArr,
+      this.sortType,
+      this.subSortType,
+      this.handleSubSortType})
       : super(key: key);
 
   @override
-  VirtualMyCardsSubSearchFieldState createState() => VirtualMyCardsSubSearchFieldState();
+  VirtualMyCardsSubSearchFieldState createState() =>
+      VirtualMyCardsSubSearchFieldState();
 }
 
-class VirtualMyCardsSubSearchFieldState extends State<VirtualMyCardsSubSearchField> {
+class VirtualMyCardsSubSearchFieldState
+    extends State<VirtualMyCardsSubSearchField> {
   hScale(double scale) {
     return Scale().hScale(context, scale);
   }
@@ -47,12 +47,12 @@ class VirtualMyCardsSubSearchFieldState extends State<VirtualMyCardsSubSearchFie
       sortField(),
       showSubSortModal
           ? Positioned(
-              top: hScale(50), right: 0, child: subSortTypeModalField())
+              top: hScale(30), right: 0, child: subSortTypeModalField())
           : const SizedBox()
     ]);
   }
 
-Widget subSortTypeModalField() {
+  Widget subSortTypeModalField() {
     return Container(
       width: wScale(177),
       decoration: BoxDecoration(
@@ -65,9 +65,9 @@ Widget subSortTypeModalField() {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -122,37 +122,40 @@ Widget subSortTypeModalField() {
   }
 
   Widget sortField() {
-    return Container(
-      height: hScale(500),
-      alignment: Alignment.topCenter,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Sorted by: ${widget.sortArr[widget.sortType]['sortType']}',
-              style: TextStyle(
-                  fontSize: fSize(12),
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFF1B2931))),
-          sortValue()
-        ],
-      ),
-    );
+    return GestureDetector(
+        onTap: () {
+          showSubSortModal && handleSubSortModal();
+        },
+        child: Container(
+          height: hScale(450),
+          color: showSubSortModal ? Colors.transparent : null,
+          alignment: Alignment.topCenter,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Sorted by: ${widget.sortArr[widget.sortType]['sortType']}',
+                  style: TextStyle(
+                      fontSize: fSize(12),
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF1B2931))),
+              sortValue()
+            ],
+          ),
+        ));
   }
 
   Widget sortValue() {
-    return TextButton(
-        style: TextButton.styleFrom(
-          primary: const Color(0xffffffff),
-          padding: const EdgeInsets.all(0),
-        ),
-        child: Container(
-          padding:
-              EdgeInsets.symmetric(vertical: hScale(3), horizontal: wScale(16)),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border:
-                  Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+    return Container(
+      height: hScale(30),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF040415).withOpacity(0.1))),
+      child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xffffffff),
+            padding: EdgeInsets.symmetric(horizontal: wScale(16)),
+          ),
           child: Row(children: [
             Text(
                 widget.subSortType == 0
@@ -167,9 +170,9 @@ Widget subSortTypeModalField() {
                   color: const Color(0xFFBFBFBF), size: fSize(24)),
             )
           ]),
-        ),
-        onPressed: () {
-          handleSubSortModal();
-        });
+          onPressed: () {
+            handleSubSortModal();
+          }),
+    );
   }
 }

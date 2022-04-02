@@ -105,9 +105,9 @@ class CreditManuallyTransferScreenState
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -170,11 +170,19 @@ class CreditManuallyTransferScreenState
                   )),
               SizedBox(width: wScale(4)),
               flagCopied
-                  ? Text('Copied',
-                      style: TextStyle(
-                          fontSize: fSize(14),
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff30E7A9)))
+                  ? TextButton(
+                      style: TextButton.styleFrom(
+                        primary: const Color(0xff515151),
+                        padding: EdgeInsets.all(0),
+                      ),
+                      onPressed: () {
+                        handleCopied("0720088905");
+                      },
+                      child: Text('Copied',
+                          style: TextStyle(
+                              fontSize: fSize(14),
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xff30E7A9))))
                   : const SizedBox(),
             ],
           ),

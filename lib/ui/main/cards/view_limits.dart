@@ -50,7 +50,7 @@ class ViewLimitsState extends State<ViewLimits> {
     true,
     false
   ];
-  double transactionLimitValue = 0;
+  double transactionLimitValue = 1.0;
   double varianceLimitValue = 0;
 
   handleCloneSetting() {}
@@ -110,9 +110,9 @@ class ViewLimitsState extends State<ViewLimits> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -154,9 +154,9 @@ class ViewLimitsState extends State<ViewLimits> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.25),
+            color: Color(0xFF106549).withOpacity(0.1),
             spreadRadius: 4,
-            blurRadius: 20,
+            blurRadius: 10,
             offset: const Offset(0, 1), // changes position of shadow
           ),
         ],
@@ -168,6 +168,7 @@ class ViewLimitsState extends State<ViewLimits> {
           Text('Additional Spend Control',
               style: TextStyle(
                   fontSize: fSize(16),
+                  height: 1.8,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1A2831))),
           Opacity(
@@ -179,7 +180,9 @@ class ViewLimitsState extends State<ViewLimits> {
                   const CustomSpacer(size: 14),
                   Text('Merchant Category Blocking',
                       style: TextStyle(
-                          fontSize: fSize(14), color: const Color(0xFF1A2831))),
+                          fontSize: fSize(14),
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF1A2831))),
                   const CustomSpacer(size: 20),
                   additionalSpendControl(
                       'assets/air_lines.png', 'Airlines', 1.0),
@@ -250,7 +253,7 @@ class ViewLimitsState extends State<ViewLimits> {
             Text(title,
                 style: TextStyle(
                     fontSize: fSize(14),
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: const Color(0xFF1A2831)))
           ],
         ));

@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:co/utils/scale.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform;
-// import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -27,6 +26,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
   List<BiometricType>? _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
+  String title = "";
 
   hScale(double scale) {
     return Scale().hScale(context, scale);
@@ -96,8 +96,18 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
 
   Future<void> _getAvailableBiometrics() async {
     late List<BiometricType> availableBiometrics;
+
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
+      setState(() {
+        // if (Platform.isIOS) {
+          if (availableBiometrics.contains(BiometricType.face)) {
+            title = "Enable Face ID";
+          } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+            title = "Enable Touch ID";
+          }
+        // }
+      });
     } on PlatformException catch (e) {
       availableBiometrics = <BiometricType>[];
       print(e);
@@ -220,25 +230,26 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
         const CustomSpacer(size: 72),
         Image.asset('assets/logo.png', fit: BoxFit.contain, width: wScale(71)),
         const CustomSpacer(size: 101),
-        Image.asset(
-            platform == 'ios'
-                ? 'assets/face_id_white.png'
-                : 'assets/touch_id_white.png',
-            fit: BoxFit.contain,
-            width: hScale(150)),
+        title == ""
+            ? SizedBox(height: hScale(150))
+            : Image.asset(
+                title == 'Enable Face ID'
+                    ? 'assets/face_id_white.png'
+                    : 'assets/touch_id_white.png',
+                fit: BoxFit.contain,
+                height: hScale(150)),
         Container(
           margin: EdgeInsets.only(
               top: hScale(113), left: wScale(40), right: wScale(40)),
-          child: Text(
-              platform == 'ios'
-                  ? AppLocalizations.of(context)!.secureFaceID
-                  : AppLocalizations.of(context)!.secureTouchID,
+          child: Text(title,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: const Color(0xffffffff), fontSize: fSize(24))),
         ),
         const CustomSpacer(size: 120),
-        enableFaceIDButton(platform),
+        title == ""
+            ? SizedBox(height: hScale(56))
+            : enableFaceIDButton(platform),
         const CustomSpacer(size: 14),
         setUpLaterButton()
       ]),
@@ -247,7 +258,7 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
 
   Widget enableFaceIDButton(platform) {
     return SizedBox(
-        width: wScale(187),
+        // width: wScale(187),
         height: hScale(56),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -260,9 +271,10 @@ class SignInAuthScreenState extends State<SignInAuthScreen> {
             handleEnableFaceID();
           },
           child: Text(
-              platform == 'ios'
-                  ? AppLocalizations.of(context)!.enableFaceID
-                  : AppLocalizations.of(context)!.enableTouchID,
+              // platform == 'ios'
+              //     ? AppLocalizations.of(context)!.enableFaceID
+              //     : AppLocalizations.of(context)!.enableTouchID,
+              title,
               style: TextStyle(
                   color: Colors.black,
                   fontSize: fSize(16),

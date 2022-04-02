@@ -4,6 +4,7 @@ import 'package:co/utils/basedata.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class Token {
   getClientToken() async {
@@ -15,10 +16,17 @@ class Token {
       "audience": BaseData.AUDIENCE,
       "grant_type": "client_credentials"
     };
-
-    var tokenResponse = await http.post(url,
-        headers: {"Content-Type": "application/json"}, body: json.encode(data));
-
+    var tokenResponse;
+    try {
+      tokenResponse = await http.post(url,
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(data));
+    } catch (error) {
+      print("===== Error : Get Token from URL =====");
+      print(error);
+      await Sentry.captureException(error);
+      return null;
+    }
     var body = json.decode(tokenResponse.body);
     var token = body["access_token"];
     return token;
@@ -52,9 +60,17 @@ class Token {
       "grant_type": "client_credentials"
     };
 
-    var tokenResponse = await http.post(url,
-        headers: {"Content-Type": "application/json"}, body: json.encode(data));
-
+    var tokenResponse;
+    try {
+      tokenResponse = await http.post(url,
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(data));
+    } catch (error) {
+      print("===== Error : Get Token from URL =====");
+      print(error);
+      await Sentry.captureException(error);
+      return null;
+    }
     var body = json.decode(tokenResponse.body);
     var token = body["access_token"];
     return token;

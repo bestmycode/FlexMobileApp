@@ -14,11 +14,13 @@ class CustomMobileTextField extends StatefulWidget {
   final bool pwd;
   final Color fillColor;
   final bool isError;
+  final inputFormatters;
   const CustomMobileTextField(
       {Key? key,
       required this.ctl,
       required this.hint,
       required this.label,
+      this.inputFormatters,
       this.pwd = false,
       this.isError = false,
       this.fillColor = const Color(0xFFFFFFFF)})
@@ -77,9 +79,11 @@ class CustomMobileTextFieldState extends State<CustomMobileTextField> {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               border: Border.all(
-                  color: widget.isError ? Color(0xFFEB5757): flagFocused
-                      ? const Color(0xFF040415)
-                      : const Color(0xFF040415).withOpacity(0.1))),
+                  color: widget.isError
+                      ? Color(0xFFEB5757)
+                      : flagFocused
+                          ? const Color(0xFF040415)
+                          : const Color(0xFF040415).withOpacity(0.1))),
           child: Row(children: [
             SizedBox(
               width: wScale(105),
@@ -93,10 +97,14 @@ class CustomMobileTextFieldState extends State<CustomMobileTextField> {
               child: TextField(
                 focusNode: _focus,
                 controller: widget.ctl,
+                inputFormatters: widget.inputFormatters,
                 decoration: InputDecoration(
                   hintText: widget.hint,
                   hintStyle: TextStyle(
-                      color: widget.isError ? Color(0xFFEB5757): Color(0xffBFBFBF), fontSize: fSize(14)),
+                      color: widget.isError
+                          ? Color(0xFFEB5757)
+                          : Color(0xffBFBFBF),
+                      fontSize: fSize(14)),
                   enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.transparent)),
                   focusedBorder: const OutlineInputBorder(
@@ -116,7 +124,9 @@ class CustomMobileTextFieldState extends State<CustomMobileTextField> {
                 style: TextStyle(
                     fontSize: fSize(12),
                     fontWeight: FontWeight.w400,
-                    color: widget.isError ? Color(0xFFEB5757): Color(0xFFBFBFBF))),
+                    color: widget.isError
+                        ? Color(0xFFEB5757)
+                        : Color(0xFFBFBFBF))),
           ),
         )
       ],
@@ -204,7 +214,7 @@ class CustomMobileTextFieldState extends State<CustomMobileTextField> {
       );
 
   Widget _buildDialogItem(Country country) => Container(
-      margin: EdgeInsets.only(bottom: hScale(16)),
+      margin: EdgeInsets.only(bottom: hScale(8)),
       child: Row(
         children: [
           SizedBox(

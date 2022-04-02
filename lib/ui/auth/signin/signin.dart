@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:co/ui/auth/signin/forgotpwd.dart';
+import 'package:co/ui/auth/signup/signup_web.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
 import 'package:co/utils/basedata.dart';
 import 'package:co/utils/token.dart';
@@ -18,6 +20,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:auth0/auth0.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -53,6 +56,7 @@ class SignInScreenState extends State<SignInScreen> {
   bool isErrorPasswordCtl = false;
   bool showPassword = true;
   bool bioMetrics = false;
+  bool iosRegisterFlag = false;
   late String firstName = '';
   late String email = '';
   late String password = '';
@@ -136,16 +140,6 @@ class SignInScreenState extends State<SignInScreen> {
 
     try {
       var user = await client.passwordGrant({
-        // "username": "ronak+testflex@finaxar.com",
-        // "password": "Gofast@123",
-        // "username": "ronak+testivbbank1@finaxar.com",
-        // "password": "Gofast@123",
-        // "username": "demo@flexnow.co",
-        // "password": "Flex@01082021",
-        // "username": "holger610@vomoto.com",
-        // "password": "1qaz@WSX",
-        // "username": "anubha.gupta+tes0909@finaxar.com",
-        // "password": "Anubha@22",
         "username": type == 0 ? emailCtr.text : email,
         "password": type == 0 ? passwordCtr.text : password,
         "scope": "openid profile email",
@@ -169,14 +163,18 @@ class SignInScreenState extends State<SignInScreen> {
       } else {
         await prefs.setBool("isRemembered", false);
       }
+
       bool? temp_biometrics = await prefs.getBool('bioMetrics');
-      if(temp_biometrics == true && type == 0) {
-        _authenticateWithBiometrics(); // right ?
+      if (temp_biometrics == true && type == 0) {
+        _authenticateWithBiometrics();
       } else {
         Navigator.of(context)
-          .pushReplacementNamed(type == 0 ? SIGN_IN_AUTH : HOME_SCREEN);
+            .pushReplacementNamed(type == 0 ? SIGN_IN_AUTH : HOME_SCREEN);
       }
     } catch (error) {
+      print("===== Error : Login user account =====");
+      print(error);
+      await Sentry.captureException(error);
       setState(() {
         loading = false;
         errorText = error.toString().split('invalid_grant')[1];
@@ -185,12 +183,18 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   handleRegister() async {
-    // Navigator.of(context).pushReplacementNamed(SIGN_UP_WEB);
-    var signupUrl = 'https://app.staging.fxr.one/signup';
-    if (await canLaunch(signupUrl)) {
-      await launch(signupUrl);
-    } else {
-      throw 'Could not launch $signupUrl';
+    Navigator.of(context).pushReplacementNamed(SIGN_UP_WEB);
+    if (Platform.isAndroid) {
+      var signupUrl = 'https://app.staging.fxr.one/signup';
+      if (await canLaunch(signupUrl)) {
+        await launch(signupUrl);
+      } else {
+        throw 'Could not launch $signupUrl';
+      }
+    } else if (Platform.isIOS) {
+      Navigator.of(context).push(
+        CupertinoPageRoute(builder: (context) => SignUpWebScreen()),
+      );
     }
   }
 
@@ -247,8 +251,9 @@ class SignInScreenState extends State<SignInScreen> {
 
   @override
   void initState() {
-    super.initState();
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     getDefaultValue();
+    super.initState();
   }
 
   @override
@@ -258,13 +263,14 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   Widget main() {
-    print("===========AAAAAAAAAAA======== ${bioMetrics}");
     return Material(
         child: Scaffold(
-            body: loading == true
-                ? const CustomLoading(isLogin: true)
-                : SingleChildScrollView(
-                    child: bioMetrics ? secondMethod() : firstMethod())));
+            body: Container(
+                height: hScale(812),
+                child: loading == true
+                    ? const CustomLoading(isLogin: true)
+                    : SingleChildScrollView(
+                        child: bioMetrics ? secondMethod() : firstMethod()))));
   }
 
   Widget firstMethod() {
@@ -300,25 +306,13 @@ class SignInScreenState extends State<SignInScreen> {
                           fontWeight: FontWeight.w400)))
               : const CustomSpacer(size: 32),
           passwordField(),
-          isErrorPasswordCtl
-              ? Container(
-                  height: hScale(32),
-                  width: wScale(295),
-                  padding: EdgeInsets.only(top: hScale(5)),
-                  child: Text(
-                      Validator()
-                          .validatePasswordLength(passwordCtr.text)
-                          .toString(),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontSize: fSize(12),
-                          color: Color(0xFFEB5757),
-                          fontWeight: FontWeight.w400)))
-              : const CustomSpacer(size: 32),
+          const CustomSpacer(size: 8),
+          forgotPwdButton(),
+          const CustomSpacer(size: 24),
           forgotPwdField(),
           const CustomSpacer(size: 25),
           loginButton(),
-          errorText != '' ? showErrorText() : const CustomSpacer(size: 50),
+          errorText != '' ? showErrorText() : const CustomSpacer(size: 25),
           registerField()
         ]));
   }
@@ -326,7 +320,7 @@ class SignInScreenState extends State<SignInScreen> {
   Widget passwordField() {
     return Stack(children: [
       CustomTextField(
-          isError: isErrorPasswordCtl,
+          // isError: isErrorPasswordCtl,
           ctl: passwordCtr,
           onChanged: (text) {
             setState(() {
@@ -402,9 +396,9 @@ class SignInScreenState extends State<SignInScreen> {
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(children: [
             rememberMeCheckBox(),
+            SizedBox(width: wScale(16)),
             rememberMeTitle(),
           ]),
-          forgotPwdButton()
         ]));
   }
 
@@ -444,20 +438,25 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   Widget forgotPwdButton() {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff515151).withOpacity(0.5),
-        padding: EdgeInsets.zero,
-        textStyle: TextStyle(
-            fontSize: fSize(14),
-            decoration: TextDecoration.underline,
-            color: const Color(0xff515151).withOpacity(0.5)),
-      ),
-      onPressed: () {
-        handleForgotPwd();
-      },
-      child: Text(AppLocalizations.of(context)!.forgotPassword),
-    );
+    return Container(
+        width: wScale(295),
+        height: hScale(20),
+        alignment: Alignment.centerLeft,
+        child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xff29C490),
+            padding: EdgeInsets.zero,
+            textStyle: TextStyle(
+                fontSize: fSize(14),
+                fontWeight:FontWeight.w400,
+                decoration: TextDecoration.underline,
+                color: const Color(0xff29C490)),
+          ),
+          onPressed: () {
+            handleForgotPwd();
+          },
+          child: Text(AppLocalizations.of(context)!.forgotPassword),
+        ));
   }
 
   Widget loginButton() {
@@ -489,6 +488,9 @@ class SignInScreenState extends State<SignInScreen> {
         Text(AppLocalizations.of(context)!.dontHaveAnAccount,
             style:
                 TextStyle(color: const Color(0xFF666666), fontSize: fSize(14))),
+        Text(" ",
+            style:
+                TextStyle(color: const Color(0xFF666666), fontSize: fSize(14))),
         registerButton(),
       ],
     );
@@ -505,14 +507,14 @@ class SignInScreenState extends State<SignInScreen> {
       onPressed: () {
         handleRegister();
       },
-      child: Text(' Register on the web browser'),
+      child: Text(AppLocalizations.of(context)!.registerontheweb),
     );
   }
 
   Widget showErrorText() {
     return Container(
         width: wScale(295),
-        height: hScale(60),
+        height: hScale(25),
         alignment: Alignment.center,
         padding: EdgeInsets.only(top: hScale(15)),
         child: Column(
@@ -624,7 +626,7 @@ class SignInScreenState extends State<SignInScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text('Not ${firstName}? Login to another account',
+        Text('Not ${firstName}? Login to another account ',
             style:
                 TextStyle(color: const Color(0xFF666666), fontSize: fSize(14))),
         anotherLoginButton(),
@@ -633,19 +635,30 @@ class SignInScreenState extends State<SignInScreen> {
   }
 
   Widget anotherLoginButton() {
-    return TextButton(
-      style: TextButton.styleFrom(
-        primary: const Color(0xff29c490),
-        padding: EdgeInsets.all(0),
-        textStyle:
-            TextStyle(fontSize: fSize(14), color: const Color(0xff29c490)),
-      ),
-      onPressed: () {
-        setState(() {
-          bioMetrics = false;
-        });
-      },
-      child: Text('here'),
-    );
+    return Container(
+        width: wScale(30),
+        child: TextButton(
+          style: TextButton.styleFrom(
+            primary: const Color(0xff29c490),
+            padding: EdgeInsets.symmetric(horizontal: 0),
+            textStyle:
+                TextStyle(fontSize: fSize(14), color: const Color(0xff29c490)),
+          ),
+          onPressed: () async {
+            setState(() {
+              bioMetrics = false;
+              flagRemember = false;
+              emailCtr.text = '';
+              passwordCtr.text = '';
+            });
+            SharedPreferences prefs = await _prefs;
+            await prefs.setBool("isRemembered", false);
+            await prefs.setBool("bioMetrics", false);
+            await prefs.setString("firstName", '');
+            await prefs.setString('email', '');
+            await prefs.setString('password', '');
+          },
+          child: Text('here'),
+        ));
   }
 }

@@ -14,11 +14,12 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:localstorage/localstorage.dart';
 
 class ReceiptScreen extends StatefulWidget {
-  final XFile? imageFile;
+  final XFile? uploadFile;
   final String? accountID;
   final String? transactionID;
+  final initTransactionType;
   const ReceiptScreen(
-      {Key? key, this.imageFile, this.accountID, this.transactionID})
+      {Key? key, this.uploadFile, this.accountID, this.transactionID, this.initTransactionType = 1})
       : super(key: key);
 
   @override
@@ -53,6 +54,9 @@ class _ReceiptScreen extends State<ReceiptScreen> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      transactionType = widget.initTransactionType;
+    });
   }
 
   @override
@@ -71,7 +75,7 @@ class _ReceiptScreen extends State<ReceiptScreen> {
                     "financeAccountId": widget.accountID,
                     "sourceTransactionId": widget.transactionID
                   },
-                  // pollInterval: const Duration(seconds: 10),
+                  
                 ),
                 builder: (QueryResult result,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
@@ -102,7 +106,7 @@ class _ReceiptScreen extends State<ReceiptScreen> {
                       CustomMainHeader(
                           title: "Transaction ${data['sourceTransactionId']}"),
                       const CustomSpacer(size: 39),
-                      ReceiptTransactionType(data: data)
+                      ReceiptTransactionType(data: data, accountID: widget.accountID, transactionID: widget.transactionID, initTransactionType: widget.initTransactionType)
                     ],
                   ))),
                   const Positioned(

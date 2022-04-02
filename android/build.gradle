@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.32'
+    ext.kotlin_version = '1.6.0'
     repositories {
         google()
         mavenCentral()
@@ -15,6 +15,14 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        maven{
+            url 'https://nexus-dev.meawallet.com/content/groups/finaxar-group'
+            credentials {
+                username 'finaxar-user'
+                password 'Va6KTcEhNiw9DE'
+            }
+        }
     }
 }
 

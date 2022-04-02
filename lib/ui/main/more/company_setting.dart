@@ -1,6 +1,8 @@
-import 'package:co/ui/main/more/company_setting_tab.dart';
+import 'package:co/ui/main/more/company_profile.dart';
+import 'package:co/ui/main/more/team_setting.dart';
 import 'package:co/ui/widgets/custom_bottom_bar.dart';
 import 'package:co/ui/widgets/custom_loading.dart';
+import 'package:co/ui/widgets/custom_no_internet.dart';
 import 'package:co/ui/widgets/custom_spacer.dart';
 import 'package:co/utils/queries.dart';
 import 'package:co/utils/token.dart';
@@ -12,7 +14,7 @@ import 'package:localstorage/localstorage.dart';
 
 class CompanySetting extends StatefulWidget {
   final tabIndex;
-  const CompanySetting({Key? key, this.tabIndex}) : super(key: key);
+  const CompanySetting({Key? key, this.tabIndex = 0}) : super(key: key);
   @override
   CompanySettingState createState() => CompanySettingState();
 }
@@ -55,12 +57,16 @@ class CompanySettingState extends State<CompanySetting> {
                 options: QueryOptions(
                   document: gql(getCompanySettingQuery),
                   variables: {'orgId': orgId},
-                  // pollInterval: const Duration(seconds: 10),
                 ),
                 builder: (QueryResult result,
                     {VoidCallback? refetch, FetchMore? fetchMore}) {
                   if (result.hasException) {
-                    return Text(result.exception.toString());
+                    return Scaffold(body: CustomNoInternet(handleTryAgain: () {
+                      Navigator.of(context)
+                          .push(new MaterialPageRoute(
+                              builder: (context) => CompanySetting()))
+                          .then((value) => setState(() => {}));
+                    }));
                   }
 
                   if (result.isLoading) {
@@ -77,14 +83,16 @@ class CompanySettingState extends State<CompanySetting> {
         color: Colors.white,
         child: Container(
             height: hScale(812),
-            padding: EdgeInsets.symmetric(horizontal: wScale(24)),
             child: SingleChildScrollView(
                 child: Column(children: [
-              const CustomSpacer(size: 57),
-              companyTitle(companyProfile!['name']),
-              const CustomSpacer(size: 40),
-              CompanySettingTab(tabIndex: widget.tabIndex),
-              // const CustomSpacer(size: 88),
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: wScale(24)),
+                  child: Column(children: [
+                    const CustomSpacer(size: 57),
+                    companyTitle(companyProfile!['name']),
+                    const CustomSpacer(size: 20)
+                  ])),
+              tabView(),
             ]))),
       ),
       const Positioned(
@@ -97,7 +105,9 @@ class CompanySettingState extends State<CompanySetting> {
 
   Widget companyTitle(title) {
     return Container(
-        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+            .size
+            .width,
         height: hScale(96),
         padding: EdgeInsets.symmetric(horizontal: wScale(24)),
         decoration: BoxDecoration(
@@ -126,5 +136,56 @@ class CompanySettingState extends State<CompanySetting> {
                     color: Colors.white))
           ],
         ));
+  }
+
+  Widget tabView() {
+    return DefaultTabController(
+      length: 2,
+      child: Container(
+        child: Column(
+          children: [
+            Container(
+              width: wScale(327),
+              child: TabBar(
+                unselectedLabelColor: const Color(0xFF70828D),
+                labelPadding: const EdgeInsets.all(1),
+                labelStyle: TextStyle(
+                  fontSize: fSize(14),
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                labelColor: Color(0xff1A2831),
+                indicator: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Color(0xFF29C490), width: hScale(2)))),
+                indicatorPadding: const EdgeInsets.all(1),
+                indicatorWeight: 1,
+                tabs: [
+                  Tab(
+                    text: 'Company Profile',
+                  ),
+                  Tab(
+                    text: 'Team',
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: hScale(480),
+              alignment: Alignment.center,
+              margin: EdgeInsets.only(top: hScale(15)),
+              child: TabBarView(
+                children: [
+                  CompanyProfile(),
+                  TeamSetting(),
+                  // AppSetting()
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

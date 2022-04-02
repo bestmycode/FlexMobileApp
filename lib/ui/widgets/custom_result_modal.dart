@@ -5,6 +5,7 @@ import 'package:co/utils/scale.dart';
 class CustomResultModal extends StatelessWidget {
   final bool status;
   final String title;
+  final titleColor;
   final String message;
   final handleOKClick;
   const CustomResultModal({
@@ -12,6 +13,7 @@ class CustomResultModal extends StatelessWidget {
     required this.status,
     required this.title,
     required this.message,
+    this.titleColor = Colors.black,
     this.handleOKClick = null
   }) : super(key: key);
 
@@ -37,8 +39,9 @@ class CustomResultModal extends StatelessWidget {
                 vertical: hScale(25), horizontal: wScale(10)),
             child: Column(children: [
               Text(title,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: fSize(14), fontWeight: FontWeight.w700)),
+                      fontSize: fSize(14), fontWeight: FontWeight.w700, color: titleColor)),
               const CustomSpacer(size: 10),
               Text(
                 message,

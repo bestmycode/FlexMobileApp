@@ -60,28 +60,39 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
 
   @override
   Widget build(BuildContext context) {
-    var firstDetail = AppLocalizations.of(context)!.welcometoworld;
-    var secondDetail =  AppLocalizations.of(context)!.flexletsyouissues;
-    var thirdDetail = AppLocalizations.of(context)!.withmoretransparency;
+    var firstDetail = 'Stress-free payments made simple!';
+    var secondDetail =
+        'Issue up to 20 physical cards and unlimited virtual cards';
+    var thirdDetail = 'Manage your payments with more transparency!';
     return Material(
         child: Scaffold(
             body: SingleChildScrollView(
                 child: Container(
+                    height: hScale(812),
                     color: Colors.white,
                     child: Column(children: [
                       logo(),
-                      step == 0
-                          ? firstTitle()
-                          : step == 1
-                              ? secondTitle()
-                              : thirdTitle(),
-                      CustomSpacer(size: 25),
-                      detail(step == 0
-                          ? firstDetail
-                          : step == 1
-                              ? secondDetail
-                              : thirdDetail),
-                      CustomSpacer(size: 110),
+                      CustomSpacer(size: 32),
+                      SizedBox(
+                        height: hScale(230),
+                        child: Column(
+                          children: [
+                            step == 0
+                                ? firstTitle()
+                                : step == 1
+                                    ? secondTitle()
+                                    : thirdTitle(),
+                            CustomSpacer(size: 32),
+                            Container(
+                                width: wScale(300),
+                                child: detail(step == 0
+                                    ? firstDetail
+                                    : step == 1
+                                        ? secondDetail
+                                        : thirdDetail)),
+                          ],
+                        ),
+                      ),
                       CircularPercentIndicator(
                         radius: hScale(80),
                         animation: true,
@@ -96,8 +107,7 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
                       CustomSpacer(size: 19),
                       TextButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed(SPLASH_SCREEN);
+                            Navigator.of(context).pushReplacementNamed(SIGN_IN);
                           },
                           child: Text(AppLocalizations.of(context)!.skip,
                               style: TextStyle(
@@ -109,11 +119,13 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
 
   Widget logo() {
     return Container(
-        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window).size.width,
-        height: hScale(300),
+        width: MediaQueryData.fromWindow(WidgetsBinding.instance!.window)
+            .size
+            .width,
+        height: hScale(383),
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/signin_top_background.png"),
+            image: AssetImage("assets/first_login_background.png"),
             fit: BoxFit.cover,
           ),
         ),
@@ -135,7 +147,7 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
           if (step < 3) {
             nextStep();
           } else {
-            Navigator.of(context).pushReplacementNamed(SPLASH_SCREEN);
+            Navigator.of(context).pushReplacementNamed(SIGN_IN);
           }
         },
         child: Container(
@@ -152,8 +164,7 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
 
   Widget firstTitle() {
     return Container(
-        height: hScale(150),
-        width: wScale(375),
+        width: wScale(300),
         alignment: Alignment.center,
         child: RichText(
           textAlign: TextAlign.center,
@@ -161,14 +172,15 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
             style: TextStyle(
               fontSize: fSize(20),
               fontWeight: FontWeight.w600,
+              height: 1.4,
               color: Color(0xFF1A2831),
             ),
             children: [
-              TextSpan(text: AppLocalizations.of(context)!.the),
+              TextSpan(text: 'The '),
               TextSpan(
-                  text: AppLocalizations.of(context)!.simpler, style: TextStyle(color: Color(0xFF29C490))),
+                  text: 'simpler ', style: TextStyle(color: Color(0xFF29C490))),
               TextSpan(
-                  text: AppLocalizations.of(context)!.cashandpayments),
+                  text: 'cash and \npayment management for \nstartups and SMEs'),
             ],
           ),
         ));
@@ -176,8 +188,7 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
 
   Widget secondTitle() {
     return Container(
-        height: hScale(150),
-        width: wScale(375),
+        width: wScale(300),
         alignment: Alignment.center,
         child: RichText(
           textAlign: TextAlign.center,
@@ -185,13 +196,13 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
             style: TextStyle(
               fontSize: fSize(20),
               fontWeight: FontWeight.w600,
+              height: 1.4,
               color: Color(0xFF1A2831),
             ),
             children: [
-              TextSpan(text: AppLocalizations.of(context)!.takechargeof),
+              TextSpan(text: 'Take charge of your '),
               TextSpan(
-                  text: AppLocalizations.of(context)!.physicalandvirtualcards,
-                  style: TextStyle(color: Color(0xFF29C490))),
+                  text: 'payments', style: TextStyle(color: Color(0xFF29C490))),
             ],
           ),
         ));
@@ -199,8 +210,7 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
 
   Widget thirdTitle() {
     return Container(
-        height: hScale(150),
-        width: wScale(375),
+        width: wScale(300),
         alignment: Alignment.center,
         child: RichText(
           textAlign: TextAlign.center,
@@ -208,14 +218,14 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
             style: TextStyle(
               fontSize: fSize(20),
               fontWeight: FontWeight.w600,
+              height: 1.4,
               color: Color(0xFF1A2831),
             ),
             children: [
-              TextSpan(text: AppLocalizations.of(context)!.easily),
+              TextSpan(text: 'Easily '),
               TextSpan(
-                  text: AppLocalizations.of(context)!.tracktransactions,
-                  style: TextStyle(color: Color(0xFF29C490))),
-              TextSpan(text: AppLocalizations.of(context)!.madebyanyone),
+                  text: 'track ', style: TextStyle(color: Color(0xFF29C490))),
+              TextSpan(text: 'transactions'),
             ],
           ),
         ));
@@ -224,6 +234,10 @@ class FirstLoadingScreenState extends State<FirstLoadingScreen>
   Widget detail(text) {
     return Text(text,
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: fSize(14), color: Color(0xFF515151)));
+        style: TextStyle(
+            fontSize: fSize(16),
+            color: Color(0xFF3F505A),
+            height: 1.5,
+            fontWeight: FontWeight.w500));
   }
 }
